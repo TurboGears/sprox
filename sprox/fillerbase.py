@@ -29,7 +29,7 @@ class TableFiller(FillerBase):
         l = []
         for value in values:
             name = self.__provider__.get_view_column_name(value.__class__, self.__possible_field_names__)
-            l.append(getattr(value, name))
+            l.append(str(getattr(value, name)))
         return ','.join(l)
 
     def _get_relation_value(self, field, value):
