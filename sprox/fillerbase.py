@@ -28,14 +28,14 @@ class TableFiller(FillerBase):
     def _get_list_data_value(self, field, values):
         l = []
         for value in values:
-            name = self.__provider__.get_view_column_name(value.__class__, self.__possible_field_names__)
+            name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
             l.append(str(getattr(value, name)))
         return ','.join(l)
 
     def _get_relation_value(self, field, value):
         if value is None:
             return None
-        name = self.__provider__.get_view_column_name(value.__class__, self.__possible_field_names__)
+        name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
         return getattr(value, name)
 
     def get_value(self, values=None, offset=None, limit=None):

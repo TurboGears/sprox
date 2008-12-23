@@ -125,7 +125,7 @@ class SAORMProvider(IProvider):
             if value.primary_key:
                 return value.name
 
-    def get_view_column_name(self, entity, possible_columns):
+    def get_view_field_name(self, entity, possible_columns):
         fields = self.get_fields(entity)
         view_field = None
         for column_name in possible_columns:
@@ -157,7 +157,7 @@ class SAORMProvider(IProvider):
             target_entity = entity.class_
 
         pk_name = self.get_primary_field(target_entity)
-        view_name = self.get_view_column_name(target_entity, view_names)
+        view_name = self.get_view_field_name(target_entity, view_names)
 
         rows = self.session.query(target_entity).all()
         return [(getattr(row, pk_name), getattr(row, view_name)) for row in rows]

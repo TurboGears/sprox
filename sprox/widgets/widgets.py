@@ -77,7 +77,7 @@ class SproxCheckBox(InputField):
 class ForeignKeyMixin(Widget):
     params = ["table_name", "provider"]
     def _my_update_params(self, d,nullable=False):
-        view_column = self.provider.get_view_column_name(self.table_name)
+        view_column = self.provider.get_view_field_name(self.table_name)
         id_column = self.provider.get_id_column_name(self.table_name)
         rows = self.provider.select(self.table_name, columns_limit=[id_column, view_column])
         rows= [(row[id_column], row[view_column]) for row in rows]
