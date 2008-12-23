@@ -7,16 +7,16 @@ from formencode import Invalid
 import inspect
 
 
-class DBSprocketsCalendarDatePicker(CalendarDatePicker):
+class SproxCalendarDatePicker(CalendarDatePicker):
     date_format = '%Y-%m-%d'
 
-class DBSprocketsTimePicker(CalendarDateTimePicker):
+class SproxTimePicker(CalendarDateTimePicker):
     date_format = '%H:%M:%S'
 
-class DBSprocketsCalendarDateTimePicker(CalendarDateTimePicker):
+class SproxCalendarDateTimePicker(CalendarDateTimePicker):
     date_format = '%Y-%m-%d %H:%M:%S'
 
-class DBSprocketsDataGrid(DataGrid):
+class SproxDataGrid(DataGrid):
     template = "genshi:sprox.widgets.templates.datagrid"
     params = ['pks', 'controller']
 
@@ -55,15 +55,15 @@ class EntityDefWidget(Widget):
 class TableWidget(Widget):
     template = "genshi:sprox.widgets.templates.table"
 
-class DBSprocketsTableForm(TableForm):
+class SproxTableForm(TableForm):
     validator = Schema(ignore_missing_keys=True, allow_extra_fields=True)
     template = "genshi:sprox.widgets.templates.tableForm"
 
     def update_params(self, d):
-        super(DBSprocketsTableForm, self).update_params(d)
+        super(SproxTableForm, self).update_params(d)
 
 #custom checkbox widget since I am not happy with the behavior of the TW one
-class DBSprocketsCheckBox(InputField):
+class SproxCheckBox(InputField):
     template = "genshi:sprox.widgets.templates.checkbox"
     validator = StringBool
     def update_params(self, d):

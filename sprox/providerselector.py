@@ -3,7 +3,7 @@ Provider Locator Module
 
 a module to help dbsprockets automatically find providers
 
-Copywrite (c) 2008 Christopher Perkins
+Copyright (c) 2008 Christopher Perkins
 Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
@@ -13,7 +13,7 @@ try:
     from sqlalchemy.orm.attributes import ClassManager
 except:
     from warnings import warn
-    warn('DBSprockets requires sqlalchemy>=0.5')
+    warn('Sprox requires sqlalchemy>=0.5')
 
 from sqlalchemy import MetaData
 from sqlalchemy.engine import Engine

@@ -1,10 +1,10 @@
-from sprox.widgets import DBSprocketsDataGrid
+from sprox.widgets import SproxDataGrid
 from viewbase import ViewBase
 from metadata import FieldsMetadata
 
 class TableBase(ViewBase):
     #object overrides
-    __base_widget_type__ = DBSprocketsDataGrid
+    __base_widget_type__ = SproxDataGrid
     __metadata_type__    = FieldsMetadata
 
     def _do_get_widget_args(self):

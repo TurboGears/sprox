@@ -1,7 +1,7 @@
 """
 validators Module
 
-Copywrite (c) 2008 Christopher Perkins
+Copyright (c) 2008 Christopher Perkins
 Original Version by Christopher Perkins 2008
 Released under MIT license.
 """

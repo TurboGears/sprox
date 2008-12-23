@@ -17,7 +17,7 @@ Functions:
 None
 
 
-Copywrite (c) 2007 Christopher Perkins
+Copyright (c) 2007 Christopher Perkins
 Original Version by Christopher Perkins 2007Database
 Released under MIT license.
 """
@@ -55,12 +55,12 @@ class SAWidgetSelector(WidgetSelector):
     String:   TextField,
     Integer:  TextField,
     Numeric:  TextField,
-    DateTime: DBSprocketsCalendarDateTimePicker,
-    Date:     DBSprocketsCalendarDatePicker,
-    Time:     DBSprocketsTimePicker,
+    DateTime: SproxCalendarDateTimePicker,
+    Date:     SproxCalendarDatePicker,
+    Time:     SproxTimePicker,
     Binary:   FileField,
     PickleType: TextField,
-    Boolean: DBSprocketsCheckBox,
+    Boolean: SproxCheckBox,
 #    NullType: TextField
     }
 

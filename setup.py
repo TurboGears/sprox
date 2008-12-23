@@ -38,7 +38,7 @@ setup(
        """
 #  entry_points="""
 #        [paste.paster_create_template]
-#        dbsprockets=sprox.instance.newDBSprockets:Template
+#        dbsprockets=sprox.instance.newSprox:Template
 #    """,
 
   )

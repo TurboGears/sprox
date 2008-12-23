@@ -17,7 +17,7 @@ MetadataError
 Functions:
 None
 
-Copywrite (c) 2007 Christopher Perkins
+Copyright (c) 2007 Christopher Perkins
 Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
