@@ -11,7 +11,7 @@ class ConfigBase(object):
     __model__ = __entity__  = None
 
     # this is used by catwalk's validate decorator to lookup the sprocket in the cache
-    __id__    = None
+    __sprox_id__    = None
 
     #How should we select a provider
     __provider_type_selector_type__ = ProviderTypeSelector

@@ -57,7 +57,7 @@ class ConfigCache(object):
         if key != 'model_view':
             base.__entity__   = self._provider.get_entity(identifier)
         base.__provider__ = self._provider
-        base.__id__ = key
+        base.__sprox_id__ = key
         return base(self.session)
 
     def __getitem__(self, key):

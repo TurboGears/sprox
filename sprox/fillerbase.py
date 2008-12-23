@@ -18,7 +18,7 @@ class FormFiller(FillerBase):
 
     def get_value(self, values=None, offset=None, limit=None):
         values = super(FormFiller, self).get_value(values, offset, limit)
-        values['sprox_id'] =  self.__id__
+        values['sprox_id'] =  self.__sprox_id__
         return values
 
 class TableFiller(FillerBase):
