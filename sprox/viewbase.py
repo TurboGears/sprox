@@ -11,9 +11,30 @@ class ClassViewer(object):
         self.__name__ = klass.__name__
 
 class ViewBase(ConfigBase):
+    """
+
+    *Modifiers specific to this class*
+
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | Name                              | Description                                | Default                      |
+    +===================================+============================================+==============================+
+    | __widget_selector_type__          | What class to use for widget selection.    | WidgetSelector               |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __field_widgets__                 | A dictionary of widgets to replace the     | {}                           |
+    |                                   | ones that would be chosen by the selector  |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __field_widget_types__            | A dictionary of types of widgets, allowing | {}                           |
+    |                                   | sprox to determine the widget args         |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __base_widget_type__              | The base widget for this config            | Widget                       |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __widget_selector__               | an instantiated object to use for widget   | None                         |
+    |                                   | selection.                                 |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+
+    """
     __field_widgets__      = None
     __field_widget_types__ = None
-    __cache_widget__       = True
 
     #object overrides
     __base_widget_type__       = Widget
@@ -32,8 +53,7 @@ class ViewBase(ConfigBase):
 
     @property
     def __widget__(self):
-        if (not self.__cache_widget__) or not hasattr(self, '___widget__'):
-            self.___widget__ = self.__base_widget_type__(**self.__widget_args__)
+        self.___widget__ = self.__base_widget_type__(**self.__widget_args__)
         return self.___widget__
 
     #try to act like a widget as much as possible

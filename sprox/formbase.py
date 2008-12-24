@@ -14,15 +14,71 @@ class FilteringSchema(Schema):
     allow_extra_fields = True
 
 class FormBase(ViewBase):
-    __field_validators__   = None
-    __base_validator__     = None
-    __require_fields__    = None
+    """
+
+    :Modifiers:
+
+
+    Modifiers defined in this class
+
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | Name                              | Description                                | Default                      |
+    +===================================+============================================+==============================+
+    | __base_widget_type__              | What widget to use for the form.           | TableForm                    |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __widget_selector_type__          | What class to use for widget selection.    | SAWidgetSelector             |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __validator_selector_type__       | What class to use for validator selection. | SAValidatorSelector          |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __require_fields__                | Specifies which fields are required.       | []                           |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __check_if_unique__               | Set this to True for "new" forms.  This    | False                        |
+    |                                   | causes Sprox to check if there is an       |                              |
+    |                                   | existing record in the database which      |                              |
+    |                                   | matches the field data.                    |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __field_validators__              | A dictionary of validators indexed by      | {}                           |
+    |                                   | fieldname.                                 |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __field_validator_types__         | Types of validators to use for each field  | {}                           |
+    |                                   | (allow sprox to set the attribute of the   |                              |
+    |                                   | validators).                               |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __base_validator__                | A validator to attch to the form.          | None                         |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __validator_selector__            | What object to use to select field         | None                         |
+    |                                   | validators.                                |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __metadata_type__                 | What metadata type to use to get schema    | FieldsMetadata               |
+    |                                   | info on this object                        |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __dropdown_view_names__           | list of names to use for discovery of view | None                         |
+    |                                   | fieldnames for dropdowns (None uses the    |                              |
+    |                                   | sprox default names.                       |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+
+    Modifiers inherited from :class:`sprox.viewbase.ViewBase`
+
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | Name                              | Description                                | Default                      |
+    +===================================+============================================+==============================+
+    | __field_widgets__                 | A dictionary of widgets to replace the     | {}                           |
+    |                                   | ones that would be chosen by the selector  |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __field_widget_types__            | A dictionary of types of widgets, allowing | {}                           |
+    |                                   | sprox to determine the widget args         |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __widget_selector__               | an instantiated object to use for widget   | None                         |
+    |                                   | selection.                                 |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+
+    Modifiers inherited from :class:`sprox.configbase.ConfigBase`
+    """
+    __require_fields__     = None
     __check_if_unique__    = False
 
     #object overrides
     __base_widget_type__       = TableForm
-    __widget_selector_type__   = None
-    __field_metadata_type__    = None
 
     __widget_selector_type__   = SAWidgetSelector
 
@@ -62,15 +118,21 @@ class FormBase(ViewBase):
     def __call__(self, *args, **kw):
         return self.__widget__(*args, **kw)
 
-    @property
     def validate(self, params):
+        """A pass-thru to the widget's validate function."""
         return self.__widget__.validate(params)
 
     def _do_get_widget_args(self):
+        """Override this method to define how the class get's the
+           arguments for the main widget
+        """
         d = super(FormBase, self)._do_get_widget_args()
         return d
 
     def _do_get_field_widget_args(self, field_name, field):
+        """Override this method do define how this class gets the field
+        widget arguemnts
+        """
         args = super(FormBase, self)._do_get_field_widget_args( field_name, field)
         v = self.__field_validators__.get(field_name, self._do_get_field_validator(field_name, field))
         if self.__provider__.is_relation(self.__entity__, field_name):
@@ -80,6 +142,8 @@ class FormBase(ViewBase):
         return args
 
     def _do_get_fields(self):
+        """Override this function to define how
+        """
         fields = super(FormBase, self)._do_get_fields()
         if 'sprox_id' not in fields:
             fields.append('sprox_id')
