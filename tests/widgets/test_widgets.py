@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from nose.tools import eq_
 from sprox.widgets import ContainerWidget
-from ..base import setup_database
+from sprox.test.base import setup_database
 
 def setup():
     setup_database()

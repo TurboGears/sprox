@@ -1,6 +1,6 @@
 from sprox.viewbase import ViewBase
-from base import setup_database
-from model import User
+from sprox.test.base import setup_database
+from sprox.test.model import User
 from sprox.widgetselector import SAWidgetSelector
 from nose.tools import raises, eq_
 
@@ -39,8 +39,8 @@ class TestViewBase:
         pass
 
     def test__fields__(self):
-        eq_(['created', 'display_name', 'email_address', 'groups', 'password', 'town', 'town_id', 'user_id', 'user_name', 'visit_identity'],
-             sorted(self.base.__fields__))
+        eq_(['_password', 'created', 'display_name', 'email_address', 'groups', 'password', 'town', 'town_id', 'user_id', 'user_name'],
+            sorted(self.base.__fields__))
 
     def test__widget__(self):
         eq_(None, self.base.__widget__())

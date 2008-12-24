@@ -1,7 +1,7 @@
 from sprox.entitiesbase import EntitiesBase
-from base import setup_database
+from sprox.test.base import setup_database
 from nose.tools import raises, eq_
-from model import User
+from sprox.test.model import User
 
 session = None
 engine  = None
@@ -24,5 +24,5 @@ class TestViewBase:
     def test__widget__(self):
         rendered = self.view.__widget__()
         assert """<div class="entitylabelwidget">
-<a href="Visit/">Visit</a>
+<a href="User/">User</a>
 </div>""" in rendered, rendered

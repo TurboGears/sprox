@@ -1,6 +1,6 @@
 from sprox.formbase import FormBase
-from base import setup_database
-from model import User
+from sprox.test.base import setup_database, sorted_user_columns
+from sprox.test.model import User
 from sprox.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
@@ -25,8 +25,7 @@ class TestFormBase:
         pass
 
     def test__fields__(self):
-        eq_(['created', 'display_name', 'email_address', 'groups', 'password', 'sprox_id', 'town', 'town_id', 'user_id', 'user_name', 'visit_identity'],
-             sorted(self.base.__fields__))
+        eq_(sorted_user_columns, sorted(self.base.__fields__))
 
     def test__widget__(self):
         rendered = self.base.__widget__()

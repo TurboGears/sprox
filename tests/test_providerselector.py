@@ -1,6 +1,6 @@
 from sprox.providerselector import SAORMSelector, ProviderTypeSelector
-from base import setup_database
-from model import User
+from sprox.test.base import setup_database
+from sprox.test.model import User
 from nose.tools import raises, eq_
 
 session = None
