@@ -9,7 +9,7 @@ from sprox.metadata import FieldsMetadata
 from validatorselector import SAValidatorSelector
 
 class FilteringSchema(Schema):
-    """This makes formencode work for most forms, because some wsgi apps append extra"""
+    """This makes formencode work for most forms, because some wsgi apps append extra values to the parameter list."""
     filter_extra_fields = True
     allow_extra_fields = True
 
@@ -73,6 +73,24 @@ class FormBase(ViewBase):
     +-----------------------------------+--------------------------------------------+------------------------------+
 
     Modifiers inherited from :class:`sprox.configbase.ConfigBase`
+
+
+    :Example Usage:
+
+    One of the more useful things sprox does for you is to fill in the arguments to a drop down automatically.
+    Here is the userform, limited to just the town field, which gets populated with the towns.
+
+    >>> from sprox.test.base import User, setup_database, setup_records
+    >>> session, engine, connection = setup_database()
+    >>> setup_records()
+    >>> class TownForm(FormBase):
+    ...    __model__ = User
+    ...    __limit_fields__ = ['town']
+    >>>
+    >>> town_form = TownForm(session)
+    >>>
+    >>> print town_form.__widget__()
+
     """
     __require_fields__     = None
     __check_if_unique__    = False
@@ -106,12 +124,6 @@ class FormBase(ViewBase):
             self.__field_validators__ = {}
         if self.__field_validator_types__ is None:
             self.__field_validator_types__ = {}
-
-    @property
-    def __widget__(self):
-        if (not self.__cache_widget__) or not hasattr(self, '___widget__'):
-            self.___widget__ = self.__base_widget_type__(**self.__widget_args__)
-        return self.___widget__
 
     #try to act like a widget as much as possible
     @property
@@ -176,14 +188,166 @@ class FormBase(ViewBase):
         return args
 
 class EditableForm(FormBase):
+    """A form for editing a record.
+    :Modifiers:
+
+    see :class:`sprox.formvase.FormBase`
+
+    """
     def _do_get_disabled_fields(self):
         fields = self.__disable_fields__[:]
         fields.append(self.__provider__.get_primary_field(self.__entity__))
         return fields
 
 class AddRecordForm(EditableForm):
+    """An editable form who's purpose is record addition.
+
+    :Modifiers:
+
+    see :class:`sprox.formbase.FormBase`
+
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | Name                              | Description                                | Default                      |
+    +===================================+============================================+==============================+
+    | __check_if_unique__               | Set this to True for "new" forms.  This    | True                         |
+    |                                   | causes Sprox to check if there is an       |                              |
+    |                                   | existing record in the database which      |                              |
+    |                                   | matches the field data.                    |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+
+    Here is an example registration form, as generated from the vase User model.
+
+    >>> from sprox.test.model import User
+    >>> from sprox.formbase import AddRecordForm
+    >>> from formencode import Schema
+    >>> from formencode.validators import FieldsMatch
+    >>> from tw.forms import PasswordField, TextField
+    >>> form_validator =  Schema(chained_validators=(FieldsMatch('password',
+    ...                                                         'verify_password',
+    ...                                                         messages={'invalidNoMatch':
+    ...                                                         'Passwords do not match'}),))
+    >>> class RegistrationForm(AddRecordForm):
+    ...     __model__ = User
+    ...     __require_fields__     = ['password', 'user_name', 'email_address']
+    ...     __omit_fields__        = ['_password', 'groups', 'created', 'user_id', 'town']
+    ...     __field_order__        = ['user_name', 'email_address', 'display_name', 'password', 'verify_password']
+    ...     __base_validator__     = form_validator
+    ...     email_address          = TextField
+    ...     display_name           = TextField
+    ...     verify_password        = PasswordField('verify_password')
+    >>> registration_form = RegistrationForm()
+    >>> print registration_form.__widget__()
+    <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="required tableform">
+        <div>
+                <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
+        </div>
+        <table border="0" cellspacing="0" cellpadding="2">
+            <tr id="user_name.container" class="even">
+                <td class="labelcol">
+                    <label id="user_name.label" for="user_name" class="fieldlabel required">User Name</label>
+                </td>
+                <td class="fieldcol">
+                    <input type="text" name="user_name" class="textfield required" id="user_name" value="" />
+                </td>
+            </tr><tr id="email_address.container" class="odd">
+                <td class="labelcol">
+                    <label id="email_address.label" for="email_address" class="fieldlabel required">Email Address</label>
+                </td>
+                <td class="fieldcol">
+                    <input type="text" name="email_address" class="textfield required" id="email_address" value="" />
+                </td>
+            </tr><tr id="display_name.container" class="even">
+                <td class="labelcol">
+                    <label id="display_name.label" for="display_name" class="fieldlabel">Display Name</label>
+                </td>
+                <td class="fieldcol">
+                    <input type="text" name="display_name" class="textfield" id="display_name" value="" />
+                </td>
+            </tr><tr id="password.container" class="odd">
+                <td class="labelcol">
+                    <label id="password.label" for="password" class="fieldlabel">Password</label>
+                </td>
+                <td class="fieldcol">
+                    <input type="password" name="password" class="passwordfield" id="password" value="" />
+                </td>
+            </tr><tr id="verify_password.container" class="even">
+                <td class="labelcol">
+                    <label id="verify_password.label" for="verify_password" class="fieldlabel">Verify Password</label>
+                </td>
+                <td class="fieldcol">
+                    <input type="password" name="verify_password" class="passwordfield" id="verify_password" value="" />
+                </td>
+            </tr><tr id="town_id.container" class="odd">
+                <td class="labelcol">
+                    <label id="town_id.label" for="town_id" class="fieldlabel">Town Id</label>
+                </td>
+                <td class="fieldcol">
+                    <input type="text" name="town_id" class="textfield" id="town_id" value="" />
+                </td>
+            </tr><tr id="submit.container" class="even">
+                <td class="labelcol">
+                </td>
+                <td class="fieldcol">
+                    <input type="submit" class="submitbutton" value="Submit" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    """
     __check_for_unique__ = True
 
 class DisabledForm(FormBase):
+    """A form who's set of fields is disabled.
+
+
+    :Modifiers:
+
+    see :class:`sprox.formbase.FormBase`
+
+    Here is an example disabled form with only the user_name and email fields.
+
+    >>> from sprox.test.model import User
+    >>> from sprox.formbase import DisabledForm
+    >>> class DisabledUserForm(DisabledForm):
+    ...     __model__ = User
+    ...     __limit_fields__ = ['user_name', 'email_address']
+    >>> disabled_user_form = DisabledUserForm()
+    >>> print disabled_user_form.__widget__(values=dict(user_name='percious', email='chris@percious.com'))
+    <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="required tableform">
+        <div>
+                <input type="hidden" name="user_name" class="hiddenfield" id="user_name" value="" />
+                <input type="hidden" name="email_address" class="hiddenfield" id="email_address" value="" />
+                <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
+        </div>
+        <table border="0" cellspacing="0" cellpadding="2">
+            <tr id="user_name.container" class="even">
+                <td class="labelcol">
+                    <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
+                </td>
+                <td class="fieldcol">
+                    <input type="text" name="user_name" class="textfield" id="user_name" value="" disabled="disabled" />
+                </td>
+            </tr><tr id="email_address.container" class="odd">
+                <td class="labelcol">
+                    <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
+                </td>
+                <td class="fieldcol">
+                    <textarea id="email_address" name="email_address" class="textarea" disabled="disabled" rows="7" cols="50"></textarea>
+                </td>
+            </tr><tr id="submit.container" class="even">
+                <td class="labelcol">
+                </td>
+                <td class="fieldcol">
+                    <input type="submit" class="submitbutton" value="Submit" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    You may notice in the above example that disabled fields pass in a hidden value for each disabled field.
+
+    """
+
+
     def _do_get_disabled_fields(self):
         return self.__fields__

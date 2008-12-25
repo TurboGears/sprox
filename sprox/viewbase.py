@@ -51,6 +51,18 @@ class ViewBase(ConfigBase):
         if self.__widget_selector__ is None:
             self.__widget_selector__ = self.__widget_selector_type__()
 
+
+        for attr in dir(self):
+            if not attr.startswith('__'):
+                value = getattr(self, attr)
+                if isinstance(value, Widget):
+                    self.__add_fields__[attr] = value
+                try:
+                    if issubclass(value, Widget):
+                        self.__field_widget_types__[attr] = value
+                except TypeError:
+                    pass
+
     @property
     def __widget__(self):
         self.___widget__ = self.__base_widget_type__(**self.__widget_args__)
@@ -132,6 +144,14 @@ class ViewBase(ConfigBase):
             if field_name == 'sprox_id':
                 continue
             if field_name in self.__hide_fields__:
+                continue
+
+            if field_name in self.__add_fields__:
+                widgets[field_name] = self.__add_fields__[field_name]
+                continue
+
+            if field_name in self.__field_widgets__:
+                widgets[field_name] = self.__field_widgets__[field_name]
                 continue
 
             field = self.__metadata__[field_name]

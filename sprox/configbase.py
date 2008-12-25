@@ -107,5 +107,3 @@ class ConfigBase(object):
             self.__add_fields__ = {}
         if self.__field_attrs__ is None:
             self.__field_attrs__ = {}
-
-

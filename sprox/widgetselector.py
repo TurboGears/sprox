@@ -66,9 +66,6 @@ class SAWidgetSelector(WidgetSelector):
 
     default_name_based_widgets = {}
 
-    def _get_select_widget(self, field):
-        return ForeignKeySingleSelectField
-
     def select(self, field):
 
         if isinstance(field, PropertyLoader):
