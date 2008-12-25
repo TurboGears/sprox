@@ -34,42 +34,35 @@ def setup_database():
 records_setup = None
 def setup_records(session):
 
- #   global records_setup
- #   if not records_setup:
-#        session.expunge_all()
+    session.expunge_all()
 
-        user = User()
-        user.user_name = u'asdf'
-        user.email = u"asdf@asdf.com"
-        user.password = u"asdf"
-        session.add(user)
+    user = User()
+    user.user_name = u'asdf'
+    user.email = u"asdf@asdf.com"
+    user.password = u"asdf"
+    session.add(user)
 
-        arvada = Town(name=u'Arvada')
-        session.add(arvada)
-        session.flush()
-        user.town = arvada.town_id
+    arvada = Town(name=u'Arvada')
+    session.add(arvada)
+    session.flush()
+    user.town = arvada
 
-        session.add(Town(name=u'Denver'))
-        session.add(Town(name=u'Golden'))
-        session.add(Town(name=u'Boulder'))
+    session.add(Town(name=u'Denver'))
+    session.add(Town(name=u'Golden'))
+    session.add(Town(name=u'Boulder'))
 
-        test_table.insert(values=dict(BLOB=FieldStorage('asdf', StringIO()).value)).execute()
-        user_reference_table.insert(values=dict(user_id=user.user_id)).execute()
+    #test_table.insert(values=dict(BLOB=FieldStorage('asdf', StringIO()).value)).execute()
+    #user_reference_table.insert(values=dict(user_id=user.user_id)).execute()
 
-    #    print user.user_id
-        for i in range (5):
-            group = Group(group_name=unicode(i))
-            session.add(group)
+#    print user.user_id
+    for i in range (5):
+        group = Group(group_name=unicode(i))
+        session.add(group)
 
-        user.groups.append(group)
+    user.groups.append(group)
 
-        session.flush()
-        #terminal=open("/dev/tty","w")
-        #print >>terminal,"AUTO:", no_auto_increment_table.c.no_auto_increment_id.autoincrement,no_auto_increment_table.c.no_auto_increment_id.server_default
-#        records_setup = user
-#    else:
-#        user = records_setup
-        return user
+    session.flush()
+    return user
 
 def teardown_database():
     pass

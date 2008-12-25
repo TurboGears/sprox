@@ -82,7 +82,7 @@ class FormBase(ViewBase):
 
     >>> from sprox.test.base import User, setup_database, setup_records
     >>> session, engine, connection = setup_database()
-    >>> setup_records()
+    >>> user = setup_records(session)
     >>> class TownForm(FormBase):
     ...    __model__ = User
     ...    __limit_fields__ = ['town']
@@ -90,7 +90,30 @@ class FormBase(ViewBase):
     >>> town_form = TownForm(session)
     >>>
     >>> print town_form.__widget__()
-
+    <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="required tableform">
+        <div>
+                <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
+        </div>
+        <table border="0" cellspacing="0" cellpadding="2">
+            <tr id="town.container" class="even">
+                <td class="labelcol">
+                    <label id="town.label" for="town" class="fieldlabel">Town</label>
+                </td>
+                <td class="fieldcol">
+                    <select name="town" class="propertysingleselectfield" id="town">
+            <option value="1">Arvada</option><option value="2">Denver</option><option value="3">Golden</option><option value="4">Boulder</option><option value="" selected="selected">-----------</option>
+    </select>
+                </td>
+            </tr><tr id="submit.container" class="odd">
+                <td class="labelcol">
+                </td>
+                <td class="fieldcol">
+                    <input type="submit" class="submitbutton" value="Submit" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    >>> session.rollback()
     """
     __require_fields__     = None
     __check_if_unique__    = False
