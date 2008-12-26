@@ -104,13 +104,11 @@ class ForeignKeyMultipleSelectField(MultipleSelectField, ForeignKeyMixin):
         return d
 
 class PropertyMixin(Widget):
-    params = ['entity', 'provider']
+    params = ['entity', 'field_name', 'provider']
 
     def _my_update_params(self, d, nullable=False):
         entity = self.entity
-        if inspect.isfunction(self.entity):
-            entity = self.entity()
-        options = self.provider.get_dropdown_options(entity)
+        options = self.provider.get_dropdown_options(self.entity, self.field_name)
         if nullable:
             options.append([None,"-----------"])
         if len(options) == 0:

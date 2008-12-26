@@ -34,11 +34,12 @@ def setup_database():
 records_setup = None
 def setup_records(session):
 
+
     session.expunge_all()
 
     user = User()
     user.user_name = u'asdf'
-    user.email = u"asdf@asdf.com"
+    user.email_address = u"asdf@asdf.com"
     user.password = u"asdf"
     session.add(user)
 

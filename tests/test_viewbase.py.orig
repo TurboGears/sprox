@@ -1,0 +1,33 @@
+from sprox.saormprovider import SAORMProvider
+from sprox.test.base import setup_database
+from sprox.test.model import *
+from sprox.widgetselector import SAWidgetSelector
+from nose.tools import raises, eq_
+
+
+session = None
+engine  = None
+connection = None
+trans = None
+def setup():
+    global session, engine, connection, trans
+    session, engine, connection = setup_database()
+
+class TestSAORMProvider:
+    def setup(self):
+        self.provider = SAORMProvider(session)
+
+    def test_create(self):
+        pass
+
+    def test_create_with_engine(self):
+        provider = SAORMProvider(engine)
+        assert provider.engine == engine
+
+    def test_create_with_metadata(self):
+        provider = SAORMProvider(engine)
+        assert provider.engine == engine
+
+    def test_create_with_session(self):
+        provider = SAORMProvider(session)
+        assert provider.engine == engine

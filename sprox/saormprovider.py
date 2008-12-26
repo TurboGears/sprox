@@ -83,18 +83,14 @@ class SAORMProvider(IProvider):
                 engine = mapper.tables[0].bind
                 if engine is not None and mapper.tables[0].bind != self.engine:
                     continue
-                if self.metadata is not None and self.mapper.tables.metadata != self.metadata:
-                    continue
                 return mapper.class_
-        raise KeyError('could not find model by the name %s in %s'%(model_name, metadata))
+        raise KeyError('could not find model by the name %s in %s'%(name, engine))
 
     def get_entities(self):
         entities = []
         for mapper in _mapper_registry:
             engine = mapper.tables[0].bind
             if engine is not None and mapper.tables[0].bind != self.engine:
-                continue
-            if self.metadata is not None and self.mapper.tables.metadata != self.metadata:
                 continue
             entities.append(mapper.class_.__name__)
         return entities
@@ -117,6 +113,7 @@ class SAORMProvider(IProvider):
         return [self.get_primary_field(entity)]
 
     def get_primary_field(self, entity):
+        #sometimes entities get surrounded by functions, not sure why.
         if inspect.isfunction(entity):
             entity = entity()
         mapper = class_mapper(entity)
@@ -139,7 +136,7 @@ class SAORMProvider(IProvider):
             view_field = fields[0]
         return view_field
 
-    def get_dropdown_options(self, entity, view_names=['_name', 'name', 'description', 'title']):
+    def get_dropdown_options(self, entity, field_name, view_names=['_name', 'name', 'description', 'title']):
         if self.session is None:
             warn('No dropdown options will be shown for %s.  '
                  'Try passing the session into the initialization'
@@ -147,19 +144,20 @@ class SAORMProvider(IProvider):
                  'can have values in the drop downs'%entity)
             return []
 
-        if isinstance(entity, PropertyLoader):
-            target_entity = entity.argument
-        else:
-            target_entity = entity
+        field = self.get_field(entity, field_name)
 
-        #some kind of join tablesd
-        if isinstance(target_entity, Mapper):
-            target_entity = entity.class_
+        target_field = entity
+        if isinstance(field, PropertyLoader):
+            target_field = field.argument
 
-        pk_name = self.get_primary_field(target_entity)
-        view_name = self.get_view_field_name(target_entity, view_names)
+        #some kind of relation
+        if isinstance(target_field, Mapper):
+            target_field = target_field.class_
 
-        rows = self.session.query(target_entity).all()
+        pk_name = self.get_primary_field(target_field)
+        view_name = self.get_view_field_name(target_field, view_names)
+
+        rows = self.session.query(target_field).all()
         return [(getattr(row, pk_name), getattr(row, view_name)) for row in rows]
 
     def get_relations(self, entity):
@@ -167,12 +165,8 @@ class SAORMProvider(IProvider):
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, PropertyLoader)]
 
     def is_relation(self, entity, field_name):
-        if entity is None:
-            return None
-        try:
-            mapper = class_mapper(entity)
-        except UnmappedClassError:
-            return None
+        mapper = class_mapper(entity)
+
         if isinstance(mapper.get_property(field_name), PropertyLoader):
             return True
 
@@ -269,7 +263,6 @@ class SAORMProvider(IProvider):
                     params[key] = dt
         return params
 
-
     def update(self, entity, params):
         params = self._modify_params_for_dates(entity, params)
         pk_name = self.get_primary_field(entity)
@@ -280,6 +273,7 @@ class SAORMProvider(IProvider):
                 setattr(obj, key, value)
         self.create_relationships(obj, params, delete_first=True)
         self.session.flush()
+        return obj
 
     def delete(self, entity, params):
         pk_name = self.get_primary_field(entity)

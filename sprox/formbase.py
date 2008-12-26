@@ -170,7 +170,8 @@ class FormBase(ViewBase):
         args = super(FormBase, self)._do_get_field_widget_args( field_name, field)
         v = self.__field_validators__.get(field_name, self._do_get_field_validator(field_name, field))
         if self.__provider__.is_relation(self.__entity__, field_name):
-            args['entity'] = field.argument
+            args['entity'] = self.__entity__
+            args['field_name'] = field_name
         if v:
             args['validator'] = v
         return args
