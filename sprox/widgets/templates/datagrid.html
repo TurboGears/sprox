@@ -15,6 +15,7 @@
             class="${i%2 and 'odd' or 'even'}">
             <td py:if="pks">
 <?python
+
 pklist = ''
 for pk in pks:
     pklist+=str(row[pk])

@@ -122,10 +122,10 @@ class SAORMProvider(IProvider):
             if value.primary_key:
                 return value.name
 
-    def get_view_field_name(self, entity, possible_columns):
+    def get_view_field_name(self, entity, possible_names):
         fields = self.get_fields(entity)
         view_field = None
-        for column_name in possible_columns:
+        for column_name in possible_names:
             for actual_name in fields:
                 if column_name in actual_name:
                     view_field = actual_name
