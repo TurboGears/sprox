@@ -24,7 +24,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty
-from sqlalchemy.orm.exc import UnmappedClassError
+from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
 from datetime import datetime
@@ -176,6 +176,13 @@ class SAORMProvider(IProvider):
         if isinstance(mapper.get_property(field_name), PropertyLoader):
             return True
 
+    def is_unique(self, entity, field_name, value):
+        field = getattr(entity, field_name)
+        try:
+            self.session.query(entity).filter(field==value).one()
+        except NoResultFound:
+            return True
+        return False
 
     def get_synonyms(self, entity):
         mapper = class_mapper(entity)

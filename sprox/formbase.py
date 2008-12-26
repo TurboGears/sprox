@@ -126,7 +126,6 @@ class FormBase(ViewBase):
     __validator_selector__      = None
     __validator_selector_type__ = SAValidatorSelector
 
-
     __field_validators__       = None
     __field_validator_types__    = None
     __base_validator__         = None
@@ -190,16 +189,20 @@ class FormBase(ViewBase):
         return widgets
 
     def _do_get_field_validator(self, field_name, field):
+        """Override thius function to define how a field validator is chosen for a given field.
+        """
         v_type = self.__field_validator_types__.get(field_name, self.__validator_selector__.select(field))
         if v_type is None:
             return
         args = self._do_get_validator_args(field_name, field, v_type)
         v = v_type(**args)
         if hasattr(field, 'unique') and field.unique and self.__check_if_unique__:
-            v = All(UniqueValue(self.__provider__, field), v)
+            v = All(UniqueValue(self.__provider__, self.__entity__, field_name), v)
         return v
 
     def _do_get_validator_args(self, field_name, field, validator_type):
+        """Override this function to define how to get the validator arguments for the field's validator.
+        """
         args = {}
         args['not_empty'] = (not self.__provider__.is_nullable(self.__entity__, field_name)) or \
                              field_name in self.__require_fields__

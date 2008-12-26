@@ -8,13 +8,14 @@ Released under MIT license.
 from formencode import FancyValidator, Invalid
 
 class UniqueValue(FancyValidator):
-    def __init__(self, provider, field, *args, **kw):
+    def __init__(self, provider, entity, field_name, *args, **kw):
         self.provider = provider
-        self.field    = field
+        self.entity   = entity
+        self.field_name    = field_name
         FancyValidator.__init__(self, *args, **kw)
 
     def _to_python(self, value, state):
-        if not self.provider.is_unique(self.field, value):
+        if not self.provider.is_unique(self.entity, self.field_name, value):
             raise Invalid(
                 'That value already exists',
                 value, state)
