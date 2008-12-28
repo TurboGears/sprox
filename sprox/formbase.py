@@ -1,3 +1,12 @@
+"""
+formbase Module
+
+Classes to create form widgets.
+
+Copyright (c) 2008 Christopher Perkins
+Original Version by Christopher Perkins 2008
+Released under MIT license.
+"""
 import inspect
 from tw.api import Widget
 from tw.forms import HiddenField, TableForm

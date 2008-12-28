@@ -28,6 +28,8 @@ from entitiesbase import EntitiesBase, EntityDefBase
 
 from fillerbase import ModelsFiller, ModelDefFiller, EditFormFiller, AddFormFiller, FormFiller, TableFiller
 
+class ConfigCacheError(Exception): pass
+
 class ConfigCache(object):
     default_configs = {}
 
@@ -51,7 +53,7 @@ class ConfigCache(object):
     def _get(self, key):
         view_type, identifier = self._split_identifiers(key)
         if view_type not in self.default_configs:
-            raise ViewConfigError('view_type:%s not found in default bases'%view_type)
+            raise ConfigCacheError('view_type:%s not found in default bases'%view_type)
 
         base = self.default_configs[view_type]
         if key != 'model_view':

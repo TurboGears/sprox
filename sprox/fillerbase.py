@@ -1,9 +1,41 @@
+"""
+fillerbase Module
+
+Classes to help fill widgets with data
+
+Copyright (c) 2008 Christopher Perkins
+Original Version by Christopher Perkins 2008
+Released under MIT license.
+"""
+
 from configbase import ConfigBase, ConfigBaseError
 from metadata import FieldsMetadata
 from genshi import XML
 
 class FillerBase(ConfigBase):
-    def get_value(self, values=None, offset=None, limit=None):
+    """
+    The base filler class.
+
+    """
+
+    def get_value(self, values=None, **kw):
+        """
+        Return a dictionary of values.
+
+        :Arguments:
+          values
+            pass through of values.  This is typically a set of default values that is updated by the
+            filler.  This is useful when updating an existing form.
+          kw
+            Set of keyword arguments for assisting the fill.  This is for instance information like offset
+            and limit for a TableFiller.
+
+        :Usage:
+
+        >>> filler = FillerBase()
+        >>> filler.get_value()
+        {}
+        """
         if values is None:
             values = {}
         return values
@@ -16,8 +48,8 @@ class ModelDefFiller(FillerBase):
 class FormFiller(FillerBase):
     __metadata_type__ = FieldsMetadata
 
-    def get_value(self, values=None, offset=None, limit=None):
-        values = super(FormFiller, self).get_value(values, offset, limit)
+    def get_value(self, values=None, **kw):
+        values = super(FormFiller, self).get_value(values)
         values['sprox_id'] =  self.__sprox_id__
         return values
 
@@ -38,7 +70,9 @@ class TableFiller(FillerBase):
         name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
         return getattr(value, name)
 
-    def get_value(self, values=None, offset=None, limit=None):
+    def get_value(self, values=None, **kw):
+        limit = kw.get('limit', None)
+        offset = kw.get('offset', None)
         query = self.__provider__.session.query(self.__entity__)
         if offset:
             query = query.offset(offset)
@@ -62,12 +96,12 @@ class TableFiller(FillerBase):
         return rows
 
 class EditFormFiller(FormFiller):
-    def get_value(self, values=None, offset=None, limit=None):
-        values = super(EditFormFiller, self).get_value(values, offset, limit)
+    def get_value(self, values=None, **kw):
+        values = super(EditFormFiller, self).get_value(values, **kw)
         values = self.__provider__.get(self.__entity__, params=values)
         return values
 
 class AddFormFiller(FormFiller):
-    def get_value(self, values=None, offset=None, limit=None):
-        kw = super(AddFormFiller, self).get_value(values, offset, limit)
+    def get_value(self, values=None, **kw):
+        kw = super(AddFormFiller, self).get_value(values, **kw)
         return self.__provider__.get_default_values(self.__entity__, params=values)

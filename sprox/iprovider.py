@@ -11,21 +11,27 @@ Released under MIT license.
 
 class IProvider:
     def get_field(self, entity, name):
+        """Get a field with the given field name."""
         raise NotImplementedError
 
     def get_fields(self, entity):
+        """Get all of the fields for a given entity."""
         raise NotImplementedError
 
     def get_entity(self, name):
+        """Get an entity with the given name."""
         raise NotImplementedError
 
     def get_entities(self):
+        """Get all entities available for this provider."""
         raise NotImplementedError
 
     def get_primary_fields(self, entity):
+        """Get the fields in the entity which uniquely identifies a record."""
         raise NotImplementedError
 
     def get_primary_field(self, entity):
+        """Get the single primary field for an entity"""
         raise NotImplementedError
 
     def get_view_field_name(self, entity, possible_names):
