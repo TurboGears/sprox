@@ -9,8 +9,8 @@ connection = None
 trans = None
 metadata = None
 def setup():
-    global session, engine, connection, trans, metadata
-    session, engine, connection = setup_database()
+    global session, engine, metadata, trans, metadata
+    session, engine, metadata = setup_database()
     from sprox.test.base import metadata as meta
     metadata = meta
     import sprox.providerselector as p

@@ -66,7 +66,7 @@ class TableFiller(FillerBase):
     Here is how we would get the values to fill up a user's table.
 
     >>> from sprox.test.base import User, setup_database, setup_records
-    >>> session, engine, connection = setup_database()
+    >>> session, engine, metadata = setup_database()
     >>> user = setup_records(session)
     >>> class UsersFiller(TableFiller):
     ...     __model__ = User

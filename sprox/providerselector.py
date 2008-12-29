@@ -92,7 +92,7 @@ class _SAORMSelector(ProviderSelector):
         :Usage:
 
         >>> from sprox.test.base import setup_database, User
-        >>> session, engine, connect = setup_database()
+        >>> session, engine, metadata = setup_database()
         >>> provider = SAORMSelector.get_provider(User, session=session)
         >>> provider.engine.url.drivername
         'sqlite'
@@ -100,7 +100,6 @@ class _SAORMSelector(ProviderSelector):
 
         if entity is None and isinstance(hint, Engine):
             engine = hint
-            print engine, self._providers
             if engine not in self._providers:
                 self._providers[engine] = SAORMProvider(hint, **hints)
             return self._providers[engine]

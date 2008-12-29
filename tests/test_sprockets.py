@@ -7,8 +7,8 @@ engine  = None
 connection = None
 trans = None
 def setup():
-    global session, engine, connection, trans
-    session, engine, connection = setup_database()
+    global session, engine, metadata, trans
+    session, engine, metadata = setup_database()
 
 class TestViewCache(SproxTest):
     def setup(self):
@@ -17,6 +17,31 @@ class TestViewCache(SproxTest):
 
     def test_create(self):
         pass
+
+    @raises(ConfigCacheError)
+    def test_config_not_found(self):
+        self.cache['never_find_me']
+
+    def test_get_model_view(self):
+        base = self.cache['model_view']
+        print base.__widget__()
+        eq_(base.__widget__(), """<div xmlns="http://www.w3.org/1999/xhtml" class="containerwidget">
+<div class="entitylabelwidget">
+<a href="Example/">Example</a>
+</div>
+<div class="entitylabelwidget">
+<a href="Group/">Group</a>
+</div>
+<div class="entitylabelwidget">
+<a href="Permission/">Permission</a>
+</div>
+<div class="entitylabelwidget">
+<a href="Town/">Town</a>
+</div>
+<div class="entitylabelwidget">
+<a href="User/">User</a>
+</div>
+</div>""")
 
     def test_get_empty(self):
         base = self.cache['listing__User']
@@ -57,3 +82,15 @@ class TestViewCache(SproxTest):
     @raises(ConfigCacheError)
     def get_not_found(self):
         self.cache['not_find_me']
+
+class TestSprocketCache:
+    def setup(self):
+        self.cache = SprocketCache(session)
+
+    def test_create(self):
+        pass
+
+    def test_get_sprocket(self):
+        base = self.cache['listing__User']
+        assert base.view is not None
+        assert base.filler is not None

@@ -30,8 +30,6 @@ class Metadata(dict):
     """
     """
     def __init__(self, provider, entity=None):
-        if not isinstance(provider, IProvider):
-            raise TypeError('provider must be of type IProvider not %s'%type(provider))
         self.provider = provider
         self.entity = entity
 
@@ -58,7 +56,7 @@ class EntitiesMetadata(Metadata):
         raise NotFoundError
 
     def _do_keys(self):
-        entities = self.provider.get_entities()
+        entities = sorted(self.provider.get_entities())
         return entities
 
 

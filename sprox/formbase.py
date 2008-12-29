@@ -90,7 +90,7 @@ class FormBase(ViewBase):
     Here is the userform, limited to just the town field, which gets populated with the towns.
 
     >>> from sprox.test.base import User, setup_database, setup_records
-    >>> session, engine, connection = setup_database()
+    >>> session, engine, metadata = setup_database()
     >>> user = setup_records(session)
     >>> class TownForm(FormBase):
     ...    __model__ = User

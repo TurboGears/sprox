@@ -15,7 +15,7 @@ sorted_user_columns = ['_password', 'created', 'display_name', 'email_address',
 
 database_setup=False
 def setup_database():
-    global session, engine, database_setup, connect
+    global session, engine, database_setup, connect, metadata
 
     #singletonizes things
     if not database_setup:
@@ -29,7 +29,7 @@ def setup_database():
         Session = sessionmaker(bind=engine, autoflush=True, autocommit=False)
         session = Session()
         database_setup = True
-    return session, engine, connect
+    return session, engine, metadata
 
 records_setup = None
 def setup_records(session):

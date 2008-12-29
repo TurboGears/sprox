@@ -38,9 +38,9 @@ class ConfigCache(object):
         self.metadata = metadata
         self._provider = SAORMSelector.get_provider(hint=session.bind, metadata=self.metadata)
 
-
     separator = '__'
     def _split_identifiers(self, key):
+        print key
         separator = '__'
         if self.separator not in key:
             identifier = None
@@ -48,7 +48,6 @@ class ConfigCache(object):
         else:
             view_type, identifier = key.split(self.separator)
         return view_type, identifier
-
 
     def _get(self, key):
         view_type, identifier = self._split_identifiers(key)
@@ -63,11 +62,13 @@ class ConfigCache(object):
         return base(self.session)
 
     def __getitem__(self, key):
-        if key in self.__dict__:
-            return self.__dict__[key]
+        #xxx: turn caching back on
+        #if key in self.__dict__:
+        #    return self.__dict__[key]
         view = self._get(key)
         #self.__dict__[key] = view
         return view
+
 class ViewCache(ConfigCache):
     default_configs = { 'model_view'   : EntitiesBase,
                         'edit'         : EditableForm,
@@ -118,6 +119,7 @@ class SprocketCache(object):
     def __getitem__(self, key):
         """
         """
+        #xxx: enable caching
         #if key in self.__dict__:
         #    import pdb; pdb.set_trace()
         #    return self.__dict__.__getitem__(key)
@@ -130,8 +132,9 @@ class SprocketCache(object):
         filler = self.fillers[key]
         return self.sprocket_type(view, filler)
 
-    def __setitem__(self, key, item):
-        return
+    #xxx: enable caching
+    #def __setitem__(self, key, item):
+    #    return
         #if not isinstance(item, Sprocket):
         #    raise TypeError('item must be of type Sprocket')
         #return self.__dict__.__setitem__(key, item)

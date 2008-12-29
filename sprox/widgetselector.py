@@ -30,7 +30,6 @@ from tw.forms.fields import *
 
 from sprox.widgets import *
 
-
 class WidgetSelector:
     def select(self, field):
         return Widget

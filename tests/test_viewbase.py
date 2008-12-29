@@ -11,8 +11,8 @@ engine  = None
 connection = None
 trans = None
 def setup():
-    global session, engine, connection, trans
-    session, engine, connection = setup_database()
+    global session, engine, metadata, trans
+    session, engine, metadata = setup_database()
 
 class DummyWidgetSelector(object):
     def select(self, *args, **kw):

@@ -19,7 +19,7 @@ class TableBase(ViewBase):
     Here is an example listing of the towns in the test database.
 
     >>> from sprox.test.base import Town, setup_database, setup_records
-    >>> session, engine, connection = setup_database()
+    >>> session, engine, metadata = setup_database()
     >>> user = setup_records(session)
     >>> class TownTable(TableBase):
     ...    __model__ = Town
