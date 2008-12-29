@@ -9,17 +9,13 @@ Released under MIT license.
 """
 import inspect
 
-try:
-    from sqlalchemy.orm.attributes import ClassManager
-except:
-    from warnings import warn
-    warn('Sprox requires sqlalchemy>=0.5')
 
 from sqlalchemy import MetaData
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import _mapper_registry, class_mapper
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
+from sqlalchemy.orm.attributes import ClassManager
 
 from sprox.saormprovider import SAORMProvider
 
@@ -35,9 +31,6 @@ class ProviderSelector:
         raise NotImplementedError
 
     def get_provider(self, entity, **hints):
-        raise NotImplementedError
-
-    def validate_entity(self, entity, **hints):
         raise NotImplementedError
 
 class _SAORMSelector(ProviderSelector):
@@ -74,8 +67,8 @@ class _SAORMSelector(ProviderSelector):
             if mapper.class_.__name__ == identifier:
                 if engine is None:
                     return mapper.class_
-                if engine is None and mapper.tables[0].bind == engine:
-                    return mappper.class_
+                if engine is not None and mapper.tables[0].bind == engine:
+                    return mapper.class_
 
         raise KeyError('could not find model by the name %s in %s'%(model_name, metadata))
 
@@ -83,13 +76,37 @@ class _SAORMSelector(ProviderSelector):
         return entity.__name__
 
     def get_provider(self, entity=None, hint=None, **hints):
+        """
+        :Arguments:
+
+        Entity
+          Mapped class to find a provider for
+
+        hint/hints
+          variables sent in to the provider to give more information about
+          how the provider connects to the database.
+
+        Get a provider related to the entity.  (They should share the same engine)
+        The provider's are cached as not to waste computation/memory.
+
+        :Usage:
+
+        >>> from sprox.test.base import setup_database, User
+        >>> session, engine, connect = setup_database()
+        >>> provider = SAORMSelector.get_provider(User, session=session)
+        >>> provider.engine.url.drivername
+        'sqlite'
+        """
+
         if entity is None and isinstance(hint, Engine):
             engine = hint
+            print engine, self._providers
             if engine not in self._providers:
                 self._providers[engine] = SAORMProvider(hint, **hints)
             return self._providers[engine]
-        mapper = class_mapper(entity)
-        if hint is None:
+
+        if hint is None and entity is not None:
+            mapper = class_mapper(entity)
             hint = mapper.tables[0].bind
         engine = self._get_engine(hint, hints)
         if engine not in self._providers:
@@ -98,16 +115,13 @@ class _SAORMSelector(ProviderSelector):
             self._providers[engine] = SAORMProvider(hint, **hints)
         return self._providers[engine]
 
-    #this may move into the provider
-    def validate_entity(self, entity, **hints):
-        if not hasattr(entity, '_sa_class_manager') or not isinstance(model._sa_class_manager, ClassManager):
-            raise TypeError('arg1(%s) has not been mapped to an sql table'%entity)
-
 SAORMSelector = _SAORMSelector()
 
 #XXX:
 #StormSelector = _StormSelector()
 #SOSelector    = _SOSelector()
+
+class ProviderTypeSelectorError(Exception):pass
 
 class ProviderTypeSelector(object):
 
@@ -117,5 +131,5 @@ class ProviderTypeSelector(object):
             return SAORMSelector
         #other helper definitions are going in here
         else:
-            raise Exception('Entity %s has no known provider mapping.'%entity)
+            raise ProviderTypeSelectorError('Entity %s has no known provider mapping.'%entity)
 
