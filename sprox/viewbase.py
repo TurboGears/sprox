@@ -13,7 +13,7 @@ class ClassViewer(object):
 class ViewBase(ConfigBase):
     """
 
-    *Modifiers specific to this class*
+    :Modifiers:
 
     +-----------------------------------+--------------------------------------------+------------------------------+
     | Name                              | Description                                | Default                      |
@@ -32,6 +32,7 @@ class ViewBase(ConfigBase):
     |                                   | selection.                                 |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
 
+    Also, see the :mod:`sprox.configbase` modifiers.
     """
     __field_widgets__      = None
     __field_widget_types__ = None
@@ -50,7 +51,6 @@ class ViewBase(ConfigBase):
             self.__field_widget_types__ = {}
         if self.__widget_selector__ is None:
             self.__widget_selector__ = self.__widget_selector_type__()
-
 
         for attr in dir(self):
             if not attr.startswith('__'):
@@ -96,8 +96,6 @@ class ViewBase(ConfigBase):
         return self.__disable_fields__
 
     def _do_get_field_widget_args(self, field_name, field):
-        field_attrs = self.__field_attrs__
-
         # toscawidgets does not like ids that have '.' in them.  This does not
         # work for databases with schemas.
         field_name = field_name.replace('.', '_')
@@ -110,8 +108,8 @@ class ViewBase(ConfigBase):
 
         args = {'id':field_name, 'identity':self.__entity__.__name__+'_'+field_name, 'entity':entity}
 
-        if field in self.__field_attrs__:
-            args['attrs'] = field_attrs.get[field_name]
+        if field_name in self.__field_attrs__:
+            args['attrs'] = self.__field_attrs__[field_name]
 
         if isinstance(field, PropertyLoader):
             args['provider'] = self.__provider__

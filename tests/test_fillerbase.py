@@ -41,3 +41,16 @@ class TestEditFormFiller(SproxTest):
         value = self.filler.get_value(values={'user_id':1})
         eq_(value['groups'], [5])
         eq_(value['town'], 1)
+
+class TestAddFormFiller(SproxTest):
+    def setup(self):
+        super(TestAddFormFiller, self).setup()
+        self.filler = AddFormFiller(session)
+        self.filler.__entity__ = User
+
+    def test_create(self):
+        pass
+
+    def test_get_value(self):
+        value = self.filler.get_value(values={'user_id':1})
+        eq_(value['user_id'], 1)

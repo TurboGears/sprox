@@ -5,10 +5,8 @@ import md5
 import sha
 from datetime import datetime
 
-from sqlalchemy import Table, ForeignKey, Column
-from sqlalchemy.types import String, Unicode, UnicodeText, Integer, DateTime, \
-                             Boolean, Float
-
+#from sqlalchemy.types import *
+from sqlalchemy import *
 from sqlalchemy.orm import relation, backref, synonym
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
@@ -161,3 +159,36 @@ class Permission(DeclarativeBase):
     description = Column(Unicode(255))
     groups = relation(Group, secondary=group_permission_table,
                       backref='permissions')
+
+class Example(DeclarativeBase):
+    __tablename__  = 'example_table'
+
+    example_id      = Column(Integer, primary_key=True)
+    created         = Column(DateTime, default=datetime.now)
+    blob            = Column(BLOB          )
+    binary          = Column(Binary        )
+    boolean         = Column(Boolean       )
+    char            = Column(CHAR(200)     )
+    cLOB            = Column(CLOB(200)     )
+    date_           = Column( DATE         )
+    datetime_       = Column( DATETIME     )
+    decimal         = Column(DECIMAL       )
+    date            = Column(Date          )
+    dateTime        = Column(DateTime      )
+    float__         = Column( FLOAT        )
+    float_          = Column(Float         )
+    int_            = Column(INT           )
+    integer         = Column(Integer, default=10)
+   # (NCHAR =       #Column NCHAR          )
+    numeric         = Column(Numeric       )
+    pickletype      = Column(PickleType    )
+    smallint        = Column(SMALLINT      )
+    smalliunteger   = Column(SmallInteger  )
+    string          = Column(String(20)    )
+    text            = Column(TEXT(20)      )
+    time_           = Column(TIME          )
+    time            = Column(Time          )
+    timestamp       = Column(TIMESTAMP     )
+    unicode_        = Column(Unicode(200)  )
+    varchar         = Column(VARCHAR(200)  )
+    password        = Column(String(20)    )

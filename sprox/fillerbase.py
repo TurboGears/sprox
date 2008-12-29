@@ -14,13 +14,11 @@ from genshi import XML
 
 class FillerBase(ConfigBase):
     """
+    :Modifiers:
+
+    see :mod:`sprox.configbase`.
+
     The base filler class.
-
-    """
-
-    def get_value(self, values=None, **kw):
-        """
-        Return a dictionary of values.
 
         :Arguments:
           values
@@ -35,6 +33,11 @@ class FillerBase(ConfigBase):
         >>> filler = FillerBase()
         >>> filler.get_value()
         {}
+    """
+
+    def get_value(self, values=None, **kw):
+        """
+        The main function for getting data to fill widgets,
         """
         if values is None:
             values = {}
@@ -54,8 +57,30 @@ class FormFiller(FillerBase):
         return values
 
 class TableFiller(FillerBase):
+    """
+    This is the base class for generating table data for use in table widgets.
+
+    This class will automatically parse relations and choose values for the related items to dispay based
+    on the __possible_field_names_modifier__ .
+
+    Here is how we would get the values to fill up a user's table.
+
+    >>> from sprox.test.base import User, setup_database, setup_records
+    >>> session, engine, connection = setup_database()
+    >>> user = setup_records(session)
+    >>> class UsersFiller(TableFiller):
+    ...     __model__ = User
+    >>> users_filler = UsersFiller(session)
+    >>> value = users_filler.get_value(values={}, limit=20, offset=0)
+    >>> value # doctest: +SKIP
+    [{'town': u'Arvada', 'user_id': u'1', 'created': u'2008-12-28 17:33:11.078931',
+      'user_name': u'asdf', 'town_id': u'1', 'groups': u'4', '_password': '******',
+      'password': '******', 'email_address': u'asdf@asdf.com', 'display_name': u'None'}]
+    >>> session.rollback()
+    """
     __metadata_type__ = FieldsMetadata
     __possible_field_names__ = ['_name', 'name', 'description', 'title']
+
 
     def _get_list_data_value(self, field, values):
         l = []
@@ -71,13 +96,23 @@ class TableFiller(FillerBase):
         return getattr(value, name)
 
     def get_value(self, values=None, **kw):
+        """
+        Get the values to fill a form widget.
+
+        :Arguments:
+         offset
+          offset into the records
+         limit
+          number of records to return
+
+        """
         limit = kw.get('limit', None)
         offset = kw.get('offset', None)
         query = self.__provider__.session.query(self.__entity__)
-        if offset:
+        if offset is not None:
             query = query.offset(offset)
-        if limit:
-            query = query.limit()
+        if limit is not None:
+            query = query.limit(limit)
         objs = query.all()
         rows = []
         for obj in objs:
@@ -103,5 +138,6 @@ class EditFormFiller(FormFiller):
 
 class AddFormFiller(FormFiller):
     def get_value(self, values=None, **kw):
+        """xxx: get the server/entity defaults."""
         kw = super(AddFormFiller, self).get_value(values, **kw)
         return self.__provider__.get_default_values(self.__entity__, params=values)

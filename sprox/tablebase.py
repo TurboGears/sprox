@@ -5,6 +5,17 @@ from metadata import FieldsMetadata
 class TableBase(ViewBase):
     """This class allows you to credate a table widget.
 
+    :Modifiers:
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | Name                              | Description                                | Default                      |
+    +===================================+============================================+==============================+
+    | __base_widget_type__              | Base widget for fields to go into.         | SproxDataGrid                |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __metadata_type__                 | Type the widget is based on.               | FieldsMetadata               |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+
+    see modifiers in :mod:`sprox.viewbase`
+
     Here is an example listing of the towns in the test database.
 
     >>> from sprox.test.base import Town, setup_database, setup_records
@@ -117,7 +128,6 @@ class TableBase(ViewBase):
     </div>
     >>> session.rollback()
     """
-
 
     #object overrides
     __base_widget_type__ = SproxDataGrid

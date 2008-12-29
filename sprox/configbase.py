@@ -5,7 +5,35 @@ from providerselector import ProviderTypeSelector
 class ConfigBaseError(Exception):pass
 
 class ConfigBase(object):
+    """
+    Base class for all configurable classes in Sprox.
 
+    :Modifiers:
+
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | Name                              | Description                                | Default                      |
+    +===================================+============================================+==============================+
+    | __entity__ (__model__)            | Entity used for metadata extraction.       | None                         |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __sprox_id_                       | Id for use in the widget.                  | None                         |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __provider_type_selector_type__   | A type for selecting the provider.         | ProviderTypeSelector         |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __field_order__                   | A list of ordered field names.             | None                         |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __hide_fields__                   | Fields marked as hidden.                   | []                           |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __disable_fields__                | Field marked as disabled.                  | []                           |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __omit_fields__                   | Fields removed from the field list.        | []                           |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __limit_fields__                  | Limit the field list to this.              | None                         |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __field_attrs__                   | attr parmater to set to the field.         | {}                           |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __metadata_type__                 | Metadata associated with this config.      | None                         |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    """
     # what object does will this object use for metadata extraction
     # model and entity are one in the same
     __model__ = __entity__  = None

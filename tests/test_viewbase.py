@@ -4,6 +4,7 @@ from sprox.test.model import User
 from sprox.widgetselector import SAWidgetSelector
 from nose.tools import raises, eq_
 
+from tw.forms import TextField, HiddenField
 
 session = None
 engine  = None
@@ -12,6 +13,10 @@ trans = None
 def setup():
     global session, engine, connection, trans
     session, engine, connection = setup_database()
+
+class DummyWidgetSelector(object):
+    def select(self, *args, **kw):
+        return TextField
 
 class DummyMetadata(object):
 
@@ -44,3 +49,39 @@ class TestViewBase:
 
     def test__widget__(self):
         eq_(None, self.base.__widget__())
+
+    def test_widget_with_attrs(self):
+        class UserView(ViewBase):
+            __entity__ = User
+            __metadata_type__ = DummyMetadata
+            __field_attrs__ = {'password':{'class':'mypassclass'}}
+            __widget_selector_type__ = DummyWidgetSelector
+
+        user_view = UserView()
+
+        widget = user_view.__widget__
+        child = widget.children['password']
+        eq_(child.attrs, {'class':'mypassclass'})
+
+    def test_hidden_fields(self):
+        class UserView(ViewBase):
+            __entity__ = User
+            __metadata_type__ = DummyMetadata
+            __hide_fields__ = ['password']
+
+        user_view = UserView()
+        widget = user_view.__widget__
+        child = widget.children['password']
+        assert isinstance(child, HiddenField), child.__class__
+
+    def test_custom_field(self):
+        class UserView(ViewBase):
+            __entity__ = User
+            __metadata_type__ = DummyMetadata
+            __field_widgets__ = {'password':TextField(id='password')}
+
+
+        user_view = UserView()
+        widget = user_view.__widget__
+        child = widget.children['password']
+        assert isinstance(child, TextField), child.__class__
