@@ -85,3 +85,14 @@ class TestViewBase:
         widget = user_view.__widget__
         child = widget.children['password']
         assert isinstance(child, TextField), child.__class__
+
+    def test_omit_fields(self):
+        class UserView(ViewBase):
+            __entity__ = User
+            __metadata_type__ = DummyMetadata
+            __omit_fields__ = ['password']
+
+
+        user_view = UserView()
+        widget = user_view.__widget__
+        assert 'password' not in widget.children.keys()

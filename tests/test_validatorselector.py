@@ -1,7 +1,7 @@
-from nose.tools import raises
+from nose.tools import raises, eq_
 from sprox.validatorselector import ValidatorSelector, SAValidatorSelector
 from sprox.test.base import *
-from tw.forms.validators  import *
+from formencode.validators  import *
 from formencode.compound import All
 from sqlalchemy import Column, Integer
 from sqlalchemy.databases.oracle import *
@@ -30,9 +30,9 @@ class TestValidatorSelector(SproxTest):
         pass
 
     def testSelect(self):
-        assert self.validatorSelector.select('lala') == UnicodeString
+        assert issubclass(self.validatorSelector.select('lala'), UnicodeString)
 
-class _TestSAValidatorSelector(SproxTest):
+class TestSAValidatorSelector(SproxTest):
     testColumns = (
     (BLOB,        NoneType),
     (BOOLEAN,     NoneType),
@@ -70,7 +70,7 @@ class _TestSAValidatorSelector(SproxTest):
 
     def setup(self):
         super(TestSAValidatorSelector, self).setup()
-        self.validatorSelector = SAValidatorSelector(provider)
+        self.validator_selector = SAValidatorSelector(provider)
 
     def test_createObj(self):
         pass
@@ -81,29 +81,13 @@ class _TestSAValidatorSelector(SproxTest):
             if isinstance(type, Text):
                 args['size'] = 100
             c = Column('asdf', type, args)
-            yield self._testSelect, c, expected
+            yield self._test_select, c, expected
 
     def _test_select(self, column, expected):
-        validator = self.validatorSelector.select(column)
-        assert validator.__class__ == expected, "expected: %s\nactual: type: %s validator: %s"%(expected, column.type, validator.__type__)
-
-    @raises(TypeError)
-    def _select(self, arg1):
-        self.validatorSelector.select(arg1)
-
-    def test_select_bad(self):
-        badInput = ('a', 1, {}, [], (), None, 1.2)
-        for input in badInput:
-            yield self._select, input
+        validator = self.validator_selector.select(column)
+        assert isinstance(validator, expected) or issubclass(validator, expected), validator
 
     def test_name_based_validator_select(self):
         c = Column('email_address', String)
-        validator = self.validatorSelector.select(c)
-        assert isinstance(validator, Email)
-
-    def test_validator_selector_unique_field(self):
-        c = Column('nana', String, unique=True)
-        validator= self.validatorSelector.select(c, check_if_unique=True)
-        assert type(validator) is All
-
-
+        validator = self.validator_selector.select(c)
+        assert issubclass(validator, Email), validator

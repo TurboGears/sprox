@@ -54,3 +54,4 @@ class TestAddFormFiller(SproxTest):
     def test_get_value(self):
         value = self.filler.get_value(values={'user_id':1})
         eq_(value['user_id'], 1)
+

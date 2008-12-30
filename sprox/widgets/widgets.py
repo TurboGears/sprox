@@ -38,11 +38,11 @@ class EntityLabelWidget(Widget):
 
 class RecordViewWidget(Widget):
     template = "genshi:sprox.widgets.templates.recordViewTable"
-    params = ["identifier"]
+    params = ["entity"]
 
 class RecordFieldWidget(Widget):
     template = "genshi:sprox.widgets.templates.recordField"
-    params = ['identifier', 'controller']
+    params = ['field_name']
 
 class TableDefWidget(Widget):
     template = "genshi:sprox.widgets.templates.tableDef"
@@ -59,9 +59,6 @@ class SproxTableForm(TableForm):
     validator = Schema(ignore_missing_keys=True, allow_extra_fields=True)
     template = "genshi:sprox.widgets.templates.tableForm"
 
-    def update_params(self, d):
-        super(SproxTableForm, self).update_params(d)
-
 #custom checkbox widget since I am not happy with the behavior of the TW one
 class SproxCheckBox(InputField):
     template = "genshi:sprox.widgets.templates.checkbox"
@@ -73,35 +70,6 @@ class SproxCheckBox(InputField):
         except Invalid:
             checked = False
         d.attrs['checked'] = checked or None
-
-class ForeignKeyMixin(Widget):
-    params = ["table_name", "provider"]
-    def _my_update_params(self, d,nullable=False):
-        view_column = self.provider.get_view_field_name(self.table_name)
-        id_column = self.provider.get_id_column_name(self.table_name)
-        rows = self.provider.select(self.table_name, columns_limit=[id_column, view_column])
-        rows= [(row[id_column], row[view_column]) for row in rows]
-        if nullable:
-            rows.append([None,"-----------"])
-        if len(rows) == 0:
-            return {}
-        d['options']= rows
-
-        return d
-
-class ForeignKeySingleSelectField(SingleSelectField, ForeignKeyMixin):
-    params=["nullable"]
-    nullable=False
-    def update_params(self, d):
-        self._my_update_params(d,nullable=self.nullable)
-        SingleSelectField.update_params(self, d)
-        return d
-
-class ForeignKeyMultipleSelectField(MultipleSelectField, ForeignKeyMixin):
-    def update_params(self, d):
-        self._my_update_params(d)
-        MultipleSelectField.update_params(self, d)
-        return d
 
 class PropertyMixin(Widget):
     params = ['entity', 'field_name', 'provider']

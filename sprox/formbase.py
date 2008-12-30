@@ -11,8 +11,9 @@ import inspect
 from tw.api import Widget
 from tw.forms import HiddenField, TableForm
 from viewbase import ViewBase
-from formencode import Schema
-from formencode.validators import UnicodeString
+from formencode import Schema, All
+from sprox.validators import UniqueValue
+from formencode.validators import UnicodeString, String
 from widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from validatorselector import SAValidatorSelector
@@ -98,7 +99,7 @@ class FormBase(ViewBase):
     >>>
     >>> town_form = TownForm(session)
     >>>
-    >>> print town_form.__widget__()
+    >>> print town_form()
     <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="required tableform">
         <div>
                 <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
@@ -122,6 +123,15 @@ class FormBase(ViewBase):
             </tr>
         </table>
     </form>
+
+    Forms created with sprox can be validated as you would any other widget.
+
+    >>> town_form.validate(params={'town':1})
+    Traceback (most recent call last):
+    ...
+    Invalid: sprox_id: Missing value
+
+
     >>> session.rollback()
     """
     __require_fields__     = None
@@ -136,7 +146,7 @@ class FormBase(ViewBase):
     __validator_selector_type__ = SAValidatorSelector
 
     __field_validators__       = None
-    __field_validator_types__    = None
+    __field_validator_types__  = None
     __base_validator__         = None
 
     __metadata_type__ = FieldsMetadata
@@ -151,15 +161,8 @@ class FormBase(ViewBase):
             self.__field_validators__ = {}
         if self.__validator_selector__ is None:
             self.__validator_selector__ = self.__validator_selector_type__(self.__provider__)
-        if self.__field_validators__ is None:
-            self.__field_validators__ = {}
         if self.__field_validator_types__ is None:
             self.__field_validator_types__ = {}
-
-    #try to act like a widget as much as possible
-    @property
-    def __call__(self, *args, **kw):
-        return self.__widget__(*args, **kw)
 
     def validate(self, params):
         """A pass-thru to the widget's validate function."""
@@ -201,7 +204,7 @@ class FormBase(ViewBase):
     def _do_get_field_validator(self, field_name, field):
         """Override thius function to define how a field validator is chosen for a given field.
         """
-        v_type = self.__field_validator_types__.get(field_name, self.__validator_selector__.select(field))
+        v_type = self.__field_validator_types__.get(field_name, self.__validator_selector__[field])
         if v_type is None:
             return
         args = self._do_get_validator_args(field_name, field, v_type)
@@ -218,7 +221,7 @@ class FormBase(ViewBase):
                              field_name in self.__require_fields__
 
         if hasattr(field, 'type') and hasattr(field.type, 'length') and\
-           validator_type is UnicodeString:
+           issubclass(validator_type, String):
             args['max'] = field.type.length
 
         return args
@@ -253,6 +256,7 @@ class AddRecordForm(EditableForm):
 
     Here is an example registration form, as generated from the vase User model.
 
+    >>> from sprox.test.base import setup_database, setup_records
     >>> from sprox.test.model import User
     >>> from sprox.formbase import AddRecordForm
     >>> from formencode import Schema
@@ -272,7 +276,7 @@ class AddRecordForm(EditableForm):
     ...     display_name           = TextField
     ...     verify_password        = PasswordField('verify_password')
     >>> registration_form = RegistrationForm()
-    >>> print registration_form.__widget__()
+    >>> print registration_form()
     <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="required tableform">
         <div>
                 <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
@@ -329,8 +333,27 @@ class AddRecordForm(EditableForm):
             </tr>
         </table>
     </form>
+
+    What is unique about the AddRecord form, is that if the fields in the database are labeled unique, it will
+    automatically vaidate against uniqueness for that field.  Here is a simple user form definition, where the
+    user_name in the model is unique:
+
+    >>> session, engine, metadata = setup_database()
+    >>> user = setup_records(session)
+    >>> class AddUserForm(AddRecordForm):
+    ...     __entity__ = User
+    ...     __limit_fields__ = ['user_name']
+    >>> user_form = AddUserForm(session)
+    >>> user_form.validate(params={'sprox_id':'asdf', 'user_name':u'asdf'}) # doctest: +SKIP
+    Traceback (most recent call last):
+    ...
+    Invalid: user_name: That value already exists
+
+    The validation fails because there is already a user with the user_name 'asdf' in the database
+
+    >>> session.rollback()
     """
-    __check_for_unique__ = True
+    __check_if_unique__ = True
 
 class DisabledForm(FormBase):
     """A form who's set of fields is disabled.
@@ -348,7 +371,7 @@ class DisabledForm(FormBase):
     ...     __model__ = User
     ...     __limit_fields__ = ['user_name', 'email_address']
     >>> disabled_user_form = DisabledUserForm()
-    >>> print disabled_user_form.__widget__(values=dict(user_name='percious', email='chris@percious.com'))
+    >>> print disabled_user_form(values=dict(user_name='percious', email='chris@percious.com'))
     <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="required tableform">
         <div>
                 <input type="hidden" name="user_name" class="hiddenfield" id="user_name" value="" />

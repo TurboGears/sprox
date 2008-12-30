@@ -40,7 +40,6 @@ class ConfigCache(object):
 
     separator = '__'
     def _split_identifiers(self, key):
-        print key
         separator = '__'
         if self.separator not in key:
             identifier = None

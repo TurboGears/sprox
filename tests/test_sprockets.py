@@ -24,8 +24,7 @@ class TestViewCache(SproxTest):
 
     def test_get_model_view(self):
         base = self.cache['model_view']
-        print base.__widget__()
-        eq_(base.__widget__(), """<div xmlns="http://www.w3.org/1999/xhtml" class="containerwidget">
+        eq_(base(), """<div xmlns="http://www.w3.org/1999/xhtml" class="containerwidget">
 <div class="entitylabelwidget">
 <a href="Example/">Example</a>
 </div>
@@ -45,7 +44,7 @@ class TestViewCache(SproxTest):
 
     def test_get_empty(self):
         base = self.cache['listing__User']
-        eq_(base.__widget__(), """<div xmlns="http://www.w3.org/1999/xhtml">
+        eq_(base(), """<div xmlns="http://www.w3.org/1999/xhtml">
 <table class="grid">
     <thead>
         <tr>

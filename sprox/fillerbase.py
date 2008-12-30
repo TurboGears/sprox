@@ -90,8 +90,9 @@ class TableFiller(FillerBase):
         return ','.join(l)
 
     def _get_relation_value(self, field, value):
-        if value is None:
-            return None
+        #this may be needed for catwalk, but I am not sure what conditions cause it to be needed
+        #if value is None:
+        #    return None
         name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
         return getattr(value, name)
 
@@ -135,6 +136,9 @@ class EditFormFiller(FormFiller):
         values = super(EditFormFiller, self).get_value(values, **kw)
         values = self.__provider__.get(self.__entity__, params=values)
         return values
+
+class RecordFiller(EditFormFiller):pass
+
 
 class AddFormFiller(FormFiller):
     def get_value(self, values=None, **kw):

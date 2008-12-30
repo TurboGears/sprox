@@ -16,7 +16,7 @@ class EntityDefBase(ViewBase):
     >>> class UserEntityDef(EntityDefBase):
     ...     __entity__ = User
     >>> base = UserEntityDef(session)
-    >>> print base.__widget__()
+    >>> print base()
     <table xmlns="http://www.w3.org/1999/xhtml" class="tablewidget">
     <tr><th>Name</th><th>Definition</th></tr>
     <tr class="odd">
@@ -123,7 +123,7 @@ class EntitiesBase(ViewBase):
     >>> class EntitiesBaseTest(EntitiesBase):
     ...     __entity__ = User
     >>> base = EntitiesBaseTest(session, metadata=metadata)
-    >>> print base.__widget__()
+    >>> print base()
     <div xmlns="http://www.w3.org/1999/xhtml" class="containerwidget">
     <div class="entitylabelwidget">
     <a href="Example/">Example</a>

@@ -46,7 +46,6 @@ class ValidatorSelector(object):
     def __getitem__(self, field):
         return self.select(field)
 
-
     def __init__(self, *args, **kw):
         pass
 
@@ -93,7 +92,6 @@ class SAValidatorSelector(ValidatorSelector):
         #do not validate boolean or binary arguments
         if isinstance(field.type, (Boolean, Binary)):
             return None
-
 
         if field.name in self.name_based_validators:
             return self.name_based_validators[field.name]

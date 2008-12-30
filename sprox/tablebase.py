@@ -24,7 +24,7 @@ class TableBase(ViewBase):
     >>> class TownTable(TableBase):
     ...    __model__ = Town
     >>> town_table = TownTable(session)
-    >>> print town_table.__widget__()
+    >>> print town_table()
     <div xmlns="http://www.w3.org/1999/xhtml">
     <table class="grid">
         <thead>

@@ -6,7 +6,7 @@ from sqlalchemy.orm import mapper
 from sqlalchemy import MetaData, Table, Column, Integer
 from sqlalchemy.engine import Engine
 from nose.tools import raises, eq_
-
+import datetime
 
 session = None
 engine  = None
@@ -129,3 +129,7 @@ class TestSAORMProvider(SproxTest):
         user = self.provider.delete(User, params={'user_id':1})
         users = self.session.query(User).all()
         assert len(users) == 0
+
+    def test_modify_params_for_dates(self):
+        params = self.provider._modify_params_for_dates(Example, {'date_': '1978-8-29'})
+        eq_(params,  {'date_': datetime.datetime(1978, 8, 29, 0, 0)})

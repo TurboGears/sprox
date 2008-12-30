@@ -22,7 +22,7 @@ class TestViewBase:
         pass
 
     def test__widget__(self):
-        rendered = self.view.__widget__()
+        rendered = self.view()
         assert """<div class="entitylabelwidget">
 <a href="User/">User</a>
 </div>""" in rendered, rendered

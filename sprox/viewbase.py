@@ -69,9 +69,8 @@ class ViewBase(ConfigBase):
         return self.___widget__
 
     #try to act like a widget as much as possible
-    @property
     def __call__(self, *args, **kw):
-        return self.__widget__(*args, **kw)
+        return self.__widget__.__call__(*args, **kw)
 
     @property
     def __widget_args__(self):
@@ -137,19 +136,9 @@ class ViewBase(ConfigBase):
             if field_name in self.__add_fields__:
                 widgets[field_name] = self.__add_fields__[field_name]
                 continue
-            if field_name in self.__omit_fields__:
-                continue
             if field_name == 'sprox_id':
                 continue
             if field_name in self.__hide_fields__:
-                continue
-
-            if field_name in self.__add_fields__:
-                widgets[field_name] = self.__add_fields__[field_name]
-                continue
-
-            if field_name in self.__field_widgets__:
-                widgets[field_name] = self.__field_widgets__[field_name]
                 continue
 
             field = self.__metadata__[field_name]
