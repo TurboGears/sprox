@@ -109,12 +109,7 @@ class TableFiller(FillerBase):
         """
         limit = kw.get('limit', None)
         offset = kw.get('offset', None)
-        query = self.__provider__.session.query(self.__entity__)
-        if offset is not None:
-            query = query.offset(offset)
-        if limit is not None:
-            query = query.limit(limit)
-        objs = query.all()
+        count, objs = self.__provider__.query(self.__entity__, limit, offset)
         rows = []
         for obj in objs:
             row = {}

@@ -106,6 +106,8 @@ class SAORMProvider(IProvider):
 
     def is_binary(self, entity, name):
         field = self.get_field(entity, name)
+        if isinstance(field, PropertyLoader):
+            field = field.local_side[0]
         return isinstance(field.type, Binary)
 
     def is_nullable(self, entity, name):
@@ -258,6 +260,18 @@ class SAORMProvider(IProvider):
         pk_name = self.get_primary_field(entity)
         obj = self.session.query(entity).get(params[pk_name])
         return self.dictify(obj)
+
+    def query(self, entity, limit=None, offset=None, limit_fields=None, order_by=None, desc=False, **kw):
+        query = self.session.query(entity)
+        count = query.count()
+        if offset is not None:
+            query = query.offset(offset)
+        if limit is not None:
+            query = query.limit(limit)
+        objs = query.all()
+
+        return count, objs
+
 
     def _modify_params_for_dates(self, entity, params):
         mapper = class_mapper(entity)
