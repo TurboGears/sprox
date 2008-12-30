@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
   name="sprox",
-  version="0.5b6",
+  version="0.5rc1",
   zip_safe=False,
   include_package_data=True,
   description="""A package for creation of web widgets directly from database schema.""",
