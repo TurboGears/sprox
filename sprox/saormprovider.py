@@ -104,6 +104,10 @@ class SAORMProvider(IProvider):
         except AttributeError:
             return mapper.get_property(name)
 
+    def is_binary(self, entity, name):
+        field = self.get_field(entity, name)
+        return isinstance(field.type, Binary)
+
     def is_nullable(self, entity, name):
         field = self.get_field(entity, name)
         if isinstance(field, PropertyLoader):

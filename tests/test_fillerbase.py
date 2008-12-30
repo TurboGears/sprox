@@ -1,5 +1,5 @@
 from sprox.fillerbase import TableFiller, EditFormFiller, AddFormFiller, FormFiller
-from sprox.test.base import setup_database, sorted_user_columns, SproxTest, User
+from sprox.test.base import setup_database, sorted_user_columns, SproxTest, User, Example
 from nose.tools import raises, eq_
 
 session = None
@@ -27,6 +27,17 @@ class TestTableFiller(SproxTest):
         value = value[0]
         eq_(value['groups'], u'4')
         eq_(value['town'], 'Arvada')
+
+    def test_get_value_with_binary_field(self):
+        class ExampleFiller(TableFiller):
+            __entity__ = Example
+        example = Example(binary='datadatadata')
+        session.add(example)
+
+        filler = ExampleFiller(session)
+        value = filler.get_value()
+        eq_(value[0]['binary'], '<file>')
+
 
 class TestEditFormFiller(SproxTest):
     def setup(self):
