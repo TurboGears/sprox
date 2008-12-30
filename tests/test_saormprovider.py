@@ -36,6 +36,9 @@ class TestSAORMProvider(SproxTest):
         super(TestSAORMProvider, self).setup()
         self.provider = SAORMProvider(session)
 
+    def test_get_fields_with_func(self):
+        eq_(self.provider.get_fields(lambda: Town), ['town_id', 'name', 'town_id', 'name'])
+
     def test_create(self):
         pass
 
@@ -83,6 +86,10 @@ class TestSAORMProvider(SproxTest):
     def test_get_dropdown_options_join(self):
         options = self.provider.get_dropdown_options(User, 'groups')
         eq_(options, [(1, u'0'), (2, u'1'), (3, u'2'), (4, u'3'), (5, u'4')])
+
+    def test_get_dropdown_options_join_2(self):
+        options = self.provider.get_dropdown_options(Group, 'users')
+        eq_(options, [(1, u'asdf'),])
 
     def test_dropdown_options_warn(self):
         provider = SAORMProvider(metadata)

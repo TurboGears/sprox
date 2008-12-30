@@ -125,7 +125,7 @@ class TableFiller(FillerBase):
                     continue
                 if isinstance(value, list):
                     value = self._get_list_data_value(field, value)
-                elif self.__provider__.is_relation(self.__entity__, field):
+                elif self.__provider__.is_relation(self.__entity__, field) and value is not None:
                     value = self._get_relation_value(field, value)
                 row[field] = unicode(value)
             rows.append(row)

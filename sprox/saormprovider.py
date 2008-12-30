@@ -65,6 +65,8 @@ class SAORMProvider(IProvider):
         return engine, session, metadata
 
     def get_fields(self, entity):
+        if inspect.isfunction(entity):
+            entity = entity()
         mapper = class_mapper(entity)
         field_names = mapper.c.keys()
         for prop in mapper.iterate_properties:
@@ -137,6 +139,7 @@ class SAORMProvider(IProvider):
         return view_field
 
     def get_dropdown_options(self, entity, field_name, view_names=['_name', 'name', 'description', 'title']):
+
         if self.session is None:
             warn('No dropdown options will be shown for %s.  '
                  'Try passing the session into the initialization'
@@ -149,6 +152,8 @@ class SAORMProvider(IProvider):
         target_field = entity
         if isinstance(field, PropertyLoader):
             target_field = field.argument
+        if inspect.isfunction(target_field):
+            target_field = target_field()
 
         #some kind of relation
         if isinstance(target_field, Mapper):
