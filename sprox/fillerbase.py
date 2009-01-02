@@ -78,6 +78,7 @@ class TableFiller(FillerBase):
       'password': '******', 'email_address': u'asdf@asdf.com', 'display_name': u'None'}]
     >>> session.rollback()
     """
+    __actions__ = True
     __metadata_type__ = FieldsMetadata
     __possible_field_names__ = ['_name', 'name', 'description', 'title']
 
@@ -96,6 +97,11 @@ class TableFiller(FillerBase):
         name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
         return getattr(value, name)
 
+    def get_count(self):
+        if not hasattr(self, '__count__'):
+            raise ConfigBaseError('Count not yet set for filler.  try calling get_value() first.')
+        return self.__count__
+
     def get_value(self, values=None, **kw):
         """
         Get the values to fill a form widget.
@@ -110,6 +116,8 @@ class TableFiller(FillerBase):
         limit = kw.get('limit', None)
         offset = kw.get('offset', None)
         count, objs = self.__provider__.query(self.__entity__, limit, offset)
+        self.__count__ = count
+        primary_fields = self.__provider__.get_primary_fields(self.__entity__)
         rows = []
         for obj in objs:
             row = {}
@@ -125,6 +133,12 @@ class TableFiller(FillerBase):
                 elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
                     value = '<file>'
                 row[field] = unicode(value)
+            #xxx: make this overridable
+            if self.__actions__:
+                pklist = '/'.join(map(lambda x: str(row[x]), primary_fields))
+                value = '<a href="'+pklist+'">edit</a> | '\
+                        '<a href="'+pklist+'/delete">delete</a>'
+                row['__actions__'] = value
             rows.append(row)
         return rows
 
