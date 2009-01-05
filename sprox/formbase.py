@@ -173,6 +173,8 @@ class FormBase(ViewBase):
            arguments for the main widget
         """
         d = super(FormBase, self)._do_get_widget_args()
+        if self.__base_validator__ is not None:
+            d['validator'] = self.__base_validator__
         return d
 
     def _do_get_field_widget_args(self, field_name, field):
@@ -205,6 +207,8 @@ class FormBase(ViewBase):
         """Override thius function to define how a field validator is chosen for a given field.
         """
         v_type = self.__field_validator_types__.get(field_name, self.__validator_selector__[field])
+        if field_name in self.__require_fields__ and v_type is None:
+            v_type = String
         if v_type is None:
             return
         args = self._do_get_validator_args(field_name, field, v_type)

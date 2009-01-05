@@ -112,6 +112,8 @@ class SAORMProvider(IProvider):
 
     def is_nullable(self, entity, name):
         field = self.get_field(entity, name)
+        if isinstance(field, SynonymProperty):
+            return
         if isinstance(field, PropertyLoader):
             return field.local_side[0].nullable
         return field.nullable
@@ -210,6 +212,8 @@ class SAORMProvider(IProvider):
             if relation in params:
                 prop = mapper.get_property(relation)
                 target = prop.argument
+                if inspect.isfunction(target):
+                    target = target()
                 if not isinstance(params[relation], list):
                     params[relation] = [params[relation]]
                 for value in params[relation]:
