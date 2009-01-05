@@ -1,4 +1,4 @@
-from sprox.fillerbase import TableFiller, EditFormFiller, AddFormFiller, FormFiller
+from sprox.fillerbase import TableFiller, EditFormFiller, AddFormFiller, FormFiller, ConfigBaseError
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, User, Example
 from nose.tools import raises, eq_
 
@@ -38,6 +38,14 @@ class TestTableFiller(SproxTest):
         value = filler.get_value()
         eq_(value[0]['binary'], '<file>')
 
+    @raises(ConfigBaseError)
+    def test_count_without_get(self):
+        self.filler.get_count()
+
+    def test_count(self):
+        self.filler.get_value()
+        c = self.filler.get_count()
+        assert c == 1, c
 
 class TestEditFormFiller(SproxTest):
     def setup(self):

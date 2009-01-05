@@ -309,10 +309,10 @@ class AddRecordForm(EditableForm):
                 </td>
             </tr><tr id="password.container" class="odd">
                 <td class="labelcol">
-                    <label id="password.label" for="password" class="fieldlabel">Password</label>
+                    <label id="password.label" for="password" class="fieldlabel required">Password</label>
                 </td>
                 <td class="fieldcol">
-                    <input type="password" name="password" class="passwordfield" id="password" value="" />
+                    <input type="password" name="password" class="required passwordfield" id="password" value="" />
                 </td>
             </tr><tr id="verify_password.container" class="even">
                 <td class="labelcol">
