@@ -1,4 +1,4 @@
-from sprox.fillerbase import TableFiller, EditFormFiller, AddFormFiller, FormFiller, ConfigBaseError
+from sprox.fillerbase import FillerBase, TableFiller, EditFormFiller, AddFormFiller, FormFiller, ConfigBaseError
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, User, Example
 from nose.tools import raises, eq_
 
@@ -12,6 +12,18 @@ def setup():
 
 class UserFiller(TableFiller):
     __entity__ = User
+
+class TestFillerBase(SproxTest):
+    def setup(self):
+        super(TestFillerBase, self).setup()
+        class UserFiller(FillerBase):
+            __entity__ = User
+
+        self.filler = UserFiller(session)
+
+    def test_get_value(self):
+        value = self.filler.get_value()
+        assert value =={}, value
 
 class TestTableFiller(SproxTest):
     def setup(self):

@@ -118,6 +118,10 @@ class TestSAORMProvider(SproxTest):
         q_user = self.session.query(User).get(2)
         assert q_user == new_user
 
+    def test_query(self):
+        r = self.provider.query(User, limit=20, offset=0)
+        eq_(len(r), 2)
+
     def test_update(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)

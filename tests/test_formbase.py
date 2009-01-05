@@ -1,10 +1,12 @@
-from sprox.formbase import FormBase, AddRecordForm
+from sprox.formbase import FormBase, AddRecordForm, DisabledForm
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example
 from sprox.test.model import User
 from sprox.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
-from formencode import Invalid
+from formencode import Invalid, Schema
+from formencode.validators import FieldsMatch
+from tw.forms import PasswordField, TextField
 
 session = None
 engine  = None
@@ -63,3 +65,41 @@ class TestAddRecordForm(SproxTest):
         #print example_form()
         #assert "checkbox" in example_form()
         assert "checkbox" in example_form({'boolean':"asdf"})
+
+    def test_form_with_base_validator(self):
+        form_validator =  Schema(chained_validators=(FieldsMatch('password',
+                                                                'verify_password',
+                                                                messages={'invalidNoMatch':
+                                                                'Passwords do not match'}),))
+        class RegistrationForm(AddRecordForm):
+            __model__ = User
+            __require_fields__     = ['password', 'user_name', 'email_address']
+            __omit_fields__        = ['_password', 'groups', 'created', 'user_id', 'town']
+            __field_order__        = ['user_name', 'email_address', 'display_name', 'password', 'verify_password']
+            __base_validator__     = form_validator
+            email_address          = TextField
+            display_name           = TextField
+            verify_password        = PasswordField('verify_password')
+        registration_form = RegistrationForm()
+        try:
+            registration_form.validate(params={'password':'blah', 'verify_password':'not_blah'})
+        except Invalid, exc:
+            assert 'Passwords do not match' in exc.message
+
+class TestDisabledForm(SproxTest):
+    def setup(self):
+        super(TestDisabledForm, self).setup()
+        #setup_records(session)
+
+        class UserForm(DisabledForm):
+            __entity__ = User
+            __limit_fields__ = ['user_name']
+
+        self.base = UserForm(session)
+
+    def test__widget__(self):
+        rendered = self.base.__widget__()
+        assert """<td class="fieldcol">
+                <input type="text" name="user_name" class="textfield has_error" id="user_name" value="asdf" disabled="disabled" />
+                <span class="fielderror">That value already exists</span>
+            </td>""" in rendered, rendered

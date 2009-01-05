@@ -1,11 +1,11 @@
-from nose.tools import raises
+from nose.tools import raises, eq_
 from tw.forms.fields import *
 from tw.api import Widget
 from sqlalchemy import Column, Integer
 from sqlalchemy.types import *
 from sqlalchemy.databases.oracle import *
 
-from sprox.widgetselector import WidgetSelector, SAWidgetSelector
+from sprox.widgetselector import WidgetSelector, SAWidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
 from sprox.widgets.widgets import *
 from sprox.saormprovider import SAORMProvider
 
@@ -24,6 +24,21 @@ class DummySAWidgetSelector(SAWidgetSelector):
         'goodGollyMissMolly':     TextField,
         }
 
+class TestEntityDefWidgetSelector:
+    def setup(self):
+        self.selector = EntityDefWidgetSelector()
+
+    def test_select(self):
+        r = self.selector.select('something')
+        eq_(r, EntityDefWidget)
+
+class TestRecordViewWidgetSelector:
+    def setup(self):
+        self.selector = RecordViewWidgetSelector()
+
+    def test_select(self):
+        r = self.selector.select('something')
+        eq_(r, RecordFieldWidget)
 
 class TestSAWidgetSelector:
     testColumns = (
