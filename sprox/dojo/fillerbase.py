@@ -12,7 +12,7 @@ from sprox.fillerbase import TableFiller
 
 class DojoTableFiller(TableFiller):
 
-    def get_value(self, value, **kw):
+    def get_value(self, value=None, **kw):
         offset = kw.get('start', None)
         limit  = kw.get('count', None)
         items = super(DojoTableFiller, self).get_value(value, limit=limit, offset=offset)
