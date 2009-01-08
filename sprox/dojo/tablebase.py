@@ -1,4 +1,4 @@
-from sprox.widgets.dojo import SproxDojoGrid
+from sprox.widgets.dojo import SproxEditableDojoGrid, SproxDojoGrid
 from sprox.tablebase import TableBase
 from sprox.metadata import FieldsMetadata
 
@@ -17,6 +17,18 @@ class DojoTableBase(TableBase):
 
     def _do_get_widget_args(self):
         args = super(DojoTableBase, self)._do_get_widget_args()
+        args['columns'] = self.__fields__
+        args['jsId'] = 'something'
+        args['url'] = self.__url__
+        return args
+
+
+class DojoEditableTableBase(TableBase):
+    __base_widget_type__ = SproxEditableDojoGrid
+    __url__ = 'data'
+
+    def _do_get_widget_args(self):
+        args = super(DojoEditableTableBase, self)._do_get_widget_args()
         args['columns'] = self.__fields__
         args['jsId'] = 'something'
         args['url'] = self.__url__
