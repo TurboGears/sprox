@@ -4,7 +4,7 @@ from widgetselector import RecordViewWidgetSelector
 from widgets import RecordViewWidget
 
 class RecordViewBase(ViewBase):
-    """This class allows you to credate a table widget.
+    """This class allows you to create a view for a single record.
 
     :Modifiers:
 

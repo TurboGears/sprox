@@ -8,11 +8,15 @@ class SproxDojoGrid(DojoBase):
     require = ['dojox.grid.DataGrid', 'dojox.data.QueryReadStore']
     dojoType = 'dojox.grid.DataGrid'
     params = ['id', 'attrs', 'columns', 'jsId', 'url',
-              'rowsPerPage', 'model', 'delayScroll', 'cssclass', 'actions']
+              'rowsPerPage', 'model', 'delayScroll', 'cssclass', 'actions',
+              'columnResizing', 'columnReordering'
+              ]
     delayScroll = "true"
     cssclass=""
     rowsPerPage = 20
     columns = []
+    columnReordering = "true"
+    columnResizing="false"
     include_dynamic_js_calls = True
     url='.json'
     model = None
@@ -22,6 +26,7 @@ class SproxDojoGrid(DojoBase):
                          jsId="${jsId}"
                          id="${id}"
                          store="${jsId}_store"
+                         columnReordering="${columnReordering}"
                          rowsPerPage="${rowsPerPage}"
                          model="${model}"
                          delayScroll="${delayScroll}"
@@ -36,11 +41,6 @@ class SproxDojoGrid(DojoBase):
             </tr>
     </thead>
     <div dojoType="dojox.data.QueryReadStore" jsId="${jsId}_store"  id="${jsId}_store" url="${url}"/>
-    <script>
-    dojo.addOnLoad(function(){
-	new dojox.grid.DataGrid({}, '${jsId}');
-	});
-    </script>
     </table>
     """
 

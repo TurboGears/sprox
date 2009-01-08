@@ -23,7 +23,7 @@ Released under MIT license.
 """
 from sqlalchemy.schema import Column
 from sqlalchemy.types import *
-from sqlalchemy.orm import PropertyLoader
+from sqlalchemy.orm import PropertyLoader, SynonymProperty
 
 from tw.api import Widget
 from tw.forms.fields import *
@@ -67,16 +67,25 @@ class SAWidgetSelector(WidgetSelector):
 
     def select(self, field):
 
+
+        if hasattr(field, 'name'):
+            if field.name in self.default_name_based_widgets:
+                return self.default_name_based_widgets[field.name]
+
+            if field.name.lower() == 'password':
+                return PasswordField
+
+        # this is really the best we can do, since we cannot know
+        # what type the field represents until execution occurs.
+        if isinstance(field, SynonymProperty):
+            if isinstance(field.descriptor, property):
+                return TextField
+
+
         if isinstance(field, PropertyLoader):
             if field.secondary:
                 return PropertyMultipleSelectField
             return PropertySingleSelectField
-
-        if field.name in self.default_name_based_widgets:
-            return self.default_name_based_widgets[field.name]
-
-        if field.name.lower() == 'password':
-            return PasswordField
 
         type_ = String
         for t in self.default_widgets.keys():

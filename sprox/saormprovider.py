@@ -19,7 +19,7 @@ Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
 import inspect
-from sqlalchemy import and_, or_, select, DateTime, Date, Binary, MetaData
+from sqlalchemy import and_, or_, DateTime, Date, Binary, MetaData, desc as _desc
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
@@ -268,10 +268,17 @@ class SAORMProvider(IProvider):
     def query(self, entity, limit=None, offset=None, limit_fields=None, order_by=None, desc=False, **kw):
         query = self.session.query(entity)
         count = query.count()
+        if order_by is not None:
+            field = self.get_field(entity, order_by)
+            if desc:
+                field = _desc(field)
+            query = query.order_by(field)
+
         if offset is not None:
             query = query.offset(offset)
         if limit is not None:
             query = query.limit(limit)
+
         objs = query.all()
 
         return count, objs

@@ -15,7 +15,12 @@ class DojoTableFiller(TableFiller):
     def get_value(self, value=None, **kw):
         offset = kw.get('start', None)
         limit  = kw.get('count', None)
-        items = super(DojoTableFiller, self).get_value(value, limit=limit, offset=offset)
+        order_by = kw.get('sort', None)
+        desc = False
+        if order_by is not None and order_by.startswith('-'):
+            order_by = order_by[1:]
+            desc = True
+        items = super(DojoTableFiller, self).get_value(value, limit=limit, offset=offset, order_by=order_by, desc=desc)
         count = self.get_count()
         identifier = self.__provider__.get_primary_field(self.__entity__)
         return dict(identifier=identifier, numRows=count, items=items)

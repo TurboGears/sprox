@@ -39,6 +39,16 @@ class TestTableFiller(SproxTest):
         value = filler.get_value()
         eq_(value['items'][0]['binary'], '<file>')
 
+    def test_get_value_with_orderby_desc(self):
+        class ExampleFiller(DojoTableFiller):
+            __entity__ = Example
+        example = Example(binary='datadatadata')
+        session.add(example)
+
+        filler = ExampleFiller(session)
+        value = filler.get_value(sort='-example_id')
+        eq_(value['items'][0]['binary'], '<file>')
+
     @raises(ConfigBaseError)
     def _test_count_without_get(self):
         self.filler.get_count()

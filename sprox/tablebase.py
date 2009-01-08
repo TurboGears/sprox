@@ -3,7 +3,7 @@ from viewbase import ViewBase
 from metadata import FieldsMetadata
 
 class TableBase(ViewBase):
-    """This class allows you to credate a table widget.
+    """This class allows you to create a table widget.
 
     :Modifiers:
     +-----------------------------------+--------------------------------------------+------------------------------+

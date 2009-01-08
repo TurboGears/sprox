@@ -115,7 +115,9 @@ class TableFiller(FillerBase):
         """
         limit = kw.get('limit', None)
         offset = kw.get('offset', None)
-        count, objs = self.__provider__.query(self.__entity__, limit, offset)
+        order_by = kw.get('order_by', None)
+        desc = kw.get('desc', False)
+        count, objs = self.__provider__.query(self.__entity__, limit, self.__limit_fields__, offset, order_by, desc)
         self.__count__ = count
         primary_fields = self.__provider__.get_primary_fields(self.__entity__)
         rows = []

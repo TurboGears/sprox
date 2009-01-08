@@ -4,10 +4,12 @@ from tw.api import Widget
 from sqlalchemy import Column, Integer
 from sqlalchemy.types import *
 from sqlalchemy.databases.oracle import *
+from sqlalchemy.orm import class_mapper
 
 from sprox.widgetselector import WidgetSelector, SAWidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
 from sprox.widgets.widgets import *
 from sprox.saormprovider import SAORMProvider
+from sprox.test.model import Document
 
 class TestWidgetSelector:
     def setup(self):
@@ -112,3 +114,9 @@ class TestSAWidgetSelector:
         selector = DummySAWidgetSelector()
         widget = selector.select(c)
         assert widget is TextField
+
+    def test_synonym_property(self):
+        mapper = class_mapper(Document)
+        c = mapper.get_property('address')
+        field = self.widgetSelector.select(c)
+        eq_(field, TextField)

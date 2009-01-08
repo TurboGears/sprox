@@ -8,7 +8,7 @@ from datetime import datetime
 #from sqlalchemy.types import *
 from sqlalchemy import *
 from sqlalchemy.orm import relation, backref, synonym
-from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
+from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base, synonym_for
 
 DeclarativeBase = declarative_base()
 
@@ -161,7 +161,7 @@ class Permission(DeclarativeBase):
                       backref='permissions')
 
 class Example(DeclarativeBase):
-    __tablename__  = 'example_table'
+    __tablename__  = 'example'
 
     example_id      = Column(Integer, primary_key=True)
     created         = Column(DateTime, default=datetime.now)
@@ -192,3 +192,22 @@ class Example(DeclarativeBase):
     unicode_        = Column(Unicode(200)  )
     varchar         = Column(VARCHAR(200)  )
     password        = Column(String(20)    )
+
+class Document(DeclarativeBase):
+
+    __tablename__ = 'document'
+    document_id     = Column(Integer, primary_key=True)
+    created         = Column(DateTime, default=datetime.now)
+    blob            = Column(BLOB          )
+    owner           = Column(Integer, ForeignKey('tg_user.user_id'))
+    url             = Column(String(500))
+
+    def _get_address(self):
+        return self.url
+
+    def _set_address(self, value):
+        self.url = value
+
+    address = synonym('address', descriptor=property(_get_address,
+                                                       _set_address))
+
