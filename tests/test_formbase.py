@@ -1,5 +1,5 @@
 from sprox.formbase import FormBase, AddRecordForm, DisabledForm
-from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example
+from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document
 from sprox.test.model import User
 from sprox.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
@@ -34,6 +34,15 @@ class TestFormBase:
         assert """<td class="fieldcol">
                 <input type="submit" class="submitbutton" value="Submit" />
             </td>""" in rendered, rendered
+
+    def test_entity_with_synonym(self):
+        class DocumentForm(FormBase):
+            __entity__ = Document
+        form = DocumentForm(session)
+        rendered = form()
+        assert """<tr id="address.container" class="odd">
+            <td class="labelcol">
+                <label id="address.label" for="address" class="fieldlabel">Address</label>""" in rendered, rendered
 
     def test_require_field(self):
         class RegistrationForm(FormBase):
