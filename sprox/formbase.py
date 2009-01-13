@@ -147,7 +147,7 @@ class FormBase(ViewBase):
 
     __field_validators__       = None
     __field_validator_types__  = None
-    __base_validator__         = None
+    __base_validator__         = FilteringSchema
 
     __metadata_type__ = FieldsMetadata
 
@@ -242,7 +242,22 @@ class EditableForm(FormBase):
         fields.append(self.__provider__.get_primary_field(self.__entity__))
         return fields
 
-class AddRecordForm(EditableForm):
+    def _do_get_fields(self):
+        """Override this function to define how
+        """
+        fields = super(EditableForm, self)._do_get_fields()
+        if '_method' not in fields:
+            fields.append('_method')
+        return fields
+
+    def _do_get_field_widgets(self, fields):
+        widgets = super(EditableForm, self)._do_get_field_widgets(fields)
+        widgets['_method'] = HiddenField('_method', value='PUT')
+        return widgets
+
+    __check_if_unique__ = False
+
+class AddRecordForm(FormBase):
     """An editable form who's purpose is record addition.
 
     :Modifiers:
@@ -358,6 +373,12 @@ class AddRecordForm(EditableForm):
     >>> session.rollback()
     """
     __check_if_unique__ = True
+
+    def _do_get_disabled_fields(self):
+        fields = self.__disable_fields__[:]
+        fields.append(self.__provider__.get_primary_field(self.__entity__))
+        return fields
+
 
 class DisabledForm(FormBase):
     """A form who's set of fields is disabled.

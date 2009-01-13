@@ -138,8 +138,15 @@ class TableFiller(FillerBase):
             #xxx: make this overridable
             if self.__actions__:
                 pklist = '/'.join(map(lambda x: str(row[x]), primary_fields))
-                value = '<a href="'+pklist+'">edit</a> | '\
-                        '<a href="'+pklist+'/delete">delete</a>'
+                value = '<div><div>&nbsp;<a href="'+pklist+'/edit" style="text-decoration:none">edit</a>'\
+                      '</div><div>'\
+                      '<form method="POST" action="'+pklist+'" class="button-to">'\
+                    '<input type="hidden" name="_method" value="DELETE" />'\
+                    '<input class="delete-button" onclick="return confirm(\'Are you sure?\');" value="delete" type="submit"'\
+                    'style="background: transparent; float:left; border:0; color: #286571; display: inline; margin: 0; padding: 0;"/>'\
+                '</form>'\
+                '</div></div>'\
+                        #'<a href="'+pklist+'/delete">delete</a>'
                 row['__actions__'] = value
             rows.append(row)
         return rows

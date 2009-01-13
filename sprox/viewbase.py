@@ -36,6 +36,7 @@ class ViewBase(ConfigBase):
     """
     __field_widgets__      = None
     __field_widget_types__ = None
+    __ignore_field_names__ = None
 
     #object overrides
     __base_widget_type__       = Widget
@@ -51,6 +52,9 @@ class ViewBase(ConfigBase):
             self.__field_widget_types__ = {}
         if self.__widget_selector__ is None:
             self.__widget_selector__ = self.__widget_selector_type__()
+
+        if self.__ignore_field_names__ is None:
+            self.__ignore_field_names__ = ['sprox_id', '_method']
 
         for attr in dir(self):
             if not attr.startswith('__'):
@@ -136,7 +140,7 @@ class ViewBase(ConfigBase):
             if field_name in self.__add_fields__:
                 widgets[field_name] = self.__add_fields__[field_name]
                 continue
-            if field_name == 'sprox_id':
+            if field_name in self.__ignore_field_names__:
                 continue
             if field_name in self.__hide_fields__:
                 continue

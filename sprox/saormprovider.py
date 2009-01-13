@@ -238,6 +238,8 @@ class SAORMProvider(IProvider):
         return obj
 
     def dictify(self, obj):
+        if obj is None:
+            return {}
         r = {}
         mapper = class_mapper(obj.__class__)
         for prop in mapper.iterate_properties:
