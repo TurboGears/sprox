@@ -85,6 +85,8 @@ class ViewBase(ConfigBase):
 
         field_widgets = []
         for key in self.__fields__:
+            if key not in widget_dict:
+                continue
             value = widget_dict[key]
             #sometimes a field will have two widgets associated with it (disabled fields)
             if hasattr(value,'__iter__'):
@@ -132,6 +134,7 @@ class ViewBase(ConfigBase):
 
     def _do_get_field_widgets(self, fields):
 
+        metadata_keys = self.__metadata__.keys()
         widgets = {}
         for field_name in fields:
             if field_name in self.__field_widgets__:
@@ -144,7 +147,8 @@ class ViewBase(ConfigBase):
                 continue
             if field_name in self.__hide_fields__:
                 continue
-
+            if field_name not in metadata_keys:
+                continue
             field = self.__metadata__[field_name]
 
             if inspect.isclass(field):

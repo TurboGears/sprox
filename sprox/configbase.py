@@ -104,7 +104,7 @@ class ConfigBase(object):
 
         r = []
         for field in fields:
-            if field not in r:
+            if field not in r and field is not None:
                 r.append(field)
         return r
 
