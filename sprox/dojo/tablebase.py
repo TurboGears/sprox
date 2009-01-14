@@ -13,23 +13,19 @@ class DojoTableBase(TableBase):
 
     #object overrides
     __base_widget_type__ = SproxDojoGrid
-    __url__ = 'data'
 
     def _do_get_widget_args(self):
         args = super(DojoTableBase, self)._do_get_widget_args()
         args['columns'] = self.__fields__
-        args['jsId'] = 'something'
-        args['url'] = self.__url__
+        args['jsId'] = self.__sprox_id__
         return args
 
 
 class DojoEditableTableBase(TableBase):
     __base_widget_type__ = SproxEditableDojoGrid
-    __url__ = 'data'
 
     def _do_get_widget_args(self):
         args = super(DojoEditableTableBase, self)._do_get_widget_args()
         args['columns'] = self.__fields__
-        args['jsId'] = 'something'
-        args['url'] = self.__url__
+        args['jsId'] = self.__sprox_id__
         return args
