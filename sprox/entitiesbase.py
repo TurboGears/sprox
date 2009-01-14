@@ -107,9 +107,7 @@ class EntityDefBase(ViewBase):
     __widget_selector_type__   = EntityDefWidgetSelector
     __metadata_type__          = FieldsMetadata
 
-
-class DummyEntity(object):
-    pass
+from dummyentity import DummyEntity
 
 class EntitiesBase(ViewBase):
     """This view can display all of the entities for a given provider.

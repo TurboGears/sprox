@@ -18,6 +18,7 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm.attributes import ClassManager
 
 from sprox.saormprovider import SAORMProvider
+from sprox.dummyentity import DummyEntity
 
 class ProviderSelector:
     def __init__(self):
@@ -127,6 +128,8 @@ class ProviderTypeSelector(object):
     def get_selector(self, entity=None, **hints):
         #use a SA Helper
         if hasattr(entity, '_sa_class_manager') and isinstance(entity._sa_class_manager, ClassManager):
+            return SAORMSelector
+        elif issubclass(entity, DummyEntity):
             return SAORMSelector
         #other helper definitions are going in here
         else:

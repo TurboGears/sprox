@@ -21,7 +21,7 @@ for pk in pks:
     pklist+=str(row[pk])
     pklist+='/'
 ?>
-            <a href="${controller}${pklist}">edit</a> |
+            <a href="${controller}${pklist}edit">edit</a> |
             <a href="${controller}${pklist}delete">delete</a>
             </td>
             <td py:for="col in columns">${col.get_field(row, displays_on='genshi')}</td>

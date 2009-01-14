@@ -1,6 +1,6 @@
 from formencode.validators import Validator
 from tw.api import Widget
-from providerselector import ProviderTypeSelector
+from sprox.providerselector import ProviderTypeSelector
 
 class ConfigBaseError(Exception):pass
 
