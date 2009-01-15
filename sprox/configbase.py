@@ -68,7 +68,7 @@ class ConfigBase(object):
     def __remove_duplicates(self, l):
         l2 = []
         for i in l:
-            if i not in l2:
+            if i not in l2 and i is not None:
                 l2.append(i)
         return l2
 

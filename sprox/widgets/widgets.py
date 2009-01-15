@@ -1,11 +1,18 @@
 from tw.api import Widget
 from tw.forms import CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid
-from tw.forms.fields import SingleSelectField, MultipleSelectField, InputField
+from tw.forms.fields import SingleSelectField, MultipleSelectField, InputField, HiddenField
 from formencode.schema import Schema
 from formencode.validators import StringBool
 from formencode import Invalid
 import inspect
 
+
+class SproxMethodPutHiddenField(HiddenField):
+    template="""<input xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:py="http://genshi.edgewall.org/"
+       type="hidden" name="_method" class="${css_class}" id="${id}"
+       value="PUT"
+       py:attrs="attrs" />"""
 
 class SproxCalendarDatePicker(CalendarDatePicker):
     date_format = '%Y-%m-%d'

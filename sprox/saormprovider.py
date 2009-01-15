@@ -195,35 +195,39 @@ class SAORMProvider(IProvider):
         mapper = class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, SynonymProperty)]
 
-    def create_relationships(self, obj, params, delete_first=False):
+    def create_relationships(self, obj, params, delete_first=True):
+        
         entity = obj.__class__
         mapper = class_mapper(entity)
-        for relation in self.get_relations(obj.__class__):
-            if delete_first:
-                related_items = getattr(obj, relation)
-                if related_items is not None:
-                    if hasattr(related_items, '__iter__'):
-                        for item in getattr(obj, relation):
-                            getattr(obj, relation).remove(item)
-                        self.session.flush()
-                    else:
-                        setattr(obj, relation, None)
-
+        
+        relations = self.get_relations(entity)
+        
+        for relation in relations:
             if relation in params:
                 prop = mapper.get_property(relation)
                 target = prop.argument
                 if inspect.isfunction(target):
                     target = target()
-                if not isinstance(params[relation], list):
-                    params[relation] = [params[relation]]
-                for value in params[relation]:
-                    if value is not None:
+                value = params[relation]
+                if value:
+                    if prop.uselist and isinstance(value, list):
+                        target_obj = [ self.session.query(target).get(v) for v in value]
+                    elif prop.uselist:
+                        target_obj = [self.session.query(target).get(value)]
+                    else:
                         target_obj = self.session.query(target).get(value)
-                        if target_obj is not None:
-                            if prop.uselist:
-                                getattr(obj, relation).append(target_obj)
-                            else:
-                                setattr(obj, relation, target_obj)
+                    setattr(obj, relation, target_obj)
+
+        for relation in relations:
+            #clear out those items which are not found in the params list.
+            if relation not in params or not params[relation]:
+                related_items = getattr(obj, relation)
+                if related_items is not None:
+                    if hasattr(related_items, '__iter__'):
+                        for item in getattr(obj, relation):
+                            getattr(obj, relation).remove(item)
+                    else:
+                        setattr(obj, relation, None)
 
     def create(self, entity, params):
         params = self._modify_params_for_dates(entity, params)

@@ -17,6 +17,7 @@ from formencode.validators import UnicodeString, String
 from widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from validatorselector import SAValidatorSelector
+from sprox.widgets.widgets import SproxMethodPutHiddenField
 
 class FilteringSchema(Schema):
     """This makes formencode work for most forms, because some wsgi apps append extra values to the parameter list."""
@@ -252,7 +253,7 @@ class EditableForm(FormBase):
 
     def _do_get_field_widgets(self, fields):
         widgets = super(EditableForm, self)._do_get_field_widgets(fields)
-        widgets['_method'] = HiddenField('_method', value='PUT')
+        widgets['_method'] = SproxMethodPutHiddenField(id='method')
         return widgets
 
     __check_if_unique__ = False
