@@ -67,25 +67,25 @@ class TableBase(ViewBase):
         <tbody>
             <tr class="even">
                 <td>
-                <a href="1/">edit</a> |
+                <a href="1/edit">edit</a> |
                 <a href="1/delete">delete</a>
                 </td>
                 <td>1</td><td>Arvada</td>
             </tr><tr class="odd">
                 <td>
-                <a href="2/">edit</a> |
+                <a href="2/edit">edit</a> |
                 <a href="2/delete">delete</a>
                 </td>
                 <td>2</td><td>Denver</td>
             </tr><tr class="even">
                 <td>
-                <a href="3/">edit</a> |
+                <a href="3/edit">edit</a> |
                 <a href="3/delete">delete</a>
                 </td>
                 <td>3</td><td>Golden</td>
             </tr><tr class="odd">
                 <td>
-                <a href="4/">edit</a> |
+                <a href="4/edit">edit</a> |
                 <a href="4/delete">delete</a>
                 </td>
                 <td>4</td><td>Boulder</td>

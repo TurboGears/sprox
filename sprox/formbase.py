@@ -106,7 +106,7 @@ class FormBase(ViewBase):
                 <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
         </div>
         <table border="0" cellspacing="0" cellpadding="2">
-            <tr id="town.container" class="even">
+            <tr id="town.container" class="even" title="">
                 <td class="labelcol">
                     <label id="town.label" for="town" class="fieldlabel">Town</label>
                 </td>
@@ -115,7 +115,7 @@ class FormBase(ViewBase):
             <option value="1">Arvada</option><option value="2">Denver</option><option value="3">Golden</option><option value="4">Boulder</option><option value="" selected="selected">-----------</option>
     </select>
                 </td>
-            </tr><tr id="submit.container" class="odd">
+            </tr><tr id="submit.container" class="odd" title="">
                 <td class="labelcol">
                 </td>
                 <td class="fieldcol">
@@ -302,49 +302,49 @@ class AddRecordForm(FormBase):
                 <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
         </div>
         <table border="0" cellspacing="0" cellpadding="2">
-            <tr id="user_name.container" class="even">
+            <tr id="user_name.container" class="even" title="">
                 <td class="labelcol">
                     <label id="user_name.label" for="user_name" class="fieldlabel required">User Name</label>
                 </td>
                 <td class="fieldcol">
                     <input type="text" name="user_name" class="textfield required" id="user_name" value="" />
                 </td>
-            </tr><tr id="email_address.container" class="odd">
+            </tr><tr id="email_address.container" class="odd" title="">
                 <td class="labelcol">
                     <label id="email_address.label" for="email_address" class="fieldlabel required">Email Address</label>
                 </td>
                 <td class="fieldcol">
                     <input type="text" name="email_address" class="textfield required" id="email_address" value="" />
                 </td>
-            </tr><tr id="display_name.container" class="even">
+            </tr><tr id="display_name.container" class="even" title="">
                 <td class="labelcol">
                     <label id="display_name.label" for="display_name" class="fieldlabel">Display Name</label>
                 </td>
                 <td class="fieldcol">
                     <input type="text" name="display_name" class="textfield" id="display_name" value="" />
                 </td>
-            </tr><tr id="password.container" class="odd">
+            </tr><tr id="password.container" class="odd" title="">
                 <td class="labelcol">
                     <label id="password.label" for="password" class="fieldlabel required">Password</label>
                 </td>
                 <td class="fieldcol">
                     <input type="password" name="password" class="required passwordfield" id="password" value="" />
                 </td>
-            </tr><tr id="verify_password.container" class="even">
+            </tr><tr id="verify_password.container" class="even" title="">
                 <td class="labelcol">
                     <label id="verify_password.label" for="verify_password" class="fieldlabel">Verify Password</label>
                 </td>
                 <td class="fieldcol">
                     <input type="password" name="verify_password" class="passwordfield" id="verify_password" value="" />
                 </td>
-            </tr><tr id="town_id.container" class="odd">
+            </tr><tr id="town_id.container" class="odd" title="">
                 <td class="labelcol">
                     <label id="town_id.label" for="town_id" class="fieldlabel">Town Id</label>
                 </td>
                 <td class="fieldcol">
                     <input type="text" name="town_id" class="textfield" id="town_id" value="" />
                 </td>
-            </tr><tr id="submit.container" class="even">
+            </tr><tr id="submit.container" class="even" title="">
                 <td class="labelcol">
                 </td>
                 <td class="fieldcol">
@@ -405,21 +405,21 @@ class DisabledForm(FormBase):
                 <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
         </div>
         <table border="0" cellspacing="0" cellpadding="2">
-            <tr id="user_name.container" class="even">
+            <tr id="user_name.container" class="even" title="">
                 <td class="labelcol">
                     <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
                 </td>
                 <td class="fieldcol">
                     <input type="text" name="user_name" class="textfield" id="user_name" value="" disabled="disabled" />
                 </td>
-            </tr><tr id="email_address.container" class="odd">
+            </tr><tr id="email_address.container" class="odd" title="">
                 <td class="labelcol">
                     <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
                 </td>
                 <td class="fieldcol">
                     <textarea id="email_address" name="email_address" class="textarea" disabled="disabled" rows="7" cols="50"></textarea>
                 </td>
-            </tr><tr id="submit.container" class="even">
+            </tr><tr id="submit.container" class="even" title="">
                 <td class="labelcol">
                 </td>
                 <td class="fieldcol">
