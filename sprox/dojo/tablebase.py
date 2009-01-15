@@ -20,6 +20,8 @@ class DojoTableBase(TableBase):
         args['jsId'] = self.__sprox_id__
         return args
 
+"""
+Experimental for next version.  Will not be included in 0.5
 
 class DojoEditableTableBase(TableBase):
     __base_widget_type__ = SproxEditableDojoGrid
@@ -29,3 +31,4 @@ class DojoEditableTableBase(TableBase):
         args['columns'] = self.__fields__
         args['jsId'] = self.__sprox_id__
         return args
+"""

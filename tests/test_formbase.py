@@ -1,4 +1,4 @@
-from sprox.formbase import FormBase, AddRecordForm, DisabledForm
+from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document
 from sprox.test.model import User
 from sprox.widgetselector import SAWidgetSelector
@@ -40,9 +40,14 @@ class TestFormBase:
             __entity__ = Document
         form = DocumentForm(session)
         rendered = form()
-        assert """<tr id="address.container" class="odd">
+        assert """<tr id="address.container" class="odd" title="">
             <td class="labelcol">
-                <label id="address.label" for="address" class="fieldlabel">Address</label>""" in rendered, rendered
+                <label id="address.label" for="address" class="fieldlabel">Address</label>
+            </td>
+            <td class="fieldcol">
+                <input type="text" name="address" class="textfield" id="address" value="" />
+            </td>
+        </tr>""" in rendered, rendered
 
     def test_require_field(self):
         class RegistrationForm(FormBase):
@@ -95,6 +100,29 @@ class TestAddRecordForm(SproxTest):
         except Invalid, exc:
             assert 'Passwords do not match' in exc.message
 
+class TestEditableForm(SproxTest):
+    def setup(self):
+        super(TestEditableForm, self).setup()
+        #setup_records(session)
+
+        class UserForm(EditableForm):
+            __entity__ = User
+            __limit_fields__ = ['user_name']
+
+        self.base = UserForm(session)
+
+    def test__widget__(self):
+        rendered = self.base.__widget__()
+        assert """<tr id="user_name.container" class="even" title="">
+            <td class="labelcol">
+                <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
+            </td>
+            <td class="fieldcol">
+                <input type="text" name="user_name" class="textfield has_error" id="user_name" value="asdf" />
+                <span class="fielderror">That value already exists</span>
+            </td>
+        </tr>""" in rendered, rendered
+        
 class TestDisabledForm(SproxTest):
     def setup(self):
         super(TestDisabledForm, self).setup()

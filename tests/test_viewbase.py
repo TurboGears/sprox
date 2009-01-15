@@ -96,3 +96,14 @@ class TestViewBase:
         user_view = UserView()
         widget = user_view.__widget__
         assert 'password' not in widget.children.keys()
+
+    def test_bad_fieldname_in_limit(self):
+        class UserView(ViewBase):
+            __entity__ = User
+            __metadata_type__ = DummyMetadata
+            __limit_fields__ = ['junk']
+
+
+        user_view = UserView()
+        widget = user_view.__widget__
+        assert 'junk' not in widget.children.keys()

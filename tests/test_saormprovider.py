@@ -112,6 +112,10 @@ class TestSAORMProvider(SproxTest):
         eq_(d['groups'], [5])
         eq_(d['user_name'], 'asdf')
 
+    def test_dictify_none(self):
+        d = self.provider.dictify(None)
+        eq_(d, {})
+
     def test_create(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
@@ -154,3 +158,19 @@ class TestSAORMProvider(SproxTest):
         self.provider.create_relationships(obj, params)
         user = session.query(User).get(1)
         assert user in obj.users
+
+    def test_create_relationships_remove_groups(self):
+        obj = session.query(Group).first()
+        obj.users.append(self.user)
+        self.provider.create_relationships(obj, {})
+        user = session.query(User).get(1)
+        assert user not in obj.users
+        
+    def test_create_relationships_remove_town(self):
+        town = session.query(Town).first()
+        
+        self.user.town = town
+        self.session.flush()
+        
+        self.provider.create_relationships(self.user, {})
+        assert self.user.town is None

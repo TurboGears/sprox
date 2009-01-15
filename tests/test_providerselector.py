@@ -2,6 +2,7 @@ from sprox.providerselector import SAORMSelector, ProviderTypeSelector, Provider
 from sprox.test.base import setup_database
 from sprox.test.model import User
 from nose.tools import raises, eq_
+from sprox.dummyentity import DummyEntity
 
 session = None
 engine  = None
@@ -77,3 +78,6 @@ class TestProviderTypeSelector:
     @raises(ProviderTypeSelectorError)
     def test_no_provider_type(self):
         self.type_selector.get_selector('asdf')
+    
+    def test_dummy_provider_type(self):
+        self.type_selector.get_selector(DummyEntity)

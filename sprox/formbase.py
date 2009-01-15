@@ -253,7 +253,7 @@ class EditableForm(FormBase):
 
     def _do_get_field_widgets(self, fields):
         widgets = super(EditableForm, self)._do_get_field_widgets(fields)
-        widgets['_method'] = SproxMethodPutHiddenField(id='method')
+        widgets['_method'] = SproxMethodPutHiddenField(id='_method')
         return widgets
 
     __check_if_unique__ = False

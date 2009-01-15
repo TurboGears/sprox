@@ -129,7 +129,7 @@ class ProviderTypeSelector(object):
         #use a SA Helper
         if hasattr(entity, '_sa_class_manager') and isinstance(entity._sa_class_manager, ClassManager):
             return SAORMSelector
-        elif issubclass(entity, DummyEntity):
+        elif inspect.isclass(entity) and issubclass(entity, DummyEntity):
             return SAORMSelector
         #other helper definitions are going in here
         else:
