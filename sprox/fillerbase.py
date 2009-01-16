@@ -87,8 +87,8 @@ class TableFiller(FillerBase):
         l = []
         for value in values:
             name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
-            l.append(str(getattr(value, name)))
-        return ','.join(l)
+            l.append(unicode(getattr(value, name)))
+        return ', '.join(l)
 
     def _get_relation_value(self, field, value):
         #this may be needed for catwalk, but I am not sure what conditions cause it to be needed
