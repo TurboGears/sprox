@@ -11,8 +11,8 @@ class EntityDefBase(ViewBase):
      see :mod:`sprox.viewbase.ViewBase`
 
     :Usage:
-    >>> from sprox.test.base import setup_database, User
-    >>> session, engine, metadata = setup_database()
+
+    >>> from sprox.entitiesbase import EntityDefBase
     >>> class UserEntityDef(EntityDefBase):
     ...     __entity__ = User
     >>> base = UserEntityDef(session)
@@ -100,7 +100,7 @@ class EntityDefBase(ViewBase):
         </td>
     </tr>
     </table>
-    >>> session.rollback()
+
     """
 
     __base_widget_type__       = TableWidget
@@ -116,11 +116,11 @@ class EntitiesBase(ViewBase):
      see :mod:`sprox.viewbase.ViewBase`
 
     :Usage:
-    >>> from sprox.test.base import setup_database, User
-    >>> session, engine, metadata = setup_database()
-    >>> class EntitiesBaseTest(EntitiesBase):
+
+    >>> from sprox.entitiesbase import EntitiesBase
+    >>> class MyEntitiesBase(EntitiesBase):
     ...     __entity__ = User
-    >>> base = EntitiesBaseTest(session, metadata=metadata)
+    >>> base = MyEntitiesBase(session, metadata=metadata)
     >>> print base()
     <div xmlns="http://www.w3.org/1999/xhtml" class="containerwidget">
     <div class="entitylabelwidget">
@@ -142,7 +142,7 @@ class EntitiesBase(ViewBase):
     <a href="User/">User</a>
     </div>
     </div>
-    >>> session.rollback()
+
     """
     __entity__ = DummyEntity
     __base_widget_type__       = ContainerWidget

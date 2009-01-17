@@ -18,9 +18,8 @@ class TableBase(ViewBase):
 
     Here is an example listing of the towns in the test database.
 
-    >>> from sprox.test.base import Town, setup_database, setup_records
-    >>> session, engine, metadata = setup_database()
-    >>> user = setup_records(session)
+    
+    >>> from sprox.tablebase import TableBase
     >>> class TownTable(TableBase):
     ...    __model__ = Town
     >>> town_table = TownTable(session)
@@ -126,7 +125,7 @@ class TableBase(ViewBase):
         </tbody>
     </table>
     </div>
-    >>> session.rollback()
+
     """
 
     #object overrides

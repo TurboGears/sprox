@@ -91,9 +91,8 @@ class _SAORMSelector(ProviderSelector):
         The provider's are cached as not to waste computation/memory.
 
         :Usage:
-
-        >>> from sprox.test.base import setup_database, User
-        >>> session, engine, metadata = setup_database()
+        
+        >>> from sprox.providerselector import SAORMSelector
         >>> provider = SAORMSelector.get_provider(User, session=session)
         >>> provider.engine.url.drivername
         'sqlite'

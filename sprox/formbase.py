@@ -91,9 +91,8 @@ class FormBase(ViewBase):
     One of the more useful things sprox does for you is to fill in the arguments to a drop down automatically.
     Here is the userform, limited to just the town field, which gets populated with the towns.
 
-    >>> from sprox.test.base import User, setup_database, setup_records
-    >>> session, engine, metadata = setup_database()
-    >>> user = setup_records(session)
+
+    >>> from sprox.formbase import FormBase
     >>> class TownForm(FormBase):
     ...    __model__ = User
     ...    __limit_fields__ = ['town']
@@ -133,7 +132,7 @@ class FormBase(ViewBase):
     Invalid: sprox_id: Missing value
 
 
-    >>> session.rollback()
+
     """
     __require_fields__     = None
     __check_if_unique__    = False
@@ -276,8 +275,6 @@ class AddRecordForm(FormBase):
 
     Here is an example registration form, as generated from the vase User model.
 
-    >>> from sprox.test.base import setup_database, setup_records
-    >>> from sprox.test.model import User
     >>> from sprox.formbase import AddRecordForm
     >>> from formencode import Schema
     >>> from formencode.validators import FieldsMatch
@@ -358,8 +355,7 @@ class AddRecordForm(FormBase):
     automatically vaidate against uniqueness for that field.  Here is a simple user form definition, where the
     user_name in the model is unique:
 
-    >>> session, engine, metadata = setup_database()
-    >>> user = setup_records(session)
+
     >>> class AddUserForm(AddRecordForm):
     ...     __entity__ = User
     ...     __limit_fields__ = ['user_name']
@@ -371,7 +367,7 @@ class AddRecordForm(FormBase):
 
     The validation fails because there is already a user with the user_name 'asdf' in the database
 
-    >>> session.rollback()
+
     """
     __check_if_unique__ = True
 

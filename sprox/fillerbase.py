@@ -20,19 +20,19 @@ class FillerBase(ConfigBase):
 
     The base filler class.
 
-        :Arguments:
-          values
-            pass through of values.  This is typically a set of default values that is updated by the
-            filler.  This is useful when updating an existing form.
-          kw
-            Set of keyword arguments for assisting the fill.  This is for instance information like offset
-            and limit for a TableFiller.
+    :Arguments:
+      values
+        pass through of values.  This is typically a set of default values that is updated by the
+        filler.  This is useful when updating an existing form.
+      kw
+        Set of keyword arguments for assisting the fill.  This is for instance information like offset
+        and limit for a TableFiller.
 
-        :Usage:
+    :Usage:
 
-        >>> filler = FillerBase()
-        >>> filler.get_value()
-        {}
+    >>> filler = FillerBase()
+    >>> filler.get_value()
+    {}
     """
 
     def get_value(self, values=None, **kw):
@@ -58,30 +58,48 @@ class FormFiller(FillerBase):
 
 class TableFiller(FillerBase):
     """
-    This is the base class for generating table data for use in table widgets.
+    :General:
+    
+    This is the base class for generating table data for use in table widgets.  The TableFiller uses
+    it's provider to obtain a dictionary of information about the __entity__ this Filler defines.
+    This class is especially useful when you need to return a json stream, because it allows for
+    customization of attributes.  A package which has similar functionality to this is TurboJson,
+    but TurboJson is rules-based, where the semantics for generating dictionaries follows the same
+    :mod:`sprox.configbase` methodology.
 
-    This class will automatically parse relations and choose values for the related items to dispay based
-    on the __possible_field_names_modifier__ .
+    :Relations:
+    
+    By default, TableFiller will populate relations (join or foreign_key) with either the value
+    from the related table, or a comma-separated list of values.  These values are derived from 
+    the related object given the field names provided by the __possible_field_names__ modifier.
+    For instance, if you have a User class which is related to Groups, the groups item in the result
+    dictionaries will be populated with Group.group_name.  The default field names are:
+    _name, name, description, title.
 
-    Here is how we would get the values to fill up a user's table.
+    :RESTful Actions:
+    
+    By default, Table filler provides an "__actions__" item in the resultant dictionary list.  This provides
+    and edit, and (javascript) delete link which provide edit and DELETE functionality as HTML verbs in REST.
+    For more information on developing RESTful URLs, please visit `http://microformats.org/wiki/rest/urls <http://microformats.org/wiki/rest/urls/>`_ .
+    
+    :Usage:
+    
+    Here is how we would get the values to fill up a user's table, minus the action column, and created date.
 
-    >>> from sprox.test.base import User, setup_database, setup_records
-    >>> session, engine, metadata = setup_database()
-    >>> user = setup_records(session)
     >>> class UsersFiller(TableFiller):
     ...     __model__ = User
+    ...     __actions__ = False
+    ...     __omit_fields__ = ['created']
     >>> users_filler = UsersFiller(session)
     >>> value = users_filler.get_value(values={}, limit=20, offset=0)
-    >>> value # doctest: +SKIP
-    [{'town': u'Arvada', 'user_id': u'1', 'created': u'2008-12-28 17:33:11.078931',
-      'user_name': u'asdf', 'town_id': u'1', 'groups': u'4', '_password': '******',
-      'password': '******', 'email_address': u'asdf@asdf.com', 'display_name': u'None'}]
-    >>> session.rollback()
+    >>> print value #doctest: +IGNORE_WHITESPACE
+    [{'town': u'Arvada', 'user_id': u'1', 'user_name': u'asdf', 
+    'town_id': u'1', 'groups': u'4', '_password': '******', 'password': '******', 
+    'email_address': u'asdf@asdf.com', 'display_name': u'None'}]
     """
     __actions__ = True
     __metadata_type__ = FieldsMetadata
     __possible_field_names__ = ['_name', 'name', 'description', 'title']
-
 
     def _get_list_data_value(self, field, values):
         l = []
@@ -98,6 +116,10 @@ class TableFiller(FillerBase):
         return getattr(value, name)
 
     def get_count(self):
+        """Returns the total number of items possible for retrieval.  This can only be
+        executed after a get_value() call.  This call is useful for creating pagination in the context
+        of a user interface.
+        """
         if not hasattr(self, '__count__'):
             raise ConfigBaseError('Count not yet set for filler.  try calling get_value() first.')
         return self.__count__
@@ -111,7 +133,10 @@ class TableFiller(FillerBase):
           offset into the records
          limit
           number of records to return
-
+         order_by
+          name of the column to the return values ordered by
+         desc
+          order the columns in descending order
         """
         limit = kw.get('limit', None)
         offset = kw.get('offset', None)
@@ -145,13 +170,26 @@ class TableFiller(FillerBase):
                     '<input class="delete-button" onclick="return confirm(\'Are you sure?\');" value="delete" type="submit"'\
                     'style="background: transparent; float:left; border:0; color: #286571; display: inline; margin: 0; padding: 0;"/>'\
                 '</form>'\
-                '</div></div>'\
-                        #'<a href="'+pklist+'/delete">delete</a>'
+                '</div></div>'
                 row['__actions__'] = value
             rows.append(row)
         return rows
 
 class EditFormFiller(FormFiller):
+    """
+    This class will help to return a single record for use within a form or otherwise.
+    The values are returned in dictionary form.
+    
+    >>> class UserFiller(EditFormFiller):
+    ...     __model__ = User
+    >>> users_filler = UsersFiller(session)
+    >>> value = users_filler.get_value(values={'user_id':'1'})
+    >>> value # doctest: +SKIP
+    {'town': u'Arvada', 'user_id': u'1', 'created': u'2008-12-28 17:33:11.078931',
+      'user_name': u'asdf', 'town_id': u'1', 'groups': u'4', '_password': '******',
+      'password': '******', 'email_address': u'asdf@asdf.com', 'display_name': u'None'}
+
+    """
     def get_value(self, values=None, **kw):
         values = super(EditFormFiller, self).get_value(values, **kw)
         values = self.__provider__.get(self.__entity__, params=values)

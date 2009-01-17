@@ -12,9 +12,8 @@ class RecordViewBase(ViewBase):
 
     Here is an example listing of the first user in the test database.
 
-    >>> from sprox.test.base import Town, setup_database, setup_records, User
-    >>> session, engine, metadata = setup_database()
-    >>> user = setup_records(session)
+    from sprox.test.base import User
+
     >>> class UserRecordView(RecordViewBase):
     ...     __model__ = User
     ...     __omit_fields__ = ['created']
@@ -91,7 +90,7 @@ class RecordViewBase(ViewBase):
         </td>
     </tr>
     </table>
-    >>> session.rollback()
+
     """
 
 
