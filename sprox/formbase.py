@@ -93,11 +93,11 @@ class FormBase(ViewBase):
 
 
     >>> from sprox.formbase import FormBase
-    >>> class TownForm(FormBase):
+    >>> class UserOnlyTownForm(FormBase):
     ...    __model__ = User
     ...    __limit_fields__ = ['town']
     >>>
-    >>> town_form = TownForm(session)
+    >>> town_form = UserOnlyTownForm(session)
     >>>
     >>> print town_form()
     <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="required tableform">
