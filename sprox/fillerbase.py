@@ -58,14 +58,27 @@ class FormFiller(FillerBase):
 
 class TableFiller(FillerBase):
     """
-    :General:
-    
     This is the base class for generating table data for use in table widgets.  The TableFiller uses
     it's provider to obtain a dictionary of information about the __entity__ this Filler defines.
     This class is especially useful when you need to return a json stream, because it allows for
     customization of attributes.  A package which has similar functionality to this is TurboJson,
     but TurboJson is rules-based, where the semantics for generating dictionaries follows the same
     :mod:`sprox.configbase` methodology.
+
+    Modifiers defined in this class
+
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | Name                              | Description                                | Default                      |
+    +===================================+============================================+==============================+
+    | __actions__                       | Whether or not to include actions in the   | True                         |
+    |                                   | output.                                    |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __metadata_type__                 | How should we get data from the provider.  | FieldsMetadata               |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __possible_field_names__          | See explanation below.                     | See below.                   |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+
+    see modifiers also in :mod:`sprox.configbase`.
 
     :Relations:
     
@@ -179,6 +192,13 @@ class EditFormFiller(FormFiller):
     """
     This class will help to return a single record for use within a form or otherwise.
     The values are returned in dictionary form.
+    
+    :Modifiers:
+    
+    see :mod:`sprox.configbase`.
+
+    
+    :Usage:
     
     >>> class UserFiller(EditFormFiller):
     ...     __model__ = User
