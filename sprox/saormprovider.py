@@ -86,7 +86,7 @@ class SAORMProvider(IProvider):
                 if engine is not None and mapper.tables[0].bind != self.engine:
                     continue
                 return mapper.class_
-        raise KeyError('could not find model by the name %s in %s'%(name, engine))
+        raise KeyError('could not find model by the name %s'%(name))
 
     def get_entities(self):
         entities = []
