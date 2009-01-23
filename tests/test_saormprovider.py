@@ -154,15 +154,15 @@ class TestSAORMProvider(SproxTest):
 
     def test_create_relationships_with_wacky_relation(self):
         obj = session.query(Group).first()
-        params = {'users':1}
-        self.provider.create_relationships(obj, params)
+        params = {'group_id':obj.group_id, 'users':1}
+        self.provider.update(Group, params)
         user = session.query(User).get(1)
         assert user in obj.users
 
     def test_create_relationships_remove_groups(self):
         obj = session.query(Group).first()
         obj.users.append(self.user)
-        self.provider.create_relationships(obj, {})
+        self.provider.update(User, {'user_id':self.user.user_id, 'groups':[]})
         user = session.query(User).get(1)
         assert user not in obj.users
         
@@ -172,5 +172,5 @@ class TestSAORMProvider(SproxTest):
         self.user.town = town
         self.session.flush()
         
-        self.provider.create_relationships(self.user, {})
+        self.provider.update(User, {'user_id':self.user.user_id, 'town':None})
         assert self.user.town is None

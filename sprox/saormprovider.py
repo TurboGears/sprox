@@ -23,8 +23,8 @@ from sqlalchemy import and_, or_, DateTime, Date, Binary, MetaData, desc as _des
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty
-from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound
+from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper
+from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
 from datetime import datetime
@@ -195,11 +195,9 @@ class SAORMProvider(IProvider):
         mapper = class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, SynonymProperty)]
 
-    def create_relationships(self, obj, params, delete_first=True):
+    def _modify_params_for_relationships(self, entity, params, delete_first=True):
         
-        entity = obj.__class__
         mapper = class_mapper(entity)
-        
         relations = self.get_relations(entity)
         
         for relation in relations:
@@ -211,33 +209,39 @@ class SAORMProvider(IProvider):
                 value = params[relation]
                 if value:
                     if prop.uselist and isinstance(value, list):
-                        target_obj = [ self.session.query(target).get(v) for v in value]
+                        target_obj = []
+                        for v in value:
+                            try:
+                                object_mapper(v)
+                                target_obj.append(v)
+                            except UnmappedInstanceError:
+                                target_obj.append(self.session.query(target).get(v))
                     elif prop.uselist:
-                        target_obj = [self.session.query(target).get(value)]
+                        try:
+                            object_mapper(value)
+                            target_obj = [value]
+                        except UnmappedInstanceError:
+                            target_obj = [self.session.query(target).get(value)]
                     else:
-                        target_obj = self.session.query(target).get(value)
-                    setattr(obj, relation, target_obj)
+                        try:
+                            object_mapper(value)
+                            target_obj = value
+                        except UnmappedInstanceError:
+                            target_obj = self.session.query(target).get(value)
+                    params[relation] = target_obj
 
-        for relation in relations:
-            #clear out those items which are not found in the params list.
-            if relation not in params or not params[relation]:
-                related_items = getattr(obj, relation)
-                if related_items is not None:
-                    if hasattr(related_items, '__iter__'):
-                        for item in getattr(obj, relation):
-                            getattr(obj, relation).remove(item)
-                    else:
-                        setattr(obj, relation, None)
-
+        return params
+    
     def create(self, entity, params):
         params = self._modify_params_for_dates(entity, params)
+        params = self._modify_params_for_relationships(entity, params)
         obj = entity()
-        relations = self.get_relations(entity)
+        
         for key, value in params.iteritems():
-            if key not in relations and value is not None:
+            if value is not None:
                 setattr(obj, key, value)
+
         self.session.add(obj)
-        self.create_relationships(obj, params)
         self.session.flush()
         return obj
 
@@ -303,15 +307,31 @@ class SAORMProvider(IProvider):
                     params[key] = dt
         return params
 
+    def _remove_related_empty_params(self, obj, params):
+        entity = obj.__class__
+        mapper = class_mapper(entity)
+        relations = self.get_relations(entity)
+        for relation in relations:
+            #clear out those items which are not found in the params list.
+            if relation not in params or not params[relation]:
+                related_items = getattr(obj, relation)
+                if related_items is not None:
+                    if hasattr(related_items, '__iter__'):
+                        for item in getattr(obj, relation):
+                            getattr(obj, relation).remove(item)
+                    else:
+                        setattr(obj, relation, None)
+                        
     def update(self, entity, params):
         params = self._modify_params_for_dates(entity, params)
+        params = self._modify_params_for_relationships(entity, params)
         pk_name = self.get_primary_field(entity)
         obj = self.session.query(entity).get(params[pk_name])
         relations = self.get_relations(entity)
         for key, value in params.iteritems():
-            if key not in relations:
-                setattr(obj, key, value)
-        self.create_relationships(obj, params, delete_first=True)
+            setattr(obj, key, value)
+        
+        self._remove_related_empty_params(obj, params)
         self.session.flush()
         return obj
 
