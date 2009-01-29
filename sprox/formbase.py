@@ -63,9 +63,10 @@ class FormBase(ViewBase):
     | __metadata_type__                 | What metadata type to use to get schema    | FieldsMetadata               |
     |                                   | info on this object                        |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
-    | __dropdown_view_names__           | list of names to use for discovery of view | None                         |
-    |                                   | fieldnames for dropdowns (None uses the    |                              |
-    |                                   | sprox default names.                       |                              |
+    | __dropdown_field_names__          | list or dict of names to use for discovery | None                         |
+    |                                   | of field names for dropdowns (None uses    |                              |
+    |                                   | sprox default names.)                      |                              |
+    |                                   | a dict provides field-level granularity    |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
 
     Modifiers inherited from :class:`sprox.viewbase.ViewBase`
@@ -151,7 +152,7 @@ class FormBase(ViewBase):
 
     __metadata_type__ = FieldsMetadata
 
-    __dropdown_view_names__      = None
+    __dropdown_field_names__      = None
 
     def _do_init_attrs(self):
         super(FormBase, self)._do_init_attrs()
@@ -186,6 +187,10 @@ class FormBase(ViewBase):
         if self.__provider__.is_relation(self.__entity__, field_name):
             args['entity'] = self.__entity__
             args['field_name'] = field_name
+            if isinstance(self.__dropdown_field_names__, dict) and field_name in dict:
+                args['dropdown_field_names'] = self.__dropdown_field_names__[field_name]
+            elif isinstance(self.__dropdown_field_names__, list):
+                args['dropdown_field_names'] = self.__dropdown_field_names__
         if v:
             args['validator'] = v
         return args

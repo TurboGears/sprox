@@ -79,11 +79,11 @@ class SproxCheckBox(InputField):
         d.attrs['checked'] = checked or None
 
 class PropertyMixin(Widget):
-    params = ['entity', 'field_name', 'provider']
+    params = ['entity', 'field_name', 'provider', 'dropdown_field_names']
 
     def _my_update_params(self, d, nullable=False):
         entity = self.entity
-        options = self.provider.get_dropdown_options(self.entity, self.field_name)
+        options = self.provider.get_dropdown_options(self.entity, self.field_name, self.dropdown_field_names)
         if nullable:
             options.append([None,"-----------"])
         if len(options) == 0:

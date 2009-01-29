@@ -146,8 +146,9 @@ class SAORMProvider(IProvider):
             view_field = fields[0]
         return view_field
 
-    def get_dropdown_options(self, entity, field_name, view_names=['_name', 'name', 'description', 'title']):
-
+    def get_dropdown_options(self, entity, field_name, view_names=None):
+        if view_names is None:
+            view_names = ['_name', 'name', 'description', 'title']
         if self.session is None:
             warn('No dropdown options will be shown for %s.  '
                  'Try passing the session into the initialization'
