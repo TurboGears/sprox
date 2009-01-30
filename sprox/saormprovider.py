@@ -137,6 +137,10 @@ class SAORMProvider(IProvider):
         view_field = None
         for column_name in possible_names:
             for actual_name in fields:
+                if column_name == actual_name:
+                    view_field = actual_name
+                    break
+            for actual_name in fields:
                 if column_name in actual_name:
                     view_field = actual_name
                     break
