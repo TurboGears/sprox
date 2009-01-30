@@ -140,6 +140,8 @@ class SAORMProvider(IProvider):
                 if column_name == actual_name:
                     view_field = actual_name
                     break
+            if view_field:
+                break;
             for actual_name in fields:
                 if column_name in actual_name:
                     view_field = actual_name
