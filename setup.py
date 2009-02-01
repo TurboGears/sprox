@@ -1,9 +1,10 @@
 #setup.py
 from setuptools import setup, find_packages
+from sprox.release import __version__
 
 setup(
   name="sprox",
-  version="0.5.1",
+  version=__version__,
   zip_safe=False,
   include_package_data=True,
   description="""A package for creation of web widgets directly from database schema.""",
