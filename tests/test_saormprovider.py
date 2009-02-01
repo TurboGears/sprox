@@ -152,6 +152,12 @@ class TestSAORMProvider(SproxTest):
         params = self.provider._modify_params_for_dates(Example, {'date_': '1978-8-29'})
         eq_(params,  {'date_': datetime.datetime(1978, 8, 29, 0, 0)})
 
+    def test_modify_params_for_relationships_params_with_instance_already(self):
+        group = self.session.query(Group).get(1)
+        params = {'groups':group}
+        params = self.provider._modify_params_for_relationships(User, params)
+        assert params['groups'] == [group], params
+    
     def test_create_relationships_with_wacky_relation(self):
         obj = session.query(Group).first()
         params = {'group_id':obj.group_id, 'users':1}

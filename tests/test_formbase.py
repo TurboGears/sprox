@@ -1,6 +1,6 @@
 from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document
-from sprox.test.model import User
+from sprox.test.model import User, Group
 from sprox.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
@@ -11,16 +11,30 @@ from tw.forms import PasswordField, TextField
 session = None
 engine  = None
 connection = None
-trans = None
+user = None
 def setup():
-    global session, engine, metadata, trans
+    global session, engine, metadata, user
     session, engine, metadata = setup_database()
+    user = setup_records(session)
 
 class UserForm(FormBase):
     __entity__ = User
 
-class TestFormBase:
+class TestsEmptyDropdownWorks:
     def setup(self):
+        self.base = UserForm(session)
+        
+    def test__widget__(self):
+        rendered = self.base.__widget__()
+        assert """<td class="fieldcol">
+                <input type="submit" class="submitbutton" value="Submit" />
+            </td>""" in rendered, rendered
+    
+
+
+class TestFormBase(SproxTest):
+    def setup(self):
+        super(TestFormBase, self).setup()
         self.base = UserForm(session)
 
     def test_create(self):
@@ -49,6 +63,27 @@ class TestFormBase:
             </td>
         </tr>""" in rendered, rendered
 
+    def test_entity_with_dropdown_field_names(self):
+        class UserFormFieldNames(FormBase):
+            __entity__ = User
+            __dropdown_field_names__ = ['group_name']
+        form = UserFormFieldNames(session)
+        rendered = form()
+        assert """<select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
+        <option value="1">0</option><option value="2">1</option><option value="3">2</option><option value="4">3</option><option value="5">4</option>
+</select>""" in rendered, rendered
+        
+    def test_entity_with_dropdown_field_names_dict(self):
+        class UserFormFieldNames(FormBase):
+            __entity__ = User
+            __dropdown_field_names__ = {'groups':['group_name']}
+        form = UserFormFieldNames(session)
+        rendered = form()
+        assert """<select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
+        <option value="1">0</option><option value="2">1</option><option value="3">2</option><option value="4">3</option><option value="5">4</option>
+</select>""" in rendered, rendered
+        
+        
     def test_require_field(self):
         class RegistrationForm(FormBase):
             __entity__ = User

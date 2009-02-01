@@ -187,7 +187,7 @@ class FormBase(ViewBase):
         if self.__provider__.is_relation(self.__entity__, field_name):
             args['entity'] = self.__entity__
             args['field_name'] = field_name
-            if isinstance(self.__dropdown_field_names__, dict) and field_name in dict:
+            if isinstance(self.__dropdown_field_names__, dict) and field_name in self.__dropdown_field_names__:
                 args['dropdown_field_names'] = self.__dropdown_field_names__[field_name]
             elif isinstance(self.__dropdown_field_names__, list):
                 args['dropdown_field_names'] = self.__dropdown_field_names__
