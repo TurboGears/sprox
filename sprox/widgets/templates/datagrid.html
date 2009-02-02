@@ -20,9 +20,18 @@ pklist = ''
 for pk in pks:
     pklist+=str(row[pk])
     pklist+='/'
+pklist = pklist[:-1]
 ?>
-            <a href="${controller}${pklist}edit">edit</a> |
-            <a href="${controller}${pklist}delete">delete</a>
+       <div>
+           <div>&nbsp;<a href="${pklist}/edit" style="text-decoration:None; color: #286571;">edit</a></div>
+           <div>
+              <form method="POST" action="${pklist}" class="button-to">
+                 <input type="hidden" name="_method" value="DELETE" />
+                 <input class="delete-button" onClick="return confirm('Are you sure you want to delete?');" value="delete" type="submit"
+                    style="background: transparent; float:left; border:0; color: #286571; display: inline; margin: 0; padding: 0;"/>
+              </form>
+            </div>
+        </div>
             </td>
             <td py:for="col in columns">${col.get_field(row, displays_on='genshi')}</td>
         </tr>

@@ -130,7 +130,7 @@ class SAORMProvider(IProvider):
         for field_name in self.get_fields(entity):
             value = getattr(mapper.c, field_name)
             if value.primary_key:
-                return value.name
+                return value.key
 
     def get_view_field_name(self, entity, possible_names):
         fields = self.get_fields(entity)
