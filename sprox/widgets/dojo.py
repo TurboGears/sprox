@@ -15,7 +15,7 @@ class SproxDojoGrid(DojoBase):
     cssclass=""
     rowsPerPage = 20
     columns = []
-    columnReordering = "true"
+    columnReordering = "false"
     columnResizing="false"
     include_dynamic_js_calls = True
     action='.json'
