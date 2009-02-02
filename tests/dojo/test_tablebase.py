@@ -29,10 +29,20 @@ class TestTableBase:
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<thead>
+        assert """<table xmlns="http://www.w3.org/1999/xhtml" dojoType="dojox.grid.DataGrid" jsId="listing__User" id="" store="listing__User_store" columnReordering="false" rowsPerPage="20" delayScroll="true" class="">
+    <thead>
             <tr>
                 <th field="__actions__">actions</th>
-                <th field="_password" width="auto">_password
-                </th><th field="user_id" width="auto">user_id
-                </th><th field="user_name" width="auto">user_name
-                """ in rendered, rendered
+                <th field="_password">_password
+                </th><th field="user_id">user_id
+                </th><th field="user_name">user_name
+                </th><th field="email_address">email_address
+                </th><th field="display_name">display_name
+                </th><th field="created">created
+                </th><th field="town_id">town_id
+                </th><th field="town">town
+                </th><th field="password">password
+                </th><th field="groups">groups
+                </th>
+            </tr>
+    </thead>""" in rendered, rendered
