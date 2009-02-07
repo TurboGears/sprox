@@ -134,7 +134,7 @@ class ViewBase(ConfigBase):
             args['nullable'] = self.__provider__.is_nullable(self.__entity__, field_name)
 
         if field_name in self.__field_widget_args__:
-            args.update(self.__field_widget_args[field_name])
+            args.update(self.__field_widget_args__[field_name])
         return args
 
     def __create_hidden_fields(self):
@@ -143,6 +143,9 @@ class ViewBase(ConfigBase):
 
         for field in self.__hide_fields__:
             if field not in self.__omit_fields__:
+                args = {}
+                if field_name in self.__field_widget_args__:
+                    args.update(self.__field_widget_args__[field_name])
                 fields[field] = HiddenField(id=field, identifier=field)
 
         return fields
