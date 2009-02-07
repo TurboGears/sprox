@@ -28,6 +28,9 @@ class ViewBase(ConfigBase):
     +-----------------------------------+--------------------------------------------+------------------------------+
     | __base_widget_type__              | The base widget for this config            | Widget                       |
     +-----------------------------------+--------------------------------------------+------------------------------+
+    | __base_widget_args__              | Args to pass into the widget overrides any | {}                           |
+    |                                   | defaults that are set in sprox creation    |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
     | __widget_selector__               | an instantiated object to use for widget   | None                         |
     |                                   | selection.                                 |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
@@ -40,12 +43,15 @@ class ViewBase(ConfigBase):
 
     #object overrides
     __base_widget_type__       = Widget
+    __base_widget_args__       = None
     __widget_selector_type__   = WidgetSelector
     __widget_selector__        = None
 
 
     def _do_init_attrs(self):
         super(ViewBase, self)._do_init_attrs()
+        if self.__base_widget_args__ is None:
+            self.__base_widget_args__ = {}
         if self.__field_widgets__ is None:
             self.__field_widgets__ = {}
         if self.__field_widget_types__ is None:
@@ -95,6 +101,7 @@ class ViewBase(ConfigBase):
             field_widgets.append(value)
 
         d = dict(children=field_widgets)
+        d.update(self.__base_widget_args__)
         return d
 
     def _do_get_disabled_fields(self):
