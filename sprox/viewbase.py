@@ -26,6 +26,9 @@ class ViewBase(ConfigBase):
     | __field_widget_types__            | A dictionary of types of widgets, allowing | {}                           |
     |                                   | sprox to determine the widget args         |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
+    | __field_widget_args__             | A dictionary of types of args for widgets, | {}                           |
+    |                                   | you to override the args sent to the fields|                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
     | __base_widget_type__              | The base widget for this config            | Widget                       |
     +-----------------------------------+--------------------------------------------+------------------------------+
     | __base_widget_args__              | Args to pass into the widget overrides any | {}                           |
@@ -39,6 +42,7 @@ class ViewBase(ConfigBase):
     """
     __field_widgets__      = None
     __field_widget_types__ = None
+    __field_widget_args__  = None
     __ignore_field_names__ = None
 
     #object overrides
@@ -54,6 +58,8 @@ class ViewBase(ConfigBase):
             self.__base_widget_args__ = {}
         if self.__field_widgets__ is None:
             self.__field_widgets__ = {}
+        if self.__field_widget_args__ is None:
+            self.__field_widget_args__ = {}
         if self.__field_widget_types__ is None:
             self.__field_widget_types__ = {}
         if self.__widget_selector__ is None:
@@ -127,6 +133,8 @@ class ViewBase(ConfigBase):
             args['provider'] = self.__provider__
             args['nullable'] = self.__provider__.is_nullable(self.__entity__, field_name)
 
+        if field_name in self.__field_widget_args__:
+            args.update(self.__field_widget_args[field_name])
         return args
 
     def __create_hidden_fields(self):
