@@ -32,18 +32,19 @@ class DojoEditableForm(EditableForm):
 
     :Usage:
     
-    >>> from sprox.dojo.formbase import DojoAddRecordForm
+    >>> from sprox.dojo.formbase import DojoEditableForm
     >>> from formencode import Schema
     >>> from formencode.validators import FieldsMatch
-    >>> class Form(DojoAddRecordForm):
+    >>> class Form(DojoEditableForm):
     ...     __model__ = User
     ...     __limit_fields__       = ['user_name', 'groups']
-    >>> add_form = Form()
-    >>> print add_form()
+    >>> edit_form = Form()
+    >>> print edit_form()
     <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="has_error required tableform">
         <div>
                 <input type="hidden" name="sprox_id" class="has_error hiddenfield" id="sprox_id" />
                 <span class="fielderror">Missing value</span>
+                <input type="hidden" name="_method" class="sproxmethodputhiddenfield" id="_method" value="PUT" />
         </div>
         <table border="0" cellspacing="0" cellpadding="2">
             <tr id="user_name.container" class="even" title="">
