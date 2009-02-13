@@ -14,7 +14,7 @@ class SproxDojoGrid(DojoBase):
               'columnResizing', 'columnReordering'
               ]
     delayScroll = "true"
-    cssclass=""
+    cssclass="sprox-dojo-grid"
     rowsPerPage = 20
     columns = []
     columnReordering = "false"

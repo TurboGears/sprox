@@ -64,6 +64,9 @@ class SAWidgetSelector(WidgetSelector):
     }
 
     default_name_based_widgets = {}
+    
+    default_multiple_select_field_widget_type = PropertyMultipleSelectField
+    default_single_select_field_widget_type = PropertySingleSelectField
 
     def select(self, field):
 
@@ -81,11 +84,10 @@ class SAWidgetSelector(WidgetSelector):
             if isinstance(field.descriptor, property):
                 return TextField
 
-
         if isinstance(field, PropertyLoader):
             if field.secondary:
-                return PropertyMultipleSelectField
-            return PropertySingleSelectField
+                return self.default_multiple_select_field_widget_type
+            return self.default_single_select_field_widget_type
 
         type_ = String
         for t in self.default_widgets.keys():
