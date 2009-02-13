@@ -4,7 +4,7 @@ from sprox.test.model import User
 from sprox.widgetselector import SAWidgetSelector
 from nose.tools import raises, eq_
 
-from tw.forms import TextField, HiddenField
+from tw.forms import TextField, HiddenField, Widget
 
 session = None
 engine  = None
@@ -30,7 +30,10 @@ class DummyMetadata(object):
     def __getitem__(self, name):
         return self.provider.get_field(self.entity, name)
 
-
+class DummyWidget(Widget):
+    params = ['test_param']
+    
+    
 class UserView(ViewBase):
     __entity__ = User
     __metadata_type__ = DummyMetadata
@@ -107,3 +110,25 @@ class TestViewBase:
         user_view = UserView()
         widget = user_view.__widget__
         assert 'junk' not in widget.children.keys()
+        
+    def test_widget_attrs(self):
+        class UserView(ViewBase):
+            __entity__ = User
+            __metadata_type__ = DummyMetadata
+            __field_widget_args__ = {'password':{'test_param':'crazy_param'}}
+            password = DummyWidget
+
+        user_view = UserView()
+        widget = user_view.__widget__
+        assert widget.children['password'].test_param == 'crazy_param'
+
+    def test_widget_attrs_hidden_field(self):
+        class UserView(ViewBase):
+            __entity__ = User
+            __metadata_type__ = DummyMetadata
+            __field_widget_args__ = {'password':{'css_classes':['crazy_param']}}
+            __hide_fields__ = ['password']
+
+        user_view = UserView()
+        widget = user_view.__widget__
+        assert widget.children['password'].css_classes == ['crazy_param'], widget.children['password'].css_classes

@@ -29,7 +29,7 @@ class TestTableBase:
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<table xmlns="http://www.w3.org/1999/xhtml" dojoType="dojox.grid.DataGrid" jsId="listing__User" id="" store="listing__User_store" columnReordering="false" rowsPerPage="20" delayScroll="true" class="">
+        assert """<table xmlns="http://www.w3.org/1999/xhtml" dojoType="dojox.grid.DataGrid" jsId="listing__User" id="" store="listing__User_store" columnReordering="false" rowsPerPage="20" delayScroll="true" class="sprox-dojo-grid">
     <thead>
             <tr>
                 <th field="__actions__">actions</th>

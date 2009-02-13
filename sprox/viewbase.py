@@ -144,9 +144,9 @@ class ViewBase(ConfigBase):
         for field in self.__hide_fields__:
             if field not in self.__omit_fields__:
                 args = {}
-                if field_name in self.__field_widget_args__:
-                    args.update(self.__field_widget_args__[field_name])
-                fields[field] = HiddenField(id=field, identifier=field)
+                if field in self.__field_widget_args__:
+                    args.update(self.__field_widget_args__[field])
+                fields[field] = HiddenField(id=field, identifier=field, **args)
 
         return fields
 

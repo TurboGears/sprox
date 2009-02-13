@@ -239,7 +239,7 @@ class EditableForm(FormBase):
     """A form for editing a record.
     :Modifiers:
 
-    see :class:`sprox.formvase.FormBase`
+    see :class:`sprox.formbase.FormBase`
 
     """
     def _do_get_disabled_fields(self):

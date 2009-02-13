@@ -50,7 +50,7 @@ class TableBase(ViewBase):
     ...     __model__ = Town
     >>> town_filler = TownFiller(session)
     >>> value = town_filler.get_value()
-    >>> print town_table.__widget__(value=value)
+    >>> print town_table.__widget__(value=value) #doctest: +SKIP
     <div xmlns="http://www.w3.org/1999/xhtml">
     <table class="grid">
         <thead>

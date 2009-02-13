@@ -1,0 +1,6 @@
+
+0.5.4
+Added the ability to pass args into base widgets and field widgets.
+Added Dojo Select Shuttles to the forms.
+
+0.5.3 and earlier.  Prehistory.  See http://bitbucket.org/percious/sprox/changesets/

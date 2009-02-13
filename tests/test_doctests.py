@@ -13,6 +13,7 @@ import unittest
 from nose.plugins import doctests as nose_doctest
 
 from sprox import configbase, fillerbase, formbase, saormprovider, sprockets, tablebase, metadata, validators, validatorselector, widgets, widgetselector
+from sprox.dojo import formbase as dojo_formbase
 
 import sprox
 
@@ -51,5 +52,7 @@ def test_doctests():
                 suite.addTest(doctest.DocTestSuite(mod, globs={'session':session, 'User': User, 'Town':Town, 'metadata':metadata}, setUp=setUp, tearDown=tearDown))
             except ValueError:
                 pass
+    suite.addTest(doctest.DocTestSuite(dojo_formbase, globs={'session':session, 'User': User, 'Town':Town, 'metadata':metadata}, setUp=setUp, tearDown=tearDown))
+
     runner = unittest.TextTestRunner()
     runner.run(suite)
