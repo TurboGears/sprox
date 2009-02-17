@@ -236,7 +236,8 @@ class SAORMProvider(IProvider):
                         except UnmappedInstanceError:
                             target_obj = self.session.query(target).get(value)
                     params[relation] = target_obj
-
+                else:
+                    del params[relation]
         return params
     
     def create(self, entity, params):
