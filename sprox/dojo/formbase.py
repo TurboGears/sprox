@@ -10,7 +10,7 @@ Released under MIT license.
 
 from sprox.formbase import FormBase, EditableForm, AddRecordForm
 from sprox.widgetselector import SAWidgetSelector
-from sprox.widgets.dojo import SproxDojoSelectShuttleField
+from sprox.widgets.dojo import SproxDojoSelectShuttleField, SproxDojoSortedSelectShuttleField
 
 class DojoSAWidgetSelector(SAWidgetSelector):
     """Dojo-Specific Widget Selector"""

@@ -1,7 +1,7 @@
 """Dojo Specific Widgets"""
 
 from tw.dojo import DojoQueryReadStore, DojoBase, grid_css, tundragrid_css
-from tw.dojo.selectshuttle import DojoSelectShuttleField
+from tw.dojo.selectshuttle import DojoSelectShuttleField, DojoSortedSelectShuttleField
 from tw.api import JSSource
 from sprox.widgets import PropertyMixin
 
@@ -70,4 +70,9 @@ class SproxDojoSelectShuttleField(DojoSelectShuttleField, PropertyMixin):
     def update_params(self, d):
         self._my_update_params(d)
         super(SproxDojoSelectShuttleField, self).update_params(d)
+
+class SproxDojoSortedSelectShuttleField(DojoSortedSelectShuttleField, PropertyMixin):
+    def update_params(self, d):
+        self._my_update_params(d)
+        super(SproxDojoSortedSelectShuttleField, self).update_params(d)
 
