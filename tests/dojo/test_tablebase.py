@@ -33,16 +33,16 @@ class TestTableBase:
     <thead>
             <tr>
                 <th field="__actions__">actions</th>
-                <th field="_password">_password
-                </th><th field="user_id">user_id
-                </th><th field="user_name">user_name
-                </th><th field="email_address">email_address
-                </th><th field="display_name">display_name
-                </th><th field="created">created
-                </th><th field="town_id">town_id
-                </th><th field="town">town
-                </th><th field="password">password
-                </th><th field="groups">groups
+                <th name="_password" field="_password">_password
+                </th><th name="user_id" field="user_id">user_id
+                </th><th name="user_name" field="user_name">user_name
+                </th><th name="email_address" field="email_address">email_address
+                </th><th name="display_name" field="display_name">display_name
+                </th><th name="created" field="created">created
+                </th><th name="town_id" field="town_id">town_id
+                </th><th name="town" field="town">town
+                </th><th name="password" field="password">password
+                </th><th name="groups" field="groups">groups
                 </th>
             </tr>
     </thead>""" in rendered, rendered

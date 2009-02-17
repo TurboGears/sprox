@@ -11,7 +11,7 @@ class SproxDojoGrid(DojoBase):
     dojoType = 'dojox.grid.DataGrid'
     params = ['id', 'attrs', 'columns', 'jsId', 'action',
               'rowsPerPage', 'model', 'delayScroll', 'cssclass', 'actions',
-              'columnResizing', 'columnReordering'
+              'columnResizing', 'columnReordering', 'headers'
               ]
     delayScroll = "true"
     cssclass="sprox-dojo-grid"

@@ -17,6 +17,7 @@ class DojoTableBase(TableBase):
     def _do_get_widget_args(self):
         args = super(DojoTableBase, self)._do_get_widget_args()
         args['columns'] = self.__fields__
+        args['headers'] = self.__headers__
         args['jsId'] = self.__sprox_id__
         return args
 

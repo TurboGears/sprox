@@ -13,6 +13,9 @@ class TableBase(ViewBase):
     +-----------------------------------+--------------------------------------------+------------------------------+
     | __metadata_type__                 | Type the widget is based on.               | FieldsMetadata               |
     +-----------------------------------+--------------------------------------------+------------------------------+
+    | __headers__                       | A dictionay of field/header pairs.         | {}                           |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+
 
     see modifiers in :mod:`sprox.viewbase`
 
@@ -131,10 +134,16 @@ class TableBase(ViewBase):
     #object overrides
     __base_widget_type__ = SproxDataGrid
     __metadata_type__    = FieldsMetadata
-
+    __headers__          = None
+    
+    def _do_init_attrs(self):
+        super(TableBase, self)._do_init_attrs()
+        if self.__headers__ is None:
+            self.__headers__ = {}
+    
     def _do_get_widget_args(self):
         args = super(TableBase, self)._do_get_widget_args()
-        args['fields'] = [(field, eval('lambda d: d["'+field+'"]')) for field in self.__fields__]
+        args['fields'] = [(self.__headers__.get(field, field), eval('lambda d: d["'+field+'"]')) for field in self.__fields__]
         args['pks'] = None
         if '__actions__' not in self.__omit_fields__:
             args['pks'] = self.__provider__.get_primary_fields(self.__entity__)
