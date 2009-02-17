@@ -1,3 +1,5 @@
+0.5.5
+Added __headers__ functionality to tablebase.
 
 0.5.4
 Added the ability to pass args into base widgets and field widgets.
