@@ -187,7 +187,7 @@ class TableFiller(FillerBase):
                 elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
                     value = '<file>'
                 row[field] = unicode(value)
-            #xxx: make this overridable
+            
             if self.__actions__:
                 row['__actions__'] = self.__actions__(row)
                 

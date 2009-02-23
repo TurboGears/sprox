@@ -15,6 +15,11 @@ class TableBase(ViewBase):
     +-----------------------------------+--------------------------------------------+------------------------------+
     | __headers__                       | A dictionay of field/header pairs.         | {}                           |
     +-----------------------------------+--------------------------------------------+------------------------------+
+    | __column_widths__                 | A dictionay of field/width(string) pairs.  | {}                           |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __default_column_width__          | Header size to use when not specified in   | '10em'                       |
+    |                                   | __column_widths__                          |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
 
 
     see modifiers in :mod:`sprox.viewbase`
@@ -135,16 +140,22 @@ class TableBase(ViewBase):
     __base_widget_type__ = SproxDataGrid
     __metadata_type__    = FieldsMetadata
     __headers__          = None
+    __column_widths__    = None
+    __default_column_width__ = "10em"
     
     def _do_init_attrs(self):
         super(TableBase, self)._do_init_attrs()
         if self.__headers__ is None:
             self.__headers__ = {}
+        if self.__column_widths__ is None:
+            self.__column_widths__ = {}
     
     def _do_get_widget_args(self):
         args = super(TableBase, self)._do_get_widget_args()
         args['fields'] = [(self.__headers__.get(field, field), eval('lambda d: d["'+field+'"]')) for field in self.__fields__]
         args['pks'] = None
+        args['column_widths'] = self.__column_widths__
+        args['default_column_width'] = self.__default_column_width__
         if '__actions__' not in self.__omit_fields__:
             args['pks'] = self.__provider__.get_primary_fields(self.__entity__)
 

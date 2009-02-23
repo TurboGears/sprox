@@ -11,7 +11,7 @@ class SproxDojoGrid(DojoBase):
     dojoType = 'dojox.grid.DataGrid'
     params = ['id', 'attrs', 'columns', 'jsId', 'action',
               'rowsPerPage', 'model', 'delayScroll', 'cssclass', 'actions',
-              'columnResizing', 'columnReordering', 'headers'
+              'columnResizing', 'columnReordering', 'column_widths', 'default_column_width', 'headers'
               ]
     delayScroll = "true"
     cssclass="sprox-dojo-grid"
@@ -19,6 +19,8 @@ class SproxDojoGrid(DojoBase):
     columns = []
     columnReordering = "false"
     columnResizing="false"
+    column_widths = {}
+    default_column_width = "10em"
     include_dynamic_js_calls = True
     action='.json'
     model = None
@@ -39,6 +41,7 @@ class SproxEditableDojoGrid(DojoBase):
     columns = []
     columnReordering = "true"
     columnResizing="false"
+    columnWidths = {}
     include_dynamic_js_calls = True
     action='.json'
     model = None
@@ -57,12 +60,12 @@ class SproxEditableDojoGrid(DojoBase):
     <thead>
             <tr>
                 <th py:if="actions" field='__actions__'>actions</th>
-                <th py:for="column in columns" field="${column}" width="auto" editor="dojox.grid.editors.Input">$column
+                <th py:for="column in columns" field="${column}" width="30px" editor="dojox.grid.editors.Input">$column
                 </th>
 
             </tr>
     </thead>
-    <div dojoType="dojox.data.QueryReadStore" jsId="${jsId}_store"  id="${jsId}_store" url="${action}"/>
+    <div dojoType="dojox.data.QueryReadStore" jsId="${jsId}_store" id="${jsId}_store" url="${action}"/>
     </table>
     """
     

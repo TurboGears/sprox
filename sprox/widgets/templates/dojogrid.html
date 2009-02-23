@@ -12,7 +12,7 @@
     <thead>
             <tr>
                 <th py:if="actions" field='__actions__'>actions</th>
-                <th py:for="column in columns" name="${headers.get(column, column)}" field="${column}">$column
+                <th py:for="column in columns" width="${column_widths.get(column, default_column_width)}" name="${headers.get(column, column)}" field="${column}">$column
                 </th>
 
             </tr>
