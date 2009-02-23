@@ -11,6 +11,7 @@ Released under MIT license.
 from configbase import ConfigBase, ConfigBaseError
 from metadata import FieldsMetadata
 from genshi import XML
+import inspect
 
 class FillerBase(ConfigBase):
     """
@@ -70,8 +71,8 @@ class TableFiller(FillerBase):
     +-----------------------------------+--------------------------------------------+------------------------------+
     | Name                              | Description                                | Default                      |
     +===================================+============================================+==============================+
-    | __actions__                       | Whether or not to include actions in the   | True                         |
-    |                                   | output.                                    |                              |
+    | __actions__                       | An overridable function to define how to   | a function that creates an   |
+    |                                   | display action links in the form.          | edit and delete link.        |
     +-----------------------------------+--------------------------------------------+------------------------------+
     | __metadata_type__                 | How should we get data from the provider.  | FieldsMetadata               |
     +-----------------------------------+--------------------------------------------+------------------------------+
@@ -137,6 +138,20 @@ class TableFiller(FillerBase):
             raise ConfigBaseError('Count not yet set for filler.  try calling get_value() first.')
         return self.__count__
 
+    def __actions__(self, obj):
+        """Override this function to define how action links should be displayed for the given record."""
+        primary_fields = self.__provider__.get_primary_fields(self.__entity__)
+        pklist = '/'.join(map(lambda x: str(obj[x]), primary_fields))
+        value = '<div><div>&nbsp;<a href="'+pklist+'/edit" style="text-decoration:none">edit</a>'\
+              '</div><div>'\
+              '<form method="POST" action="'+pklist+'" class="button-to">'\
+            '<input type="hidden" name="_method" value="DELETE" />'\
+            '<input class="delete-button" onclick="return confirm(\'Are you sure?\');" value="delete" type="submit"'\
+            'style="background: transparent; float:left; border:0; color: #286571; display: inline; margin: 0; padding: 0;"/>'\
+        '</form>'\
+        '</div></div>'
+        return value
+
     def get_value(self, values=None, **kw):
         """
         Get the values to fill a form widget.
@@ -157,7 +172,6 @@ class TableFiller(FillerBase):
         desc = kw.get('desc', False)
         count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__, order_by, desc)
         self.__count__ = count
-        primary_fields = self.__provider__.get_primary_fields(self.__entity__)
         rows = []
         for obj in objs:
             row = {}
@@ -175,16 +189,8 @@ class TableFiller(FillerBase):
                 row[field] = unicode(value)
             #xxx: make this overridable
             if self.__actions__:
-                pklist = '/'.join(map(lambda x: str(row[x]), primary_fields))
-                value = '<div><div>&nbsp;<a href="'+pklist+'/edit" style="text-decoration:none">edit</a>'\
-                      '</div><div>'\
-                      '<form method="POST" action="'+pklist+'" class="button-to">'\
-                    '<input type="hidden" name="_method" value="DELETE" />'\
-                    '<input class="delete-button" onclick="return confirm(\'Are you sure?\');" value="delete" type="submit"'\
-                    'style="background: transparent; float:left; border:0; color: #286571; display: inline; margin: 0; padding: 0;"/>'\
-                '</form>'\
-                '</div></div>'
-                row['__actions__'] = value
+                row['__actions__'] = self.__actions__(row)
+                
             rows.append(row)
         return rows
 
