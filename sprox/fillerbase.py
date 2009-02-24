@@ -159,6 +159,15 @@ class TableFiller(FillerBase):
         '</div></div>'
         return value
 
+    def _do_get_provider_count_and_objs(self, **kw):
+        limit = kw.get('limit', None)
+        offset = kw.get('offset', None)
+        order_by = kw.get('order_by', None)
+        desc = kw.get('desc', False)
+        count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__, order_by, desc)
+        self.__count__ = count
+        return count, objs
+    
     def get_value(self, values=None, **kw):
         """
         Get the values to fill a form widget.
@@ -173,12 +182,7 @@ class TableFiller(FillerBase):
          desc
           order the columns in descending order
         """
-        limit = kw.get('limit', None)
-        offset = kw.get('offset', None)
-        order_by = kw.get('order_by', None)
-        desc = kw.get('desc', False)
-        count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__, order_by, desc)
-        self.__count__ = count
+        count, objs = self._do_get_provider_count_and_objs(**kw)
         rows = []
         for obj in objs:
             row = {}
