@@ -137,11 +137,18 @@ class TableFiller(FillerBase):
         if not hasattr(self, '__count__'):
             raise ConfigBaseError('Count not yet set for filler.  try calling get_value() first.')
         return self.__count__
+    
+    def _do_get_fields(self):
+        fields = super(TableFiller, self)._do_get_fields()
+        if '__actions__' not in self.__omit_fields__ and '__actions__' not in fields:
+            fields.insert(0, '__actions__')
+        return fields
+
 
     def __actions__(self, obj):
         """Override this function to define how action links should be displayed for the given record."""
         primary_fields = self.__provider__.get_primary_fields(self.__entity__)
-        pklist = '/'.join(map(lambda x: str(obj[x]), primary_fields))
+        pklist = '/'.join(map(lambda x: str(getattr(obj, x)), primary_fields))
         value = '<div><div>&nbsp;<a href="'+pklist+'/edit" style="text-decoration:none">edit</a>'\
               '</div><div>'\
               '<form method="POST" action="'+pklist+'" class="button-to">'\
@@ -176,21 +183,20 @@ class TableFiller(FillerBase):
         for obj in objs:
             row = {}
             for field in self.__fields__:
-                value = getattr(obj, field)
-                if 'password' in field.lower():
-                    row[field] = '******'
-                    continue
-                if isinstance(value, list):
-                    value = self._get_list_data_value(field, value)
-                elif self.__provider__.is_relation(self.__entity__, field) and value is not None:
-                    value = self._get_relation_value(field, value)
-                elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
-                    value = '<file>'
+                if hasattr(self, field) and inspect.ismethod(getattr(self, field)):
+                    value = getattr(self, field)(obj)
+                else:
+                    value = getattr(obj, field)
+                    if 'password' in field.lower():
+                        row[field] = '******'
+                        continue
+                    elif isinstance(value, list):
+                        value = self._get_list_data_value(field, value)
+                    elif self.__provider__.is_relation(self.__entity__, field) and value is not None:
+                        value = self._get_relation_value(field, value)
+                    elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
+                        value = '<file>'
                 row[field] = unicode(value)
-            
-            if self.__actions__:
-                row['__actions__'] = self.__actions__(row)
-                
             rows.append(row)
         return rows
 

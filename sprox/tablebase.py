@@ -119,6 +119,7 @@ class TableBase(ViewBase):
                 name
                 </th>
             </tr>
+            
         </thead>
         <tbody>
             <tr class="even">
@@ -143,6 +144,14 @@ class TableBase(ViewBase):
     __column_widths__    = None
     __default_column_width__ = "10em"
     
+    def _do_get_fields(self):
+        fields = super(TableBase, self)._do_get_fields()
+        if '__actions__' not in self.__omit_fields__ and '__actions__' not in fields:
+            fields.insert(0, '__actions__')
+            if '__actions__' not in self.__headers__:
+                self.__headers__['__actions__'] = 'actions'
+        return fields
+    
     def _do_init_attrs(self):
         super(TableBase, self)._do_init_attrs()
         if self.__headers__ is None:
@@ -152,10 +161,10 @@ class TableBase(ViewBase):
     
     def _do_get_widget_args(self):
         args = super(TableBase, self)._do_get_widget_args()
-        args['fields'] = [(self.__headers__.get(field, field), eval('lambda d: d["'+field+'"]')) for field in self.__fields__]
         args['pks'] = None
         args['column_widths'] = self.__column_widths__
         args['default_column_width'] = self.__default_column_width__
+        args['fields'] = [(self.__headers__.get(field, field), eval('lambda d: d["'+field+'"]')) for field in self.__fields__]
         if '__actions__' not in self.__omit_fields__:
             args['pks'] = self.__provider__.get_primary_fields(self.__entity__)
 
