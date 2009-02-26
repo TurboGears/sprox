@@ -165,9 +165,9 @@ class FormBase(ViewBase):
         if self.__field_validator_types__ is None:
             self.__field_validator_types__ = {}
 
-    def validate(self, params):
+    def validate(self, params, state=None):
         """A pass-thru to the widget's validate function."""
-        return self.__widget__.validate(params)
+        return self.__widget__.validate(params, state)
 
     def _do_get_widget_args(self):
         """Override this method to define how the class get's the

@@ -20,6 +20,7 @@ class SproxDojoGrid(DojoBase):
     columnReordering = "false"
     columnResizing="false"
     column_widths = {}
+    headers = {}
     default_column_width = "10em"
     include_dynamic_js_calls = True
     action='.json'
