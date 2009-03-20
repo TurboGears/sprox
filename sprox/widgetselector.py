@@ -81,7 +81,8 @@ class SAWidgetSelector(WidgetSelector):
         # this is really the best we can do, since we cannot know
         # what type the field represents until execution occurs.
         if isinstance(field, SynonymProperty):
-            if isinstance(field.descriptor, property):
+                                                         #fix to handle weird synonym prop stuff
+            if isinstance(field.descriptor, property) or field.descriptor.__class__.endswith('SynonymProp'):
                 return TextField
 
         if isinstance(field, PropertyLoader):

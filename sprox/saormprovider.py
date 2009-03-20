@@ -199,7 +199,7 @@ class SAORMProvider(IProvider):
         except NoResultFound:
             return True
         return False
-
+    
     def get_synonyms(self, entity):
         mapper = class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, SynonymProperty)]
