@@ -6,6 +6,8 @@ from tw.api import JSSource
 from sprox.widgets import PropertyMixin
 
 class SproxDojoGrid(DojoBase):
+    engine_name=None
+    available_engines = ['mako', 'genshi']
     css = [grid_css, tundragrid_css]
     require = ['dojox.grid.DataGrid', 'dojox.data.QueryReadStore']
     dojoType = 'dojox.grid.DataGrid'
@@ -26,7 +28,7 @@ class SproxDojoGrid(DojoBase):
     action='.json'
     model = None
     actions = True
-    template = "genshi:sprox.widgets.templates.dojogrid"
+    template = "sprox.widgets.templates.dojogrid"
 
 class SproxEditableDojoGrid(DojoBase):
     css = [grid_css, tundragrid_css]
@@ -47,6 +49,7 @@ class SproxEditableDojoGrid(DojoBase):
     action='.json'
     model = None
     actions = True
+    engine='mako'
     template = """<table xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/"
                          dojoType="$dojoType"
                          jsId="${jsId}"

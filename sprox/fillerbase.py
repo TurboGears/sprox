@@ -153,7 +153,7 @@ class TableFiller(FillerBase):
               '</div><div>'\
               '<form method="POST" action="'+pklist+'" class="button-to">'\
             '<input type="hidden" name="_method" value="DELETE" />'\
-            '<input class="delete-button" onclick="return confirm(\'Are you sure?\');" value="delete" type="submit"'\
+            '<input class="delete-button" onclick="return confirm(\'Are you sure?\');" value="delete" type="submit" '\
             'style="background: transparent; float:left; border:0; color: #286571; display: inline; margin: 0; padding: 0;"/>'\
         '</form>'\
         '</div></div>'

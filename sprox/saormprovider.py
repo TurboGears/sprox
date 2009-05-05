@@ -108,6 +108,8 @@ class SAORMProvider(IProvider):
         field = self.get_field(entity, name)
         if isinstance(field, PropertyLoader):
             field = field.local_side[0]
+        if not hasattr(field, 'type'):
+            return False
         return isinstance(field.type, Binary)
 
     def is_nullable(self, entity, name):
@@ -197,7 +199,7 @@ class SAORMProvider(IProvider):
         except NoResultFound:
             return True
         return False
-
+    
     def get_synonyms(self, entity):
         mapper = class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, SynonymProperty)]
