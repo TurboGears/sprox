@@ -85,7 +85,7 @@ class SAWidgetSelector(WidgetSelector):
                 return TextField
 
         if isinstance(field, PropertyLoader):
-            if field.secondary:
+            if field.uselist:
                 return self.default_multiple_select_field_widget_type
             return self.default_single_select_field_widget_type
 
