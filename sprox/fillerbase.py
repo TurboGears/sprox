@@ -118,8 +118,11 @@ class TableFiller(FillerBase):
     def _get_list_data_value(self, field, values):
         l = []
         for value in values:
-            name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
-            l.append(unicode(getattr(value, name)))
+            if not isinstance(value, basestring):
+                name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
+                l.append(unicode(getattr(value, name)))
+            else:
+                return values
         return ', '.join(l)
 
     def _get_relation_value(self, field, value):
