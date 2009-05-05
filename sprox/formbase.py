@@ -164,6 +164,8 @@ class FormBase(ViewBase):
             self.__validator_selector__ = self.__validator_selector_type__(self.__provider__)
         if self.__field_validator_types__ is None:
             self.__field_validator_types__ = {}
+        if self.__dropdown_field_names__ is None:
+            self.__dropdown_field_names__ = ['name', '_name', 'description', '_description']
 
     def validate(self, params, state=None):
         """A pass-thru to the widget's validate function."""
