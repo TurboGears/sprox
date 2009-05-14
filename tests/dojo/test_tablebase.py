@@ -1,4 +1,4 @@
-from sprox.dojo.tablebase import DojoTableBase
+from sprox.dojo.tablebase import DojoTableBase, DojoEditableTableBase
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example
 from sprox.test.model import User
 from sprox.widgetselector import SAWidgetSelector
@@ -32,17 +32,17 @@ class TestTableBase:
         assert """<table xmlns="http://www.w3.org/1999/xhtml" dojoType="dojox.grid.DataGrid" jsId="listing__User" id="" store="listing__User_store" columnReordering="false" rowsPerPage="20" delayScroll="true" class="sprox-dojo-grid">
     <thead>
             <tr>
-                <th field="__actions__">actions</th>
-                <th name="_password" field="_password">_password
-                </th><th name="user_id" field="user_id">user_id
-                </th><th name="user_name" field="user_name">user_name
-                </th><th name="email_address" field="email_address">email_address
-                </th><th name="display_name" field="display_name">display_name
-                </th><th name="created" field="created">created
-                </th><th name="town_id" field="town_id">town_id
-                </th><th name="town" field="town">town
-                </th><th name="password" field="password">password
-                </th><th name="groups" field="groups">groups
+                <th width="10em" name="actions" field="__actions__">__actions__
+                </th><th width="10em" name="_password" field="_password">_password
+                </th><th width="10em" name="user_id" field="user_id">user_id
+                </th><th width="10em" name="user_name" field="user_name">user_name
+                </th><th width="10em" name="email_address" field="email_address">email_address
+                </th><th width="10em" name="display_name" field="display_name">display_name
+                </th><th width="10em" name="created" field="created">created
+                </th><th width="10em" name="town_id" field="town_id">town_id
+                </th><th width="10em" name="town" field="town">town
+                </th><th width="10em" name="password" field="password">password
+                </th><th width="10em" name="groups" field="groups">groups
                 </th>
             </tr>
-    </thead>""" in rendered, rendered
+        </thead>""" in rendered, rendered

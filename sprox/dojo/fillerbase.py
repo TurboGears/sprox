@@ -23,5 +23,5 @@ class DojoTableFiller(TableFiller):
         items = super(DojoTableFiller, self).get_value(value, limit=limit, offset=offset, order_by=order_by, desc=desc, **kw)
         count = self.get_count()
         identifier = self.__provider__.get_primary_field(self.__entity__)
-        return dict(identifier=identifier, numRows=count, items=items)
+        return dict(identifier=identifier, numRows=count, totalCount=count, items=items)
 
