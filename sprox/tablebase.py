@@ -1,6 +1,8 @@
 from sprox.widgets import SproxDataGrid
 from viewbase import ViewBase
 from metadata import FieldsMetadata
+from tw.api import Widget
+from operator import itemgetter
 
 class TableBase(ViewBase):
     """This class allows you to create a table widget.
@@ -164,7 +166,58 @@ class TableBase(ViewBase):
         args['pks'] = None
         args['column_widths'] = self.__column_widths__
         args['default_column_width'] = self.__default_column_width__
-        args['fields'] = [(self.__headers__.get(field, field), eval('lambda d: d["'+field+'"]')) for field in self.__fields__]
+
+        # Okay: the trunk version of Sprox creates its args['fields']
+        # very simply, as a list of lambdas that do an item lookup on
+        # the field name.  This means that TableBase inherently ignores
+        # any attempt to specify widgets for displaying or formatting
+        # model values; in fact, the field widget list that the
+        # TableBase grows at some point during processing appears to be
+        # completely ignored.  (You will see if it you add "print"
+        # statements around your code to watch how your tables are
+        # behaving.)
+
+        # To make widgets active, we need to put the widgets in place of
+        # the lambdas in the the args['fields'] that we build.  There
+        # are challenges to building this list, however:
+
+        # 1. The widgets supplied by default are useless.  Instead of
+        #    being something that can actually display text, the list of
+        #    widgets somehow winds up just being bare Widget instances,
+        #    which seem to display absolutely nothing when rendered.
+        #    Therefore, when we see a bare Widget supplied for a
+        #    particular column, we need to ignore it.
+
+        # 2. Some fields (like '__action__') do not even appear in our
+        #    list of fields-plus-widgets called self.__fields__, so we
+        #    have to be willing to fall back to a lambda in that case
+        #    too.
+
+        # 3. For some reason, the list of field widgets is not always
+        #    present, so we have to wastefully re-compute it here by
+        #    calling the _do_get_field_widgets() method.  It would be
+        #    nice if this were produced once before these computations
+        #    started and could be relied upon to be present, but it's
+        #    not so far as I could tell.  But, then, I was reading code
+        #    late at night.
+
+        # Anyway, with the stanza below, I am able to provide my table
+        # classes with a __field_widget_types__ dictionary and have
+        # those fields rendered differently.
+
+        field_headers = [ self.__headers__.get(field, field)
+                          for field in self.__fields__ ]
+        field_widget_dict = self._do_get_field_widgets(self.__fields__)
+        field_widgets = []
+        for field in self.__fields__:
+            widget = field_widget_dict.get(field, None)
+            if widget is None or widget.__class__ is Widget: # yuck
+                widget = itemgetter(field)
+            field_widgets.append(widget)
+        args['fields'] = zip(field_headers, field_widgets)
+
+        # And, now back to our regularly-scheduled trunk-derived Sprox.
+
         if '__actions__' not in self.__omit_fields__:
             args['pks'] = self.__provider__.get_primary_fields(self.__entity__)
 
