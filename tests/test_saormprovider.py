@@ -169,6 +169,7 @@ class TestSAORMProvider(SproxTest):
         obj = session.query(Group).first()
         obj.users.append(self.user)
         self.provider.update(User, {'user_id':self.user.user_id, 'groups':[]})
+        session.flush()
         user = session.query(User).get(1)
         assert user not in obj.users
         

@@ -322,13 +322,13 @@ class SAORMProvider(IProvider):
         mapper = class_mapper(entity)
         relations = self.get_relations(entity)
         for relation in relations:
+            print relation
             #clear out those items which are not found in the params list.
             if relation not in params or not params[relation]:
                 related_items = getattr(obj, relation)
                 if related_items is not None:
                     if hasattr(related_items, '__iter__'):
-                        for item in getattr(obj, relation):
-                            getattr(obj, relation).remove(item)
+                        setattr(obj, relation, [])
                     else:
                         setattr(obj, relation, None)
                         
