@@ -36,10 +36,11 @@ class TableBase(ViewBase):
     <table class="grid">
         <thead>
             <tr>
-                <th></th>
                 <th class="col_0">
-                town_id
+                actions
                 </th><th class="col_1">
+                town_id
+                </th><th class="col_2">
                 name
                 </th>
             </tr>
@@ -119,17 +120,32 @@ class TableBase(ViewBase):
                 name
                 </th>
             </tr>
-            
         </thead>
         <tbody>
             <tr class="even">
-                <td>1</td><td>Arvada</td>
+                <td>
+                    1
+                </td><td>
+                    Arvada
+                </td>
             </tr><tr class="odd">
-                <td>2</td><td>Denver</td>
+                <td>
+                    2
+                </td><td>
+                    Denver
+                </td>
             </tr><tr class="even">
-                <td>3</td><td>Golden</td>
+                <td>
+                    3
+                </td><td>
+                    Golden
+                </td>
             </tr><tr class="odd">
-                <td>4</td><td>Boulder</td>
+                <td>
+                    4
+                </td><td>
+                    Boulder
+                </td>
             </tr>
         </tbody>
     </table>

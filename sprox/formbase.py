@@ -101,25 +101,32 @@ class FormBase(ViewBase):
     >>> town_form = UserOnlyTownForm(session)
     >>>
     >>> print town_form()
-    <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="required tableform">
+    <form action="" method="post" class="required tableform">
         <div>
+    <BLANKLINE>
                 <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
         </div>
-        <table border="0" cellspacing="0" cellpadding="2">
-            <tr id="town.container" class="even" title="">
+        <table border="0" cellspacing="0" cellpadding="2" >
+            <tr class="even" id="town.container" title="" >            
                 <td class="labelcol">
                     <label id="town.label" for="town" class="fieldlabel">Town</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <select name="town" class="propertysingleselectfield" id="town">
-            <option value="1">Arvada</option><option value="2">Denver</option><option value="3">Golden</option><option value="4">Boulder</option><option value="" selected="selected">-----------</option>
+            <option value="1">Arvada</option>
+            <option value="2">Denver</option>
+            <option value="3">Golden</option>
+            <option value="4">Boulder</option>
+            <option value="" selected="selected">-----------</option>
     </select>
                 </td>
-            </tr><tr id="submit.container" class="odd" title="">
+            </tr>
+            <tr class="odd" id="submit.container" title="" >            
                 <td class="labelcol">
+                    <label id="submit.label" for="submit" class="fieldlabel"></label>
                 </td>
-                <td class="fieldcol">
-                    <input type="submit" class="submitbutton" value="Submit" />
+                <td class="fieldcol" >
+                    <input type="submit" name="" class="submitbutton" id="None" value="Submit" />
                 </td>
             </tr>
         </table>
@@ -301,58 +308,66 @@ class AddRecordForm(FormBase):
     ...     verify_password        = PasswordField('verify_password')
     >>> registration_form = RegistrationForm()
     >>> print registration_form()
-    <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="required tableform">
+    <form action="" method="post" class="required tableform">
         <div>
+    <BLANKLINE>
                 <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
         </div>
-        <table border="0" cellspacing="0" cellpadding="2">
-            <tr id="user_name.container" class="even" title="">
+        <table border="0" cellspacing="0" cellpadding="2" >
+            <tr class="even" id="user_name.container" title="" >            
                 <td class="labelcol">
                     <label id="user_name.label" for="user_name" class="fieldlabel required">User Name</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <input type="text" name="user_name" class="textfield required" id="user_name" value="" />
                 </td>
-            </tr><tr id="email_address.container" class="odd" title="">
+            </tr>
+            <tr class="odd" id="email_address.container" title="" >            
                 <td class="labelcol">
                     <label id="email_address.label" for="email_address" class="fieldlabel required">Email Address</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <input type="text" name="email_address" class="textfield required" id="email_address" value="" />
                 </td>
-            </tr><tr id="display_name.container" class="even" title="">
+            </tr>
+            <tr class="even" id="display_name.container" title="" >            
                 <td class="labelcol">
                     <label id="display_name.label" for="display_name" class="fieldlabel">Display Name</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <input type="text" name="display_name" class="textfield" id="display_name" value="" />
                 </td>
-            </tr><tr id="password.container" class="odd" title="">
+            </tr>
+            <tr class="odd" id="password.container" title="" >            
                 <td class="labelcol">
                     <label id="password.label" for="password" class="fieldlabel required">Password</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <input type="password" name="password" class="required passwordfield" id="password" value="" />
                 </td>
-            </tr><tr id="verify_password.container" class="even" title="">
+            </tr>
+            <tr class="even" id="verify_password.container" title="" >            
                 <td class="labelcol">
                     <label id="verify_password.label" for="verify_password" class="fieldlabel">Verify Password</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <input type="password" name="verify_password" class="passwordfield" id="verify_password" value="" />
                 </td>
-            </tr><tr id="town_id.container" class="odd" title="">
+            </tr>
+            <tr class="odd" id="town_id.container" title="" >            
                 <td class="labelcol">
                     <label id="town_id.label" for="town_id" class="fieldlabel">Town Id</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <input type="text" name="town_id" class="textfield" id="town_id" value="" />
                 </td>
-            </tr><tr id="submit.container" class="even" title="">
+            </tr>
+            <tr class="even" id="submit.container" title="" >            
                 <td class="labelcol">
+                    <label id="submit.label" for="submit" class="fieldlabel"></label>
                 </td>
-                <td class="fieldcol">
-                    <input type="submit" class="submitbutton" value="Submit" />
+                <td class="fieldcol" >
+                    <input type="submit" name="" class="submitbutton" id="None" value="Submit" />
                 </td>
             </tr>
         </table>
@@ -401,32 +416,38 @@ class DisabledForm(FormBase):
     ...     __limit_fields__ = ['user_name', 'email_address']
     >>> disabled_user_form = DisabledUserForm()
     >>> print disabled_user_form(values=dict(user_name='percious', email='chris@percious.com'))
-    <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="required tableform">
+    <form action="" method="post" class="required tableform">
         <div>
+    <BLANKLINE>
                 <input type="hidden" name="user_name" class="hiddenfield" id="user_name" value="" />
+    <BLANKLINE>
                 <input type="hidden" name="email_address" class="hiddenfield" id="email_address" value="" />
+    <BLANKLINE>
                 <input type="hidden" name="sprox_id" class="hiddenfield" id="sprox_id" value="" />
         </div>
-        <table border="0" cellspacing="0" cellpadding="2">
-            <tr id="user_name.container" class="even" title="">
+        <table border="0" cellspacing="0" cellpadding="2" >
+            <tr class="even" id="user_name.container" title="" >            
                 <td class="labelcol">
                     <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <input type="text" name="user_name" class="textfield" id="user_name" value="" disabled="disabled" />
                 </td>
-            </tr><tr id="email_address.container" class="odd" title="">
+            </tr>
+            <tr class="odd" id="email_address.container" title="" >            
                 <td class="labelcol">
                     <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <textarea id="email_address" name="email_address" class="textarea" disabled="disabled" rows="7" cols="50"></textarea>
                 </td>
-            </tr><tr id="submit.container" class="even" title="">
+            </tr>
+            <tr class="even" id="submit.container" title="" >            
                 <td class="labelcol">
+                    <label id="submit.label" for="submit" class="fieldlabel"></label>
                 </td>
-                <td class="fieldcol">
-                    <input type="submit" class="submitbutton" value="Submit" />
+                <td class="fieldcol" >
+                    <input type="submit" name="" class="submitbutton" id="None" value="Submit" />
                 </td>
             </tr>
         </table>

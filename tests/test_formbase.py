@@ -26,8 +26,10 @@ class TestsEmptyDropdownWorks:
         
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<td class="fieldcol">
-                <input type="submit" class="submitbutton" value="Submit" />
+        assert """<td class="fieldcol" >
+                <select name="town" class="propertysingleselectfield" id="town">
+        <option value="" selected="selected">-----------</option>
+</select>
             </td>""" in rendered, rendered
     
 
@@ -45,8 +47,8 @@ class TestFormBase(SproxTest):
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<td class="fieldcol">
-                <input type="submit" class="submitbutton" value="Submit" />
+        assert """<td class="fieldcol" >
+                <input type="submit" name="" class="submitbutton" id="None" value="Submit" />
             </td>""" in rendered, rendered
 
     def test_entity_with_synonym(self):
@@ -54,11 +56,11 @@ class TestFormBase(SproxTest):
             __entity__ = Document
         form = DocumentForm(session)
         rendered = form()
-        assert """<tr id="address.container" class="odd" title="">
+        assert """<tr class="odd" id="address.container" title="" >            
             <td class="labelcol">
                 <label id="address.label" for="address" class="fieldlabel">Address</label>
             </td>
-            <td class="fieldcol">
+            <td class="fieldcol" >
                 <input type="text" name="address" class="textfield" id="address" value="" />
             </td>
         </tr>""" in rendered, rendered
@@ -69,9 +71,15 @@ class TestFormBase(SproxTest):
             __dropdown_field_names__ = ['group_name']
         form = UserFormFieldNames(session)
         rendered = form()
-        assert """<select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
-        <option value="1">0</option><option value="2">1</option><option value="3">2</option><option value="4">3</option><option value="5">4</option>
-</select>""" in rendered, rendered
+        assert """<td class="fieldcol" >
+                <select name="groups" class="propertymultipleselectfield" id="groups" multiple="True" size="5">
+        <option value="1">0</option>
+        <option value="2">1</option>
+        <option value="3">2</option>
+        <option value="4">3</option>
+        <option value="5">4</option>
+</select>
+            </td>""" in rendered, rendered
         
     def test_entity_with_dropdown_field_names_dict(self):
         class UserFormFieldNames(FormBase):
@@ -79,9 +87,15 @@ class TestFormBase(SproxTest):
             __dropdown_field_names__ = {'groups':['group_name']}
         form = UserFormFieldNames(session)
         rendered = form()
-        assert """<select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
-        <option value="1">0</option><option value="2">1</option><option value="3">2</option><option value="4">3</option><option value="5">4</option>
-</select>""" in rendered, rendered
+        assert """<td class="fieldcol" >
+                <select name="groups" class="propertymultipleselectfield" id="groups" multiple="True" size="5">
+        <option value="1">0</option>
+        <option value="2">1</option>
+        <option value="3">2</option>
+        <option value="4">3</option>
+        <option value="5">4</option>
+</select>
+            </td>""" in rendered, rendered
         
         
     def test_require_field(self):
@@ -148,11 +162,11 @@ class TestEditableForm(SproxTest):
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<tr id="user_name.container" class="even" title="">
+        assert """<tr class="even" id="user_name.container" title="" >            
             <td class="labelcol">
                 <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
             </td>
-            <td class="fieldcol">
+            <td class="fieldcol" >
                 <input type="text" name="user_name" class="textfield has_error" id="user_name" value="asdf" />
                 <span class="fielderror">That value already exists</span>
             </td>
@@ -171,7 +185,7 @@ class TestDisabledForm(SproxTest):
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<td class="fieldcol">
+        assert """<td class="fieldcol" >
                 <input type="text" name="user_name" class="textfield has_error" id="user_name" value="asdf" disabled="disabled" />
                 <span class="fielderror">That value already exists</span>
             </td>""" in rendered, rendered

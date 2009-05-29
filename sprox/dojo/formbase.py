@@ -40,26 +40,33 @@ class DojoEditableForm(EditableForm):
     ...     __limit_fields__       = ['user_name', 'groups']
     >>> edit_form = Form()
     >>> print edit_form()
-    <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="has_error required tableform">
+    <form action="" method="post" class="has_error required tableform">
         <div>
-                <input type="hidden" name="sprox_id" class="has_error hiddenfield" id="sprox_id" />
+    <BLANKLINE>
+                <input type="hidden" name="sprox_id" class="has_error hiddenfield" id="sprox_id" value="None" />
                 <span class="fielderror">Missing value</span>
-                <input type="hidden" name="_method" class="sproxmethodputhiddenfield" id="_method" value="PUT" />
+    <BLANKLINE>
+                <input xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:py="http://genshi.edgewall.org/"
+           type="hidden" name="_method" class="sproxmethodputhiddenfield" id="_method"
+           value="PUT"
+           py:attrs="attrs" />
         </div>
-        <table border="0" cellspacing="0" cellpadding="2">
-            <tr id="user_name.container" class="even" title="">
+        <table border="0" cellspacing="0" cellpadding="2" >
+            <tr class="even" id="user_name.container" title="" >            
                 <td class="labelcol">
                     <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <input type="text" name="user_name" class="textfield" id="user_name" value="" />
                 </td>
-            </tr><tr id=".container" class="odd" title="">
+            </tr>
+            <tr class="odd" id=".container" title="" >            
                 <td class="labelcol">
                     <label id=".label" for="" class="fieldlabel">Groups</label>
                 </td>
-                <td class="fieldcol">
-                    <div dojoType="twdojo.SelectShuttle" id="groups_SelectShuttle">
+                <td class="fieldcol" >
+                    <div xmlns="http://www.w3.org/1999/xhtml" dojoType="twdojo.SelectShuttle" id="groups_SelectShuttle">
         <div style="float:left; padding: 5px; width:10em;">
             Available<br />
             <select class="shuttle" id="groups_src" multiple="multiple" name="" size="5">
@@ -82,11 +89,13 @@ class DojoEditableForm(EditableForm):
         </script>
     </div>
                 </td>
-            </tr><tr id="submit.container" class="even" title="">
+            </tr>
+            <tr class="even" id="submit.container" title="" >            
                 <td class="labelcol">
+                    <label id="submit.label" for="submit" class="fieldlabel"></label>
                 </td>
-                <td class="fieldcol">
-                    <input type="submit" class="submitbutton" value="Submit" />
+                <td class="fieldcol" >
+                    <input type="submit" name="" class="submitbutton" id="None" value="Submit" />
                 </td>
             </tr>
         </table>
@@ -112,25 +121,27 @@ class DojoAddRecordForm(AddRecordForm):
     ...     __limit_fields__       = ['user_name', 'groups']
     >>> add_form = Form()
     >>> print add_form()
-    <form xmlns="http://www.w3.org/1999/xhtml" action="" method="post" class="has_error required tableform">
+    <form action="" method="post" class="has_error required tableform">
         <div>
-                <input type="hidden" name="sprox_id" class="has_error hiddenfield" id="sprox_id" />
+    <BLANKLINE>
+                <input type="hidden" name="sprox_id" class="has_error hiddenfield" id="sprox_id" value="None" />
                 <span class="fielderror">Missing value</span>
         </div>
-        <table border="0" cellspacing="0" cellpadding="2">
-            <tr id="user_name.container" class="even" title="">
+        <table border="0" cellspacing="0" cellpadding="2" >
+            <tr class="even" id="user_name.container" title="" >            
                 <td class="labelcol">
                     <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
                 </td>
-                <td class="fieldcol">
+                <td class="fieldcol" >
                     <input type="text" name="user_name" class="textfield" id="user_name" value="" />
                 </td>
-            </tr><tr id=".container" class="odd" title="">
+            </tr>
+            <tr class="odd" id=".container" title="" >            
                 <td class="labelcol">
                     <label id=".label" for="" class="fieldlabel">Groups</label>
                 </td>
-                <td class="fieldcol">
-                    <div dojoType="twdojo.SelectShuttle" id="groups_SelectShuttle">
+                <td class="fieldcol" >
+                    <div xmlns="http://www.w3.org/1999/xhtml" dojoType="twdojo.SelectShuttle" id="groups_SelectShuttle">
         <div style="float:left; padding: 5px; width:10em;">
             Available<br />
             <select class="shuttle" id="groups_src" multiple="multiple" name="" size="5">
@@ -153,11 +164,13 @@ class DojoAddRecordForm(AddRecordForm):
         </script>
     </div>
                 </td>
-            </tr><tr id="submit.container" class="even" title="">
+            </tr>
+            <tr class="even" id="submit.container" title="" >            
                 <td class="labelcol">
+                    <label id="submit.label" for="submit" class="fieldlabel"></label>
                 </td>
-                <td class="fieldcol">
-                    <input type="submit" class="submitbutton" value="Submit" />
+                <td class="fieldcol" >
+                    <input type="submit" name="" class="submitbutton" id="None" value="Submit" />
                 </td>
             </tr>
         </table>

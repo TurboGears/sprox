@@ -47,30 +47,31 @@ class TestViewCache(SproxTest):
 
     def test_get_empty(self):
         base = self.cache['listing__User']
-        eq_(base(), """<div xmlns="http://www.w3.org/1999/xhtml">
-<table class="grid">
+        b = base()
+        assert """<table class="grid">
     <thead>
         <tr>
-            <th></th>
             <th class="col_0">
-            _password
+            actions
             </th><th class="col_1">
-            user_id
+            _password
             </th><th class="col_2">
-            user_name
+            user_id
             </th><th class="col_3">
-            email_address
+            user_name
             </th><th class="col_4">
-            display_name
+            email_address
             </th><th class="col_5">
-            created
+            display_name
             </th><th class="col_6">
-            town_id
+            created
             </th><th class="col_7">
-            town
+            town_id
             </th><th class="col_8">
-            password
+            town
             </th><th class="col_9">
+            password
+            </th><th class="col_10">
             groups
             </th>
         </tr>
@@ -79,7 +80,7 @@ class TestViewCache(SproxTest):
     </tbody>
 </table>
       No Records Found.
-</div>""")
+</div>""" in b, b
 
     @raises(ConfigCacheError)
     def get_not_found(self):

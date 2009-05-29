@@ -29,11 +29,14 @@ class TestTableBase:
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<th></th>
-            <th class="col_0">
-            _password
+        assert """<th class="col_0">
+            actions
             </th><th class="col_1">
-            user_id
+            _password
             </th><th class="col_2">
+            user_id
+            </th><th class="col_3">
             user_name
-            """ in rendered, rendered
+            </th><th class="col_4">
+            email_address
+            </th>""" in rendered, rendered
