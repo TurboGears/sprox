@@ -122,6 +122,7 @@ class TableFiller(FillerBase):
                 name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
                 l.append(unicode(getattr(value, name)))
             else:
+                #this is needed for postgres to see array values
                 return values
         return ', '.join(l)
 

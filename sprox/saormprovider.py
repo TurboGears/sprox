@@ -108,8 +108,10 @@ class SAORMProvider(IProvider):
         field = self.get_field(entity, name)
         if isinstance(field, PropertyLoader):
             field = field.local_side[0]
-        if not hasattr(field, 'type'):
-            return False
+        # I am unsure what this is needed for, so it will be removed in the next version, and is for now
+        # commented until someone reports a bug.
+        #if not hasattr(field, 'type'):
+        #    return False
         return isinstance(field.type, Binary)
 
     def is_nullable(self, entity, name):

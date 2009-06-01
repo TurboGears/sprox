@@ -50,6 +50,10 @@ class TestTableFiller(SproxTest):
         value = filler.get_value()
         eq_(value[0]['binary'], '<file>')
 
+    def test_get_list_data_value_array_values(self):
+        r = self.filler._get_list_data_value(User, ['something', 'something else'])
+        assert r == ['something', 'something else'], r
+        
     @raises(ConfigBaseError)
     def test_count_without_get(self):
         self.filler.get_count()
