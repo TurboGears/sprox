@@ -80,11 +80,8 @@ class SproxEditableDojoGrid(DojoBase):
 
     def __init__(self,**kw):
         super(SproxEditableDojoGrid, self).__init__(**kw)
-        storeName = kw.get('jsId','')
-        if not(storeName is None):
-            storeName = storeName+'_store'
-        else:
-            storeName = '_store'
+        storeName = kw.get('jsId','') or ''
+        storeName = storeName+'_store'
 
         self.javascript.append(buildService)
         self.javascript.append(DojoJsonRestStoreInstance(varId=storeName,target=kw['action'],url=kw['action']))
