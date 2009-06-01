@@ -24,7 +24,7 @@ class TestTableFiller(SproxTest):
 
     def test_get_value(self):
         value = self.filler.get_value()
-        eq_(len(value), 3)
+        eq_(len(value), 4)
         value = value['items'][0]
         eq_(value['groups'], u'4')
         eq_(value['town'], 'Arvada')

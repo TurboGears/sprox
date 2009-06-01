@@ -11,10 +11,9 @@
                          >
     <thead>
             <tr>
-                <th py:for="column in columns" width="${column_widths.get(column, default_column_width)}" name="${headers.get(column, column)}" field="${column}">$column
+                <th py:for="column in columns" width="${column_widths.get(column, default_column_width)}" name="${headers.get(column, column)}" field="${column}" py:attrs="column_options.get(column,default_column_options)">$column
                 </th>
-
             </tr>
-    </thead>
-    <div dojoType="dojox.data.QueryReadStore" jsId="${jsId}_store"  id="${jsId}_store" url="${action}"/>
+        </thead>
+        <div py:if="not(dojoStoreWidget is None)" dojoType="${dojoStoreType}" jsId="${jsId}_store"  id="${jsId}_store" url="${action}"/>
 </table>

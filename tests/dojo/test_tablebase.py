@@ -1,4 +1,4 @@
-from sprox.dojo.tablebase import DojoTableBase
+from sprox.dojo.tablebase import DojoTableBase, DojoEditableTableBase
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example
 from sprox.test.model import User
 from sprox.widgetselector import SAWidgetSelector
@@ -43,17 +43,17 @@ class TestTableBase:
                          >
     <thead>
             <tr>
-                    <th width="10em" name="actions" field="__actions__">__actions__</th>
-                    <th width="10em" name="_password" field="_password">_password</th>
-                    <th width="10em" name="user_id" field="user_id">user_id</th>
-                    <th width="10em" name="user_name" field="user_name">user_name</th>
-                    <th width="10em" name="email_address" field="email_address">email_address</th>
-                    <th width="10em" name="display_name" field="display_name">display_name</th>
-                    <th width="10em" name="created" field="created">created</th>
-                    <th width="10em" name="town_id" field="town_id">town_id</th>
-                    <th width="10em" name="town" field="town">town</th>
-                    <th width="10em" name="password" field="password">password</th>
-                    <th width="10em" name="groups" field="groups">groups</th>
+                    <th width="10em" name="actions" field="__actions__" >__actions__</th>
+                    <th width="10em" name="_password" field="_password" >_password</th>
+                    <th width="10em" name="user_id" field="user_id" >user_id</th>
+                    <th width="10em" name="user_name" field="user_name" >user_name</th>
+                    <th width="10em" name="email_address" field="email_address" >email_address</th>
+                    <th width="10em" name="display_name" field="display_name" >display_name</th>
+                    <th width="10em" name="created" field="created" >created</th>
+                    <th width="10em" name="town_id" field="town_id" >town_id</th>
+                    <th width="10em" name="town" field="town" >town</th>
+                    <th width="10em" name="password" field="password" >password</th>
+                    <th width="10em" name="groups" field="groups" >groups</th>
             </tr>
     </thead>
     <div dojoType="dojox.data.QueryReadStore" jsId="listing__User_store"  id="listing__User_store" url="./something.json"/>
