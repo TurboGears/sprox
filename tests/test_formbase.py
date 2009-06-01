@@ -1,4 +1,5 @@
 from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm
+from sprox.viewbase import ViewBaseError
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document
 from sprox.test.model import User, Group
 from sprox.widgetselector import SAWidgetSelector
@@ -51,6 +52,13 @@ class TestFormBase(SproxTest):
                 <input type="submit" name="" class="submitbutton" id="None" value="Submit" />
             </td>""" in rendered, rendered
 
+    @raises(ViewBaseError)
+    def test_form_field_with_no_id(self):
+        class BogusUserForm(FormBase):
+            __entity__ = User
+            field = TextField()
+        bogus = BogusUserForm(session)
+        
     def test_entity_with_synonym(self):
         class DocumentForm(FormBase):
             __entity__ = Document

@@ -9,6 +9,9 @@ class ClassViewer(object):
     """class wrapper to expose items of a class.  Needed to pass classes to TW as params"""
     def __init__(self, klass):
         self.__name__ = klass.__name__
+        
+
+class ViewBaseError(Exception):pass
 
 class ViewBase(ConfigBase):
     """
@@ -72,6 +75,8 @@ class ViewBase(ConfigBase):
             if not attr.startswith('__'):
                 value = getattr(self, attr)
                 if isinstance(value, Widget):
+                    if not getattr(value, 'id', None):
+                        raise ViewBaseError('Widgets must provide an id argument for use as a field within a ViewBase')
                     self.__add_fields__[attr] = value
                 try:
                     if issubclass(value, Widget):
