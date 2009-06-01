@@ -19,6 +19,7 @@ def teardown():
 
 class UserTable(DojoTableBase):
     __entity__ = User
+    __url__ = './something.json'
 
 class TestTableBase:
     def setup(self):
@@ -55,5 +56,5 @@ class TestTableBase:
                     <th width="10em" name="groups" field="groups">groups</th>
             </tr>
     </thead>
-    <div dojoType="dojox.data.QueryReadStore" jsId="listing__User_store"  id="listing__User_store" url=".json"/>
+    <div dojoType="dojox.data.QueryReadStore" jsId="listing__User_store"  id="listing__User_store" url="./something.json"/>
 </table>""" in rendered, rendered
