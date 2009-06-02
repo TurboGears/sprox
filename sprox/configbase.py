@@ -86,6 +86,7 @@ class ConfigBase(object):
         if self.__limit_fields__ is not None:
             fields.extend(self.__limit_fields__)
             fields.extend(self.__hide_fields__)
+            fields.extend(self.__add_fields__.keys())
             fields = self.__remove_duplicates(fields)
             return fields
         else:

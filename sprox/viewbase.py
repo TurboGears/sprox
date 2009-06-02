@@ -164,7 +164,10 @@ class ViewBase(ConfigBase):
                 widgets[field_name] = self.__field_widgets__[field_name]
                 continue
             if field_name in self.__add_fields__:
-                widgets[field_name] = self.__add_fields__[field_name]
+                widget = self.__add_fields__[field_name]
+                if widget is None:
+                    widget = Widget(field_name)
+                widgets[field_name] = widget
                 continue
             if field_name in self.__ignore_field_names__:
                 continue

@@ -22,6 +22,8 @@ class TableBase(ViewBase):
     | __default_column_width__          | Header size to use when not specified in   | '10em'                       |
     |                                   | __column_widths__                          |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
+    | __xml_fields__                    | fields whos values should show as html     |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
 
 
     see modifiers in :mod:`sprox.viewbase`
@@ -126,33 +128,32 @@ class TableBase(ViewBase):
         <tbody>
             <tr class="even">
                 <td>
-                    1
+                            1
                 </td><td>
-                    Arvada
+                            Arvada
                 </td>
             </tr><tr class="odd">
                 <td>
-                    2
+                            2
                 </td><td>
-                    Denver
+                            Denver
                 </td>
             </tr><tr class="even">
                 <td>
-                    3
+                            3
                 </td><td>
-                    Golden
+                            Golden
                 </td>
             </tr><tr class="odd">
                 <td>
-                    4
+                            4
                 </td><td>
-                    Boulder
+                            Boulder
                 </td>
             </tr>
         </tbody>
     </table>
     </div>
-
     """
 
     #object overrides
@@ -160,6 +161,7 @@ class TableBase(ViewBase):
     __metadata_type__    = FieldsMetadata
     __headers__          = None
     __column_widths__    = None
+    __xml_fields__       = None
     __default_column_width__ = "10em"
     
     def _do_get_fields(self):
@@ -176,6 +178,8 @@ class TableBase(ViewBase):
             self.__headers__ = {}
         if self.__column_widths__ is None:
             self.__column_widths__ = {}
+        if self.__xml_fields__ is None:
+            self.__xml_fields__ = {}
     
     def _do_get_widget_args(self):
         args = super(TableBase, self)._do_get_widget_args()
@@ -237,4 +241,5 @@ class TableBase(ViewBase):
         if '__actions__' not in self.__omit_fields__:
             args['pks'] = self.__provider__.get_primary_fields(self.__entity__)
 
+        args['xml_fields'] = self.__xml_fields__
         return args

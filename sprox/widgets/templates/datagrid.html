@@ -15,12 +15,14 @@
             class="${i%2 and 'odd' or 'even'}">
             
             <td py:for="col in columns">
-                <py:if test="col.title == 'actions'">
-                ${XML(col.get_field(row, displays_on='genshi'))}
-                </py:if>
-                <py:if test="col.title != 'actions'">
-                ${col.get_field(row, displays_on='genshi')}
-                </py:if>
+                <py:choose test="col.title == 'actions' or col.title in xml_fields">
+                    <py:when test="True">
+                        ${XML(col.get_field(row, displays_on='genshi'))}
+                    </py:when>
+                    <py:otherwise>
+                        ${col.get_field(row, displays_on='genshi')}
+                    </py:otherwise>
+                </py:choose>
             </td>
         </tr>
     </tbody>

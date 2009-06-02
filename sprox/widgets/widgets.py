@@ -25,7 +25,8 @@ class SproxCalendarDateTimePicker(CalendarDateTimePicker):
 
 class SproxDataGrid(DataGrid):
     template = "genshi:sprox.widgets.templates.datagrid"
-    params = ['pks', 'controller']
+    params = ['pks', 'controller', 'xml_fields']
+    xml_fields = ['actions']
 
 class ContainerWidget(Widget):
     template = "genshi:sprox.widgets.templates.container"
