@@ -191,8 +191,13 @@ class TableFiller(FillerBase):
         for obj in objs:
             row = {}
             for field in self.__fields__:
-                if hasattr(self, field) and inspect.ismethod(getattr(self, field)):
-                    value = getattr(self, field)(obj)
+                field_method = getattr(self, field, None)
+                if inspect.ismethod(field_method):
+                    argspec = inspect.getargspec(field_method)
+                    if argspec and (len(argspec[0])-2>=len(kw) or argspec[2]):
+                        value = getattr(self, field)(obj, **kw)
+                    else:
+                        value = getattr(self, field)(obj)
                 else:
                     value = getattr(obj, field)
                     if 'password' in field.lower():
