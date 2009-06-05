@@ -1,4 +1,4 @@
-from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm
+from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm, Field
 from sprox.viewbase import ViewBaseError
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document, assert_in_xml
 from sprox.test.model import User, Group
@@ -6,8 +6,10 @@ from sprox.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid, Schema
-from formencode.validators import FieldsMatch
+from formencode.validators import FieldsMatch, NotEmpty, OpenId
 from tw.forms import PasswordField, TextField
+
+class MyTextField(TextField):pass
 
 session = None
 engine  = None
@@ -20,6 +22,15 @@ def setup():
 
 class UserForm(FormBase):
     __entity__ = User
+    
+class TestField:
+    
+    def setup(self):
+        self.field = Field(TextField, NotEmpty)
+        
+    def test_create(self):
+        assert self.field.widget == TextField
+        assert self.field.validator == NotEmpty
 
 class TestsEmptyDropdownWorks:
     def setup(self):
@@ -42,6 +53,88 @@ class TestFormBase(SproxTest):
 
     def test_create(self):
         pass
+
+    def test_formbase_with_validator_class(self):
+        class UserForm(FormBase):
+            __entity__ = User
+            user_name = OpenId
+        user_form = UserForm(session)
+        widget = user_form.__widget__
+        try:
+            widget.validate({'user_name':'something'})
+        except Invalid, e:
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+
+    def test_formbase_with_validator_instance(self):
+        class UserForm(FormBase):
+            __entity__ = User
+            user_name = OpenId()
+        user_form = UserForm(session)
+        widget = user_form.__widget__
+        try:
+            widget.validate({'user_name':'something'})
+        except Invalid, e:
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+
+    def test_formbase_with_field_validator_instance(self):
+        class UserForm(FormBase):
+            __entity__ = User
+            user_name = Field(validator=OpenId())
+        user_form = UserForm(session)
+        widget = user_form.__widget__
+        try:
+            widget.validate({'user_name':'something'})
+        except Invalid, e:
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+
+    def test_formbase_with_field_validator_class(self):
+        class UserForm(FormBase):
+            __entity__ = User
+            user_name = Field(validator=OpenId())
+        user_form = UserForm(session)
+        widget = user_form.__widget__
+        try:
+            widget.validate({'user_name':'something'})
+        except Invalid, e:
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+
+    def test_formbase_with_field_widget_class(self):
+        class UserForm(FormBase):
+            __entity__ = User
+            user_name = Field(MyTextField)
+        user_form = UserForm(session)
+        widget = user_form.__widget__
+        assert isinstance(widget.children['user_name'], MyTextField)
+
+    def test_formbase_with_field_widget_instance(self):
+        class UserForm(FormBase):
+            __entity__ = User
+            user_name = Field(MyTextField('user_name'))
+        user_form = UserForm(session)
+        widget = user_form.__widget__
+        assert isinstance(widget.children['user_name'], MyTextField)
+
+    @raises(ViewBaseError)
+    def test_formbase_with_field_widget_instance_no_id(self):
+        class UserForm(FormBase):
+            __entity__ = User
+            user_name = Field(MyTextField())
+        user_form = UserForm(session)
+        widget = user_form.__widget__
+        assert isinstance(widget.children['user_name'], MyTextField)
+
+
+    def test_formbase_with_field_widget_and_validator_instance(self):
+        class UserForm(FormBase):
+            __entity__ = User
+            user_name = Field(MyTextField, OpenId)
+        user_form = UserForm(session)
+        widget = user_form.__widget__
+        assert isinstance(widget.children['user_name'], MyTextField)
+        try:
+            widget.validate({'user_name':'something'})
+        except Invalid, e:
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
 
     def test__fields__(self):
         eq_(sorted_user_columns, sorted(self.base.__fields__))

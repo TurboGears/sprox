@@ -10,8 +10,9 @@ Released under MIT license.
 import inspect
 from tw.api import Widget
 from tw.forms import HiddenField, TableForm
-from viewbase import ViewBase
+from viewbase import ViewBase, ViewBaseError
 from formencode import Schema, All
+from formencode import Validator
 from sprox.validators import UniqueValue
 from formencode.validators import UnicodeString, String
 from widgetselector import SAWidgetSelector
@@ -23,6 +24,12 @@ class FilteringSchema(Schema):
     """This makes formencode work for most forms, because some wsgi apps append extra values to the parameter list."""
     filter_extra_fields = True
     allow_extra_fields = True
+
+class Field(object):
+    """Used to handle the case where you want to override both a validator and a widget for a given field"""
+    def __init__(self, widget=None, validator=None):
+        self.widget = widget
+        self.validator = validator
 
 class FormBase(ViewBase):
     """
@@ -131,11 +138,15 @@ class FormBase(ViewBase):
     </form>
 
     Forms created with sprox can be validated as you would any other widget.
-
-    >>> town_form.validate(params={'town':1})
+    >>> class UserOnlyTownForm(FormBase):
+    ...    __model__ = User
+    ...    __limit_fields__ = ['town']
+    ...    __required_fields__ = ['town']
+    >>> town_form = UserOnlyTownForm(session)
+    >>> town_form.validate(params={'sprox_id':1})
     Traceback (most recent call last):
     ...
-    Invalid: sprox_id: Missing value
+    Invalid: town: Missing value
 
 
 
@@ -172,6 +183,38 @@ class FormBase(ViewBase):
         if self.__dropdown_field_names__ is None:
             self.__dropdown_field_names__ = ['name', '_name', 'description', '_description']
 
+        #bring in custom declared validators 
+        for attr in dir(self):
+            if not attr.startswith('__'):
+                value = getattr(self, attr)
+                if isinstance(value, Field):
+                    widget = value.widget
+                    if isinstance(widget, Widget):
+                        if not getattr(widget, 'id', None):
+                            raise ViewBaseError('Widgets must provide an id argument for use as a field within a ViewBase')
+                        self.__add_fields__[attr] = widget
+                    try:
+                        if issubclass(widget, Widget):
+                            self.__field_widget_types__[attr] = widget
+                    except TypeError:
+                        pass
+                    validator = value.validator
+                    if isinstance(validator, Validator):
+                        self.__field_validators__[attr] = validator
+                    try:
+                        if issubclass(validator, Validator):
+                            self.__field_validator_types__[attr] = validator
+                    except TypeError:
+                        pass
+                if isinstance(value, Validator):
+                    self.__field_validators__[attr] = value
+                    continue
+                try:
+                    if issubclass(value, Validator):
+                        self.__field_validator_types__[attr] = value
+                except TypeError:
+                    pass
+    
     def validate(self, params, state=None):
         """A pass-thru to the widget's validate function."""
         return self.__widget__.validate(params, state)
