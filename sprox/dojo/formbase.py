@@ -99,3 +99,59 @@ class DojoEditableForm(EditableForm):
     </form>
 """
     __widget_selector_type__ = DojoSAWidgetSelector
+
+class DojoAddRecordForm(AddRecordForm):
+    """
+    Creates a form for adding records that has select shuttles for the multiple relations.
+    
+    :Modifiers:
+      see :class:`sprox.formbase.FormBase`
+
+    :Usage:
+    
+    >>> from sprox.dojo.formbase import DojoAddRecordForm
+    >>> from formencode import Schema
+    >>> from formencode.validators import FieldsMatch
+    >>> class Form(DojoAddRecordForm):
+    ...     __model__ = User
+    ...     __limit_fields__       = ['user_name', 'groups']
+    >>> add_form = Form()
+    >>> print add_form() # doctest: +XML
+    <form action="" method="post" class="required tableform">
+        <div>
+                <input type="hidden" id="sprox_id" class="hiddenfield" name="sprox_id" value="" />
+        </div>
+        <table border="0" cellspacing="0" cellpadding="2" >
+            <tr class="even" id="user_name.container" title="" >
+                <td class="labelcol">
+                    <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
+                </td>
+                <td class="fieldcol" >
+                    <input type="text" id="user_name" class="textfield" name="user_name" value="" />
+                </td>
+            </tr>
+            <tr class="odd" id="groups.container" title="" >
+                <td class="labelcol">
+                    <label id="groups.label" for="groups" class="fieldlabel">Groups</label>
+                </td>
+                <td class="fieldcol" >
+                    <select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
+            <option value="1">0</option>
+            <option value="2">1</option>
+            <option value="3">2</option>
+            <option value="4">3</option>
+            <option value="5">4</option>
+    </select>
+                </td>
+            </tr>
+            <tr class="even" id="submit.container" title="" >
+                <td class="labelcol">
+                    <label id="submit.label" for="submit" class="fieldlabel"></label>
+                </td>
+                <td class="fieldcol" >
+                    <input type="submit" class="submitbutton" value="Submit" />
+                </td>
+            </tr>
+        </table>
+    </form>
+"""
