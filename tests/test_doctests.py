@@ -1,7 +1,7 @@
 from sprox.configbase import ConfigBase, ConfigBaseError
-from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document
+from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document, eq_xml
 from sprox.test.model import User, Town
-import os.path
+import os.path, re
 from nose.tools import raises, eq_
 from nose.util import anyp, getpackage, test_address, resolve_name, src, tolist
 
@@ -29,6 +29,24 @@ def setup():
     #this may be needed if we end up testing the provider with doctests
     #session.commit()
     
+
+def check_output_xml(want, got, optionsflags):
+    return eq_xml(want, got)
+
+from doctest import OutputChecker
+original_check_output = OutputChecker.check_output
+import doctest
+
+XML_OUTPUT = doctest.register_optionflag("XML")
+
+class MyOutputChecker(doctest.OutputChecker):
+    def check_output(self, want, got, optionflags):
+        if optionflags & XML_OUTPUT:
+            return check_output_xml(want, got, optionflags)
+        return original_check_output(self, want, got, optionflags)
+
+doctest.OutputChecker = MyOutputChecker
+
 def teardown():
     session.rollback()
 
@@ -54,5 +72,5 @@ def test_doctests():
                 pass
     suite.addTest(doctest.DocTestSuite(dojo_formbase, globs={'session':session, 'User': User, 'Town':Town, 'metadata':metadata}, setUp=setUp, tearDown=tearDown))
 
-    runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner(verbosity=10)
     runner.run(suite)

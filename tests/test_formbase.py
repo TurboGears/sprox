@@ -1,6 +1,6 @@
 from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm
 from sprox.viewbase import ViewBaseError
-from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document
+from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document, assert_in_xml
 from sprox.test.model import User, Group
 from sprox.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
@@ -48,9 +48,14 @@ class TestFormBase(SproxTest):
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<td class="fieldcol" >
-                <input type="submit" name="" class="submitbutton" id="None" value="Submit" />
-            </td>""" in rendered, rendered
+        assert_in_xml("""<tr class="even" id="submit.container" title="" >
+            <td class="labelcol">
+                <label id="submit.label" for="submit" class="fieldlabel"></label>
+            </td>
+            <td class="fieldcol" >
+                <input type="submit" class="submitbutton" value="Submit" />
+            </td>
+        </tr>""", rendered)
 
     @raises(ViewBaseError)
     def test_form_field_with_no_id(self):
@@ -64,14 +69,14 @@ class TestFormBase(SproxTest):
             __entity__ = Document
         form = DocumentForm(session)
         rendered = form()
-        assert """<tr class="odd" id="address.container" title="" >            
+        assert_in_xml("""<tr class="odd" id="address.container" title="" >
             <td class="labelcol">
                 <label id="address.label" for="address" class="fieldlabel">Address</label>
             </td>
             <td class="fieldcol" >
-                <input type="text" name="address" class="textfield" id="address" value="" />
+                <input type="text" id="address" class="textfield" name="address" value="" />
             </td>
-        </tr>""" in rendered, rendered
+        </tr>""", rendered)
 
     def test_entity_with_dropdown_field_names(self):
         class UserFormFieldNames(FormBase):
@@ -79,15 +84,15 @@ class TestFormBase(SproxTest):
             __dropdown_field_names__ = ['group_name']
         form = UserFormFieldNames(session)
         rendered = form()
-        assert """<td class="fieldcol" >
-                <select name="groups" class="propertymultipleselectfield" id="groups" multiple="True" size="5">
+        assert_in_xml("""<td class="fieldcol" >
+                <select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
         <option value="1">0</option>
         <option value="2">1</option>
         <option value="3">2</option>
         <option value="4">3</option>
         <option value="5">4</option>
 </select>
-            </td>""" in rendered, rendered
+            </td>""", rendered)
         
     def test_entity_with_dropdown_field_names_dict(self):
         class UserFormFieldNames(FormBase):
@@ -95,15 +100,15 @@ class TestFormBase(SproxTest):
             __dropdown_field_names__ = {'groups':['group_name']}
         form = UserFormFieldNames(session)
         rendered = form()
-        assert """<td class="fieldcol" >
-                <select name="groups" class="propertymultipleselectfield" id="groups" multiple="True" size="5">
+        assert_in_xml( """<td class="fieldcol" >
+                <select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
         <option value="1">0</option>
         <option value="2">1</option>
         <option value="3">2</option>
         <option value="4">3</option>
         <option value="5">4</option>
 </select>
-            </td>""" in rendered, rendered
+            </td>""", rendered)
         
         
     def test_require_field(self):
@@ -170,15 +175,14 @@ class TestEditableForm(SproxTest):
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<tr class="even" id="user_name.container" title="" >            
+        assert_in_xml("""<tr class="even" id="user_name.container" title="" >
             <td class="labelcol">
                 <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
             </td>
             <td class="fieldcol" >
-                <input type="text" name="user_name" class="textfield has_error" id="user_name" value="asdf" />
-                <span class="fielderror">That value already exists</span>
+                <input type="text" id="user_name" class="textfield" name="user_name" value="" />
             </td>
-        </tr>""" in rendered, rendered
+        </tr>""", rendered)
         
 class TestDisabledForm(SproxTest):
     def setup(self):
@@ -193,7 +197,11 @@ class TestDisabledForm(SproxTest):
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<td class="fieldcol" >
-                <input type="text" name="user_name" class="textfield has_error" id="user_name" value="asdf" disabled="disabled" />
-                <span class="fielderror">That value already exists</span>
-            </td>""" in rendered, rendered
+        assert_in_xml( """<tr class="even" id="user_name.container" title="" >
+            <td class="labelcol">
+                <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
+            </td>
+            <td class="fieldcol" >
+                <input type="text" id="user_name" class="textfield" name="user_name" value="" disabled="disabled" />
+            </td>
+        </tr>""", rendered)
