@@ -89,6 +89,18 @@ class TestViewBase:
         child = widget.children['password']
         assert isinstance(child, TextField), child.__class__
 
+    def test_custom_with_none(self):
+        class UserView(ViewBase):
+            __entity__ = User
+            __metadata_type__ = DummyMetadata
+            __add_fields__ = {'password':None}
+
+
+        user_view = UserView()
+        widget = user_view.__widget__
+        child = widget.children['password']
+        assert isinstance(child, Widget), str(child.__class__)
+
     def test_omit_fields(self):
         class UserView(ViewBase):
             __entity__ = User
