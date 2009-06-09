@@ -238,7 +238,10 @@ class FormBase(ViewBase):
             args['entity'] = self.__entity__
             args['field_name'] = field_name
             if isinstance(self.__dropdown_field_names__, dict) and field_name in self.__dropdown_field_names__:
-                args['dropdown_field_names'] = self.__dropdown_field_names__[field_name]
+                view_names = self.__dropdown_field_names__[field_name]
+                if not isinstance(view_names, list):
+                    view_names = [view_names]
+                args['dropdown_field_names'] = view_names
             elif isinstance(self.__dropdown_field_names__, list):
                 args['dropdown_field_names'] = self.__dropdown_field_names__
         if v:

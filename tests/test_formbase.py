@@ -187,6 +187,22 @@ class TestFormBase(SproxTest):
 </select>
             </td>""", rendered)
         
+    def test_entity_with_dropdown_field_names2(self):
+        class UserFormFieldNames(FormBase):
+            __entity__ = User
+            __dropdown_field_names__ = {'groups':'group_name'}
+        form = UserFormFieldNames(session)
+        rendered = form()
+        assert_in_xml("""<td class="fieldcol" >
+                <select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
+        <option value="1">0</option>
+        <option value="2">1</option>
+        <option value="3">2</option>
+        <option value="4">3</option>
+        <option value="5">4</option>
+</select>
+            </td>""", rendered)
+
     def test_entity_with_dropdown_field_names_dict(self):
         class UserFormFieldNames(FormBase):
             __entity__ = User

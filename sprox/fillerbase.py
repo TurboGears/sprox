@@ -187,6 +187,7 @@ class TableFiller(FillerBase):
           order the columns in descending order
         """
         count, objs = self._do_get_provider_count_and_objs(**kw)
+        self.__count__ = count
         rows = []
         for obj in objs:
             row = {}

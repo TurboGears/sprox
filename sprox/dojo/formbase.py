@@ -130,18 +130,33 @@ class DojoAddRecordForm(AddRecordForm):
                     <input type="text" id="user_name" class="textfield" name="user_name" value="" />
                 </td>
             </tr>
-            <tr class="odd" id="groups.container" title="" >
+            <tr class="odd" id=".container" title="" >
                 <td class="labelcol">
-                    <label id="groups.label" for="groups" class="fieldlabel">Groups</label>
+                    <label id=".label" for="" class="fieldlabel">Groups</label>
                 </td>
                 <td class="fieldcol" >
-                    <select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
-            <option value="1">0</option>
-            <option value="2">1</option>
-            <option value="3">2</option>
-            <option value="4">3</option>
-            <option value="5">4</option>
-    </select>
+                    <div xmlns="http://www.w3.org/1999/xhtml" dojoType="twdojo.SelectShuttle" id="groups_SelectShuttle">
+        <div style="float:left; padding: 5px; width:10em;">
+            Available<br />
+            <select class="shuttle" id="groups_src" multiple="multiple" name="" size="5">
+                    <option value="1">0</option><option value="2">1</option><option value="3">2</option><option value="4">3</option><option value="5">4</option>
+            </select>
+        </div>
+        <div style="float:left; padding: 25px 5px 5px 0px;" id="groups_Buttons">
+            <button class="shuttle" id="groups_AllRightButton">&gt;&gt;</button><br />
+            <button class="shuttle" id="groups_RightButton">&gt;</button><br />
+            <button class="shuttle" id="groups_LeftButton">&lt;</button><br />
+            <button class="shuttle" id="groups_AllLeftButton">&lt;&lt;</button>
+        </div>
+        <div style="float:left; padding: 5px; width:10em;">
+                Selected<br />
+                <select class="shuttle" id="groups" multiple="multiple" name="groups" size="5">
+                </select>
+        </div>
+        <script type="text/javascript">
+        //create an object of this type here
+        </script>
+    </div>
                 </td>
             </tr>
             <tr class="even" id="submit.container" title="" >
@@ -155,3 +170,4 @@ class DojoAddRecordForm(AddRecordForm):
         </table>
     </form>
 """
+    __widget_selector_type__ = DojoSAWidgetSelector

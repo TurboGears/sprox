@@ -86,7 +86,10 @@ class ViewBase(ConfigBase):
 
     @property
     def __widget__(self):
-        self.___widget__ = self.__base_widget_type__(**self.__widget_args__)
+        widget = getattr(self, '___widget__', None)
+        if not widget:
+            self.___widget__ = self.__base_widget_type__(**self.__widget_args__)
+            widget = self.___widget__
         return self.___widget__
 
     #try to act like a widget as much as possible

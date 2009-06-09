@@ -182,7 +182,7 @@ class SAORMProvider(IProvider):
         view_name = self.get_view_field_name(target_field, view_names)
 
         rows = self.session.query(target_field).all()
-        return [(getattr(row, pk_name), getattr(row, view_name)) for row in rows]
+        return  [(getattr(row, pk_name), getattr(row, view_name)) for row in rows]
 
     def get_relations(self, entity):
         mapper = class_mapper(entity)
