@@ -1,4 +1,4 @@
-import os
+import os, re
 from copy import copy
 from difflib import unified_diff
 from sqlalchemy import *
@@ -33,10 +33,22 @@ def remove_whitespace_nodes(node):
         new_node.append(child)
     return new_node
 
+def remove_namespace(doc):
+    """Remove namespace in the passed document in place."""
+    for elem in doc.getiterator():
+        match = re.match('(\{.*\})(.*)', elem.tag)
+        if match:
+            elem.tag = match.group(2)
+
+def replace_escape_chars(needle):
+    needle = needle.replace('&nbsp;', ' ')
+    return needle
+
 def fix_xml(needle):
-    needle_node   = etree.fromstring(needle)
+    needle = replace_escape_chars(needle)
+    needle_node = etree.fromstring(needle)
     needle_node = remove_whitespace_nodes(needle_node)
-#    import ipdb; ipdb.set_trace();
+    remove_namespace(needle_node)
     needle_s = etree.tostring(needle_node)
     return needle_s
 
@@ -46,7 +58,6 @@ def in_xml(needle, haystack):
 
 def eq_xml(needle, haystack):
     needle_s, haystack_s = map(fix_xml, (needle, haystack))
-        
     return needle_s == haystack_s
 
 def assert_in_xml(needle, haystack):
