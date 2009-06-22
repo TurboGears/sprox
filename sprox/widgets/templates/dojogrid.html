@@ -1,5 +1,6 @@
-<div>
-<table  dojoType="$dojoType"
+<table xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:py="http://genshi.edgewall.org/"
+        dojoType="$dojoType"
         jsId="${jsId}"
         id="${id}"
         store="${jsId}_store"
@@ -15,6 +16,5 @@
                 </th>
             </tr>
         </thead>
+<div dojoType="${dojoStoreType}" jsId="${jsId}_store"  id="${jsId}_store" url="${action}"/>
 </table>
-<div py:if="not(dojoStoreWidget is None)" dojoType="${dojoStoreType}" jsId="${jsId}_store"  id="${jsId}_store" url="${action}"/>
-</div>

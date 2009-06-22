@@ -52,7 +52,7 @@ class DojoJsonRestStoreInstance(JSSource):
 
 class SproxEditableDojoGrid(DojoBase):
     engine_name=None
-    available_engines = ['mako','genshi']
+    available_engines = ['genshi', 'mako']
     css = [grid_css, tundragrid_css]
     require = ['dojox.grid.DataGrid', 'twdojo.data.TWDojoRestStore']
     dojoType = 'dojox.grid.DataGrid'

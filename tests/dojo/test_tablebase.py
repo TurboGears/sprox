@@ -1,5 +1,5 @@
 from sprox.dojo.tablebase import DojoTableBase, DojoEditableTableBase
-from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example
+from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, assert_in_xml
 from sprox.test.model import User
 from sprox.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
@@ -34,7 +34,7 @@ class TestDojoTableBase:
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<table xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/"
+        assert_in_xml("""<table
                          dojoType="dojox.grid.DataGrid"
                          jsId="listing__User"
                          id=""
@@ -61,7 +61,7 @@ class TestDojoTableBase:
             </tr>
     </thead>
     <div dojoType="dojox.data.QueryReadStore" jsId="listing__User_store"  id="listing__User_store" url="./something.json"/>
-</table>""" in rendered, rendered
+</table>""",rendered)
 
 class TestDojoEditableTableBase:
     def setup(self):
@@ -72,7 +72,7 @@ class TestDojoEditableTableBase:
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<table xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/"
+        assert_in_xml("""<table
                          dojoType="dojox.grid.DataGrid"
                          jsId="None"
                          id=""
@@ -98,5 +98,5 @@ class TestDojoEditableTableBase:
                     <th width="10em" name="groups" field="groups"                             editable="true">groups</th>
             </tr>
     </thead>
-</table>""" in rendered, rendered
+</table>""", rendered)
 
