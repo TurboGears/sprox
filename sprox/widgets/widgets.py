@@ -57,19 +57,23 @@ class TableDefWidget(Widget):
     params = ["identifier"]
 
 class EntityDefWidget(Widget):
-    template = "genshi:sprox.widgets.templates.entityDef"
+    available_engines = ['genshi']
+    template = "sprox.widgets.templates.entityDef"
     params = ["entity"]
 
 class TableWidget(Widget):
+    available_engines = ['genshi']
     template = "genshi:sprox.widgets.templates.table"
 
 class SproxTableForm(TableForm):
+    available_engines = ['genshi']
     validator = Schema(ignore_missing_keys=True, allow_extra_fields=True)
     template = "genshi:sprox.widgets.templates.tableForm"
 
 #custom checkbox widget since I am not happy with the behavior of the TW one
 class SproxCheckBox(InputField):
-    template = "genshi:sprox.widgets.templates.checkbox"
+    available_engines = ['genshi']
+    template = "sprox.widgets.templates.checkbox"
     validator = StringBool
     def update_params(self, d):
         InputField.update_params(self, d)

@@ -38,13 +38,11 @@ class TestsEmptyDropdownWorks:
         
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<td class="fieldcol" >
+        assert_in_xml("""<td class="fieldcol" >
                 <select name="town" class="propertysingleselectfield" id="town">
         <option value="" selected="selected">-----------</option>
 </select>
-            </td>""" in rendered, rendered
-    
-
+            </td>""", rendered)
 
 class TestFormBase(SproxTest):
     def setup(self):

@@ -38,6 +38,7 @@ class SproxDojoGrid(DojoBase):
         super(SproxDojoGrid, self).update_params(d)
 
 class DojoJsonRestStoreInstance(JSSource):
+    engine_name='mako'
     require = ['twdojo.data.TWDojoRestStore']
     target='.json'
     url = '.json'

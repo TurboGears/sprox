@@ -7,6 +7,9 @@ from model import *
 from cStringIO import StringIO
 from cgi import FieldStorage
 
+from tw import framework
+framework.default_view = 'mako'
+
 #try:
 import xml.etree.ElementTree as etree
 #except ImportError:
