@@ -13,7 +13,7 @@ setup(
   license="MIT",
   url="http://www.sprox.org",
   install_requires=['sqlalchemy>=0.5',
-                    'tw.forms>=0.9.6',
+                    'tw.forms>=0.9.7.2',
                     ],
   packages = find_packages(),
   classifiers=[
