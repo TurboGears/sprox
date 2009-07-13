@@ -75,7 +75,8 @@ class TestFieldsMetadata(MetadataTest):
                     'dateTime', 'dateTime', 'date_', 'date_', 'datetime_',
                     'datetime_', 'decimal', 'decimal', 'example_id', 'example_id',
                     'float_', 'float_', 'float__', 'float__', 'int_', 'int_', 'integer',
-                    'integer', 'numeric', 'numeric', 'password', 'password', 'pickletype',
+                    'integer', 'interval', 'interval', 'numeric', 'numeric',
+                    'password', 'password', 'pickletype',
                     'pickletype', 'smallint', 'smallint', 'smalliunteger', 'smalliunteger',
                     'string', 'string', 'text', 'text', 'time', 'time', 'time_', 'time_',
                     'timestamp', 'timestamp', 'unicode_', 'unicode_', 'varchar', 'varchar'])

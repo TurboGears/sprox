@@ -152,6 +152,10 @@ class TestSAORMProvider(SproxTest):
         params = self.provider._modify_params_for_dates(Example, {'date_': '1978-8-29'})
         eq_(params,  {'date_': datetime.datetime(1978, 8, 29, 0, 0)})
 
+    def test_modify_params_for_intervals(self):
+        params = self.provider._modify_params_for_dates(Example, {'interval': '1 days, 3:20:01'})
+        eq_(params,  {'interval': datetime.timedelta(days=1, hours=3, minutes=20, seconds=1)})
+
     def test_modify_params_for_relationships_params_with_instance_already(self):
         group = self.session.query(Group).get(1)
         params = {'groups':group}

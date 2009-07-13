@@ -179,6 +179,7 @@ class Example(DeclarativeBase):
     float_          = Column(Float         )
     int_            = Column(INT           )
     integer         = Column(Integer, default=10)
+    interval        = Column(Interval      )
    # (NCHAR =       #Column NCHAR          )
     numeric         = Column(Numeric       )
     pickletype      = Column(PickleType    )
