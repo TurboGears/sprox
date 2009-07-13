@@ -19,7 +19,8 @@ Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
 import inspect
-from sqlalchemy import and_, or_, DateTime, Date, Binary, MetaData, desc as _desc
+import re
+from sqlalchemy import and_, or_, DateTime, Date, Interval, Binary, MetaData, desc as _desc
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
@@ -27,7 +28,7 @@ from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registr
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
-from datetime import datetime
+from datetime import datetime, timedelta
 from warnings import warn
 
 class SAORMProviderError(Exception):pass
@@ -316,6 +317,14 @@ class SAORMProvider(IProvider):
                     params[key] = dt
                 if hasattr(field, 'type') and isinstance(field.type, Date) and not isinstance(value, datetime):
                     dt = datetime.strptime(value, '%Y-%m-%d')
+                    params[key] = dt
+                if hasattr(field, 'type') and isinstance(field.type, Interval) and not isinstance(value, timedelta):
+                    d = re.match(
+                            r'((?P<days>\d+) days, )?(?P<hours>\d+):'
+                            r'(?P<minutes>\d+):(?P<seconds>\d+)',
+                            str(value)).groupdict(0)
+                    dt = timedelta(**dict(( (key, int(value))
+                                              for key, value in d.items() )))
                     params[key] = dt
         return params
 
