@@ -24,6 +24,8 @@ class FilteringSchema(Schema):
     """This makes formencode work for most forms, because some wsgi apps append extra values to the parameter list."""
     filter_extra_fields = True
     allow_extra_fields = True
+    ignore_key_missing = True
+    if_key_missing = None
 
 class Field(object):
     """Used to handle the case where you want to override both a validator and a widget for a given field"""
@@ -226,6 +228,7 @@ class FormBase(ViewBase):
         d = super(FormBase, self)._do_get_widget_args()
         if self.__base_validator__ is not None:
             d['validator'] = self.__base_validator__
+        print d
         return d
 
     def _do_get_field_widget_args(self, field_name, field):
@@ -303,9 +306,11 @@ class EditableForm(FormBase):
     def _do_get_fields(self):
         """Override this function to define how
         """
+        print 'here', self
         fields = super(EditableForm, self)._do_get_fields()
         if '_method' not in fields:
             fields.append('_method')
+        print 'here'
         return fields
 
     def _do_get_field_widgets(self, fields):
