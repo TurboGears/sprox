@@ -8,11 +8,7 @@ import inspect
 
 
 class SproxMethodPutHiddenField(HiddenField):
-    template="""<input xmlns="http://www.w3.org/1999/xhtml"
-       xmlns:py="http://genshi.edgewall.org/"
-       type="hidden" name="_method" class="${css_class}" id="${id}"
-       value="PUT"
-       py:attrs="attrs" />"""
+    template="genshi:sprox.widgets.templates.hidden_put"
 
 class SproxCalendarDatePicker(CalendarDatePicker):
     date_format = '%Y-%m-%d'

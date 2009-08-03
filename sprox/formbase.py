@@ -228,7 +228,6 @@ class FormBase(ViewBase):
         d = super(FormBase, self)._do_get_widget_args()
         if self.__base_validator__ is not None:
             d['validator'] = self.__base_validator__
-        print d
         return d
 
     def _do_get_field_widget_args(self, field_name, field):
@@ -306,11 +305,9 @@ class EditableForm(FormBase):
     def _do_get_fields(self):
         """Override this function to define how
         """
-        print 'here', self
         fields = super(EditableForm, self)._do_get_fields()
         if '_method' not in fields:
             fields.append('_method')
-        print 'here'
         return fields
 
     def _do_get_field_widgets(self, fields):
