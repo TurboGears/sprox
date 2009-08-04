@@ -43,11 +43,7 @@ class DojoEditableForm(EditableForm):
     <form action="" method="post" class="required tableform">
         <div>
                 <input type="hidden" id="sprox_id" class="hiddenfield" name="sprox_id" value="" />
-                <input xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:py="http://genshi.edgewall.org/"
-           type="hidden" name="_method" class="sproxmethodputhiddenfield" id="_method"
-           value="PUT"
-           py:attrs="attrs" />
+                <input xmlns="http://www.w3.org/1999/xhtml" type="hidden" name="_method" class="sproxmethodputhiddenfield" id="_method" value="PUT" />
         </div>
         <table border="0" cellspacing="0" cellpadding="2" >
             <tr class="even" id="user_name.container" title="" >

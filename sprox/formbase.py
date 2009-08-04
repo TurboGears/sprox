@@ -24,8 +24,6 @@ class FilteringSchema(Schema):
     """This makes formencode work for most forms, because some wsgi apps append extra values to the parameter list."""
     filter_extra_fields = True
     allow_extra_fields = True
-    ignore_key_missing = True
-    if_key_missing = None
 
 class Field(object):
     """Used to handle the case where you want to override both a validator and a widget for a given field"""
@@ -312,7 +310,7 @@ class EditableForm(FormBase):
 
     def _do_get_field_widgets(self, fields):
         widgets = super(EditableForm, self)._do_get_field_widgets(fields)
-        widgets['_method'] = SproxMethodPutHiddenField(id='_method')
+        widgets['_method'] = SproxMethodPutHiddenField(id='_method', validator=String(if_missing=None))
         return widgets
 
     __check_if_unique__ = False
