@@ -1,3 +1,36 @@
+0.6.4
+Fixed _method forcing "missing value" error on TG2
+Interval Support (Graham Higgins)
+
+0.6.3
+TW 0.9.7 support
+
+0.6.2
+Bugfix Release
+
+0.6.1
+Bugfix Release
+
+0.6.0
+* TableFiller can provide field_methods for customization of output. 
+* You can now customize the query TableFiller uses. 
+* TableBase now has __xml_field__ modifier that un-escapes the data 
+provided by the given list of fields. 
+* There is a new tutorial for TableFiller: http://www.sprox.org/tutorials/table.html 
+. 
+* Sqashed #8: Synonym Properties causing Tracebacks. 
+* Added Mako Templates for every sprox widget. (SPEED!) 
+* Fixed the way relation form fields render. 
+* Brandon Rhodes provided a fix for TableBase that allows fields to 
+render with any Widget type. 
+* Teajay Bernard provided *experimental* support for Editable Dojo 
+Grid. 
+* Test framework fixed to be more forgiving of XML.
+* Declarative Validation overrides now work properly. 
+* Field Class added so that you may override both the Widget _and_ a 
+Validator for a field (documentation pending). 
+
+
 0.5.5
 Added __headers__ functionality to tablebase.
 
