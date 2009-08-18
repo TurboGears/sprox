@@ -109,16 +109,14 @@ class SAORMProvider(IProvider):
         field = self.get_field(entity, name)
         if isinstance(field, PropertyLoader):
             field = field.local_side[0]
-        # I am unsure what this is needed for, so it will be removed in the next version, and is for now
-        # commented until someone reports a bug.
-        #if not hasattr(field, 'type'):
-        #    return False
+        if isinstance(field, SynonymProperty):
+            field = self.get_field(entity, field.name)
         return isinstance(field.type, Binary)
 
     def is_nullable(self, entity, name):
         field = self.get_field(entity, name)
         if isinstance(field, SynonymProperty):
-            return
+            field = self.get_field(entity, field.name)
         if isinstance(field, PropertyLoader):
             return field.local_side[0].nullable
         return field.nullable
