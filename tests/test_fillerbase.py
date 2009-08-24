@@ -48,7 +48,7 @@ class TestTableFiller(SproxTest):
 
         filler = ExampleFiller(session)
         value = filler.get_value()
-        eq_(value[0]['binary'], '<file>')
+        eq_(value[0]['binary'], '&lt;file&gt;')
 
     def test_get_list_data_value_array_values(self):
         r = self.filler._get_list_data_value(User, ['something', 'something else'])
