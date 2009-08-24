@@ -209,7 +209,7 @@ class TableFiller(FillerBase):
                     elif self.__provider__.is_relation(self.__entity__, field) and value is not None:
                         value = self._get_relation_value(field, value)
                     elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
-                        value = '<file>'
+                        value = '&lt;file&gt;'
                 row[field] = unicode(value)
             rows.append(row)
         return rows
