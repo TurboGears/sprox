@@ -106,7 +106,7 @@ class User(DeclarativeBase):
         """
         return self._password
 
-    password = synonym('password', descriptor=property(_get_password,
+    password = synonym('_password', descriptor=property(_get_password,
                                                        _set_password))
 
     def _encrypt_password(self, algorithm, password):

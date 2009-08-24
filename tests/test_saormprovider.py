@@ -45,6 +45,9 @@ class TestSAORMProvider(SproxTest):
     def test_isbinary_related(self):
         assert not self.provider.is_binary(User, 'groups')
 
+    def test_isbinary_synonym(self):
+        assert not self.provider.is_binary(User, 'password')
+
     def test_create_with_engine(self):
         provider = SAORMProvider(engine)
         assert provider.engine == engine
