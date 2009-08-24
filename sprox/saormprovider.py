@@ -250,6 +250,8 @@ class SAORMProvider(IProvider):
         
         for key, value in params.iteritems():
             if value is not None:
+                if isinstance(value, FieldStorage):
+                    value = value.file.read()
                 setattr(obj, key, value)
 
         self.session.add(obj)
@@ -347,6 +349,8 @@ class SAORMProvider(IProvider):
         obj = self.session.query(entity).get(params[pk_name])
         relations = self.get_relations(entity)
         for key, value in params.iteritems():
+            if isinstance(value, FieldStorage):
+                value = value.file.read()
             setattr(obj, key, value)
         
         self._remove_related_empty_params(obj, params)
