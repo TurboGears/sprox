@@ -16,6 +16,12 @@ class DojoBaseHref(JSLink):
     is_external=True
     template = """<base href="/toscawidgets/resources/tw.dojo/static/"/>"""
 
+fb_lite = JSLink(
+    is_external=True,
+    link = 'http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js',
+    template = """<base href="/toscawidgets/resources/tw.dojo/static/"/>""",)
+
+
 dojo_base_href = DojoBaseHref()
 
 # un parse-on-load shit
@@ -52,7 +58,8 @@ class SproxDojoGrid(SproxDojoBase):
     engine_name=None
     available_engines = ['mako','genshi']
     css = [grid_css, tundragrid_css, tundra_css]
-    javascript=[dojo_js, 
+    javascript=[#fb_lite,
+                dojo_js,
                 sprox_grid_js]
 #    require = ['dojo.parser', 'dojox.grid.DataGrid', 'dojox.data.QueryReadStore']
     dojoType = 'dojox.grid.DataGrid'

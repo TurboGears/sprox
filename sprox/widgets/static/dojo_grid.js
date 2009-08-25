@@ -1,5 +1,5 @@
-alert('here');
-/*dojo.require("dojo.parser");
+//alert('here');
+dojo.require("dojo.parser");
 dojo.require("dojox.data.QueryReadStore");
 dojo.require("dojox.grid.DataGrid");
 dojo.addOnLoad(
@@ -7,4 +7,3 @@ dojo.addOnLoad(
         dojo.parser.parse(dojo.byId("code1"));
     });
 
-*/
