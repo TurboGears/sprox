@@ -12,33 +12,43 @@ import tw
 # fuck you IE
 class DojoBaseHref(JSLink):
     modname = 'tw.dojo'
-    location="bodybottom"
+#    location="bodytop"
     is_external=True
-    template = """<base href="/toscawidgets/resources/tw.dojo/static/"/>"""
+#    template = """<base href="/toscawidgets/resources/tw.dojo/static/"></base>"""
+    template = """<script type="text/javascript">
+    djConfig = {baseUrl: '/toscawidgets/resources/tw.dojo/static/dojo/',
+                isDebug: false,
+                parseOnLoad: false,
+                locale: 'en',
+                afterOnLoad: true,
+                useXDomain: false
+                }
+    </script>"""
 
 fb_lite = JSLink(
     is_external=True,
     link = 'http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js',
-    template = """<base href="/toscawidgets/resources/tw.dojo/static/"/>""",)
-
+)
 
 dojo_base_href = DojoBaseHref()
 
 # un parse-on-load shit
 dojo_js = DojoLink(
-    location="bodybottom",
+#    location="bodytop",
     modname = 'tw.dojo', 
     filename = 'static/dojo/dojo.js',
     parseOnLoad = False,
     isDebug = False,
     javascript=[dojo_base_href],
-    template = """<script type="text/javascript" src="$link" djConfig="isDebug: ${isDebug and 'true' or 'false'},
-    parseOnLoad: ${parseOnLoad and 'true' or 'false'}"/>"""
+    template = """<script type="text/javascript" src="$link"></script>"""
+    
+    #""" djConfig="isDebug: ${isDebug and 'true' or 'false'},
+    #parseOnLoad: ${parseOnLoad and 'true' or 'false'}"/>"""
 
     )
 
 class SproxDojoRequireCalls(DojoRequireCalls): 
-    location = "bodytop" 
+#    location = "bodytop" 
     javascript=[dojo_js,]
 
 dojo_require = SproxDojoRequireCalls("dojo_require")
@@ -52,7 +62,9 @@ class SproxDojoBase(DojoBase):
 
 sprox_grid_js = JSLink(modname="sprox",
                        filename="widgets/static/dojo_grid.js",
-                       location="bodybottom")
+                       location="bodytop",
+                       template = """<script type="text/javascript" src="$link" defer="defer"></script>"""
+                       )
 
 class SproxDojoGrid(SproxDojoBase):
     engine_name=None
