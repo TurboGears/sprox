@@ -5,11 +5,56 @@ from tw.dojo.selectshuttle import DojoSelectShuttleField, DojoSortedSelectShuttl
 from tw.api import JSSource
 from sprox.widgets import PropertyMixin
 
-class SproxDojoGrid(DojoBase):
+from tw.dojo import DojoLink, DojoRequireCalls, DojoBase, dijit_dir, tundra_css, dojo_css
+from tw.core import JSLink
+import tw
+
+# fuck you IE
+class DojoBaseHref(JSLink):
+    modname = 'tw.dojo'
+    location="bodybottom"
+    is_external=True
+    template = """<base href="/toscawidgets/resources/tw.dojo/static/"/>"""
+
+dojo_base_href = DojoBaseHref()
+
+# un parse-on-load shit
+dojo_js = DojoLink(
+    location="bodybottom",
+    modname = 'tw.dojo', 
+    filename = 'static/dojo/dojo.js',
+    parseOnLoad = False,
+    isDebug = False,
+    javascript=[dojo_base_href],
+    template = """<script type="text/javascript" src="$link" djConfig="isDebug: ${isDebug and 'true' or 'false'},
+    parseOnLoad: ${parseOnLoad and 'true' or 'false'}"/>"""
+
+    )
+
+class SproxDojoRequireCalls(DojoRequireCalls): 
+    location = "bodytop" 
+    javascript=[dojo_js,]
+
+dojo_require = SproxDojoRequireCalls("dojo_require")
+
+class SproxDojoBase(DojoBase):
+    require = []
+    def update_params(self, d): 
+        super(DojoBase, self).update_params(d)
+        for r in self.require:
+            dojo_require.require(r)
+
+sprox_grid_js = JSLink(modname="sprox",
+                       filename="widgets/static/dojo_grid.js",
+                       location="bodybottom")
+
+class SproxDojoGrid(SproxDojoBase):
     engine_name=None
     available_engines = ['mako','genshi']
-    css = [grid_css, tundragrid_css]
-    require = ['dojox.grid.DataGrid', 'dojox.data.QueryReadStore']
+    css = [grid_css, tundragrid_css, tundra_css]
+    javascript=[dojo_js, 
+                sprox_grid_js]
+#    require = ['dojo.parser', 'dojox.grid.DataGrid', 'dojox.data.QueryReadStore']
     dojoType = 'dojox.grid.DataGrid'
     params = ['id', 'attrs', 'columns', 'jsId', 'action',
               'rowsPerPage', 'model', 'delayScroll', 'cssclass', 'actions',

@@ -1,3 +1,12 @@
+
+<div>
+<script>
+//<![CDATA[
+function lessThan(str) {
+return str.replace(/&lt;/gi, "<");
+}
+//]]>
+</script>
 <table xmlns="http://www.w3.org/1999/xhtml"
        xmlns:py="http://genshi.edgewall.org/"
         dojoType="$dojoType"
@@ -12,9 +21,10 @@
         >
     <thead>
             <tr>
-                <th py:for="column in columns" width="${column_widths.get(column, default_column_width)}" name="${headers.get(column, column)}" field="${column}" py:attrs="column_options.get(column,default_column_options)">$column
+                <th formatter="lessThan" py:for="column in columns" width="${column_widths.get(column, default_column_width)}" name="${headers.get(column, column)}" field="${column}" py:attrs="column_options.get(column,default_column_options)">$column
                 </th>
             </tr>
         </thead>
 <div dojoType="${dojoStoreType}" jsId="${jsId}_store"  id="${jsId}_store" url="${action}"/>
 </table>
+</div>
