@@ -5,76 +5,20 @@ from tw.dojo.selectshuttle import DojoSelectShuttleField, DojoSortedSelectShuttl
 from tw.api import JSSource
 from sprox.widgets import PropertyMixin
 
-from tw.dojo import DojoLink, DojoRequireCalls, DojoBase, dijit_dir, tundra_css, dojo_css
+from tw.dojo import DojoBase, tundragrid_css, tundra_css, dojo_css, dojo_js
 from tw.core import JSLink
-import tw
-
-# fuck you IE
-class DojoBaseHref(JSLink):
-    modname = 'tw.dojo'
-#    location="bodytop"
-    is_external=True
-#    template = """<base href="/toscawidgets/resources/tw.dojo/static/"></base>"""
-    template = """<script type="text/javascript">
-    djConfig = {baseUrl: '/toscawidgets/resources/tw.dojo/static/dojo/',
-                isDebug: false,
-                parseOnLoad: false,
-                locale: 'en',
-                afterOnLoad: true,
-                useXDomain: false
-                }
-    </script>"""
-
-fb_lite = JSLink(
-    is_external=True,
-    link = 'http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js',
-)
-
-dojo_base_href = DojoBaseHref()
-
-# un parse-on-load shit
-dojo_js = DojoLink(
-#    location="bodytop",
-    modname = 'tw.dojo', 
-    filename = 'static/dojo/dojo.js',
-    parseOnLoad = False,
-    isDebug = False,
-    javascript=[dojo_base_href],
-    template = """<script type="text/javascript" src="$link"></script>"""
-    
-    #""" djConfig="isDebug: ${isDebug and 'true' or 'false'},
-    #parseOnLoad: ${parseOnLoad and 'true' or 'false'}"/>"""
-
-    )
-
-class SproxDojoRequireCalls(DojoRequireCalls): 
-#    location = "bodytop" 
-    javascript=[dojo_js,]
-
-dojo_require = SproxDojoRequireCalls("dojo_require")
-
-class SproxDojoBase(DojoBase):
-    require = []
-    def update_params(self, d): 
-        super(DojoBase, self).update_params(d)
-        for r in self.require:
-            dojo_require.require(r)
 
 sprox_grid_js = JSLink(modname="sprox",
                        filename="widgets/static/dojo_grid.js",
-                       location="bodytop",
-                       template = """<script type="text/javascript" src="$link" defer="defer"></script>"""
                        )
 
-class SproxDojoGrid(SproxDojoBase):
+class SproxDojoGrid(DojoBase):
     engine_name=None
     available_engines = ['mako','genshi']
     css = [grid_css, tundragrid_css, tundra_css]
-    javascript=[#fb_lite,
-                dojo_js,
-                sprox_grid_js]
-#    require = ['dojo.parser', 'dojox.grid.DataGrid', 'dojox.data.QueryReadStore']
+    javascript=[dojo_js, sprox_grid_js]
     dojoType = 'dojox.grid.DataGrid'
+    require = ['dojox.grid.DataGrid', 'twdojo.data.TWDojoRestStore']
     params = ['id', 'attrs', 'columns', 'jsId', 'action',
               'rowsPerPage', 'model', 'delayScroll', 'cssclass', 'actions',
               'columnResizing', 'columnReordering', 'column_widths', 'default_column_width', 'headers','column_options', 'default_column_options','dojoStoreType','dojoStoreWidget'
