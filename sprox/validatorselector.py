@@ -61,6 +61,9 @@ class ValidatorSelector(object):
     def _do_get_name_based_validators(self):
         return {}
 
+class MongoKitValidatorSelector(ValidatorSelector):
+    pass
+
 class SAValidatorSelector(ValidatorSelector):
 
     default_validators = {

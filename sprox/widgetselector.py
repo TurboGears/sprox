@@ -48,6 +48,29 @@ class RecordViewWidgetSelector(WidgetSelector):
 
 text_field_limit=100
 
+import datetime
+import pymongo
+class MongoKitWidgetSelector(WidgetSelector):
+    #XXX this is a copy of authorized_types from monogokit/pylons/document
+    default_widgets = {
+#    type(None): 
+    bool: SproxCheckBox,
+    int: TextField,
+    float: TextField,
+    unicode: TextField,
+#    list: 
+#    dict:
+    datetime.datetime: SproxCalendarDateTimePicker,
+    pymongo.binary.Binary:FileField
+#    pymongo.objectid.ObjectId:
+#    pymongo.dbref.DBRef:
+#    pymongo.code.Code:
+#    type(re.compile("")):
+#    MongoDocument:
+    }
+    def select(self,field):
+        return self.default_widgets[field]
+
 class SAWidgetSelector(WidgetSelector):
 
     default_widgets = {

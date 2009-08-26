@@ -18,6 +18,7 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm.attributes import ClassManager
 
 from sprox.saormprovider import SAORMProvider
+from sprox.mongokitprovider import MongoKitProvider
 from sprox.dummyentity import DummyEntity
 
 class ProviderSelector:
@@ -34,6 +35,16 @@ class ProviderSelector:
     def get_provider(self, entity=None, hint=None, **hints):
         #BUG this signature is wrong
         raise NotImplementedError
+
+class _MongoKitSelector(ProviderSelector):
+    def get_identifier(self, entity, **hints):
+        return entity.__name__
+
+    def get_provider(self, entity=None, hint=None, **hints):
+        #TODO cache
+        return MongoKitProvider(None)
+        
+        
 
 class _SAORMSelector(ProviderSelector):
 
@@ -116,6 +127,7 @@ class _SAORMSelector(ProviderSelector):
         return self._providers[engine]
 
 SAORMSelector = _SAORMSelector()
+MongoKitSelector = _MongoKitSelector()
 
 #XXX:
 #StormSelector = _StormSelector()
@@ -131,6 +143,9 @@ class ProviderTypeSelector(object):
             return SAORMSelector
         elif inspect.isclass(entity) and issubclass(entity, DummyEntity):
             return SAORMSelector
+        elif hasattr(entity, '_use_pylons') or hasttr(entity,'_enable_autoref'):
+            #FIXME find a better marker
+            return MongoKitSelector
         #other helper definitions are going in here
         else:
             raise ProviderTypeSelectorError('Entity %s has no known provider mapping.'%entity)

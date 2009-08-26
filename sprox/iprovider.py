@@ -1,7 +1,7 @@
 """
 iprovider Module
 
-This contains the class which allows dbsprockets to interface with any database.
+This contains the class which allows sprox to interface with any database.
 
 
 Copyright &copy 2008 Christopher Perkins
