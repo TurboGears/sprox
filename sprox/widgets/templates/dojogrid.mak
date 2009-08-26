@@ -1,3 +1,15 @@
+<%namespace name="tw" module="tw.core.mako_util"/>\
+<div> <!-- begin table widget mako! -->
+<script>
+//<![CDATA[
+function lessThan(str) {
+return str.replace(/&lt;/gi, "<");
+}
+//]]>
+</script>
+% if not(dojoStoreWidget is None):
+<div dojoType="${dojoStoreType}" jsId="${jsId}_store"  id="${jsId}_store" url="${action}"></div>
+% endif
 <table  dojoType="${dojoType}"\
  jsId="${jsId}"\
  id="${id}"\
@@ -7,11 +19,12 @@
  model="${model}"\
  delayScroll="${delayScroll}"\
  class="${cssclass}"\
+ ${tw.attrs(attrs=attrs)}\
 >
     <thead>
             <tr>
                 % for column in columns:
-                    <th width="${column_widths.get(column, default_column_width)}" name="${headers.get(column, column)}" field="${column}" \
+                    <th formatter="lessThan" width="${column_widths.get(column, default_column_width)}" name="${headers.get(column, column)}" field="${column}" \
                          %for name,value in column_options.get(column,default_column_options).iteritems():
                             ${name}="${value}"\
                         %endfor
@@ -19,7 +32,5 @@
                 % endfor
             </tr>
     </thead>
-% if not(dojoStoreWidget is None):
-    <div dojoType="${dojoStoreType}" jsId="${jsId}_store"  id="${jsId}_store" url="${action}"/>
-% endif
 </table>
+</div> <!-- end table widget -->
