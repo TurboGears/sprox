@@ -70,7 +70,6 @@ class SAWidgetSelector(WidgetSelector):
 
     def select(self, field):
 
-
         if hasattr(field, 'name'):
             if field.name in self.default_name_based_widgets:
                 return self.default_name_based_widgets[field.name]
@@ -78,10 +77,13 @@ class SAWidgetSelector(WidgetSelector):
             if field.name.lower() == 'password':
                 return PasswordField
 
+        if hasattr(field, 'key') and field.key.lower() == 'password':
+            return PasswordField
+
         # this is really the best we can do, since we cannot know
         # what type the field represents until execution occurs.
         if isinstance(field, SynonymProperty):
-                                                         #fix to handle weird synonym prop stuff
+            #fix to handle weird synonym prop stuff
             if isinstance(field.descriptor, property) or field.descriptor.__class__.__name__.endswith('SynonymProp'):
                 return TextField
 

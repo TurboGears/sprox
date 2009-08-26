@@ -54,9 +54,9 @@ class DojoEditableForm(EditableForm):
                     <input type="text" id="user_name" class="textfield" name="user_name" value="" />
                 </td>
             </tr>
-            <tr class="odd" id=".container" title="" >
+            <tr class="odd" id="groups.container" title="" >
                 <td class="labelcol">
-                    <label id=".label" for="" class="fieldlabel">Groups</label>
+                    <label id="groups.label" for="groups" class="fieldlabel">Groups</label>
                 </td>
                 <td class="fieldcol" >
                     <div xmlns="http://www.w3.org/1999/xhtml" dojoType="twdojo.SelectShuttle" id="groups_SelectShuttle">
@@ -126,9 +126,9 @@ class DojoAddRecordForm(AddRecordForm):
                     <input type="text" id="user_name" class="textfield" name="user_name" value="" />
                 </td>
             </tr>
-            <tr class="odd" id=".container" title="" >
+            <tr class="odd" id="groups.container" title="" >
                 <td class="labelcol">
-                    <label id=".label" for="" class="fieldlabel">Groups</label>
+                    <label id="groups.label" for="groups" class="fieldlabel">Groups</label>
                 </td>
                 <td class="fieldcol" >
                     <div xmlns="http://www.w3.org/1999/xhtml" dojoType="twdojo.SelectShuttle" id="groups_SelectShuttle">
