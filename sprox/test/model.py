@@ -212,3 +212,14 @@ class Document(DeclarativeBase):
     address = synonym('address', descriptor=property(_get_address,
                                                        _set_address))
 
+class File(DeclarativeBase):
+    __tablename__ = 'attachments'
+
+    file_id = Column(Integer, primary_key=True)
+    data = Column(Binary)
+
+    @synonym_for('data')
+    @property
+    def content(self):
+        return self.data
+

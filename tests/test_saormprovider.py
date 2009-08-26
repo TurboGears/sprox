@@ -8,6 +8,9 @@ from sqlalchemy.engine import Engine
 from nose.tools import raises, eq_
 import datetime
 
+from cgi import FieldStorage
+from StringIO import StringIO
+
 session = None
 engine  = None
 connection = None
@@ -47,6 +50,24 @@ class TestSAORMProvider(SproxTest):
 
     def test_isbinary_synonym(self):
         assert not self.provider.is_binary(User, 'password')
+        assert self.provider.is_binary(File, 'content')
+
+    def test_binary_create(self):
+        fs = FieldStorage()
+        fs.file = StringIO('fake_content')
+
+        values = {'data':fs}
+        self.provider.create(File, values)
+
+    def test_binary_update(self):
+        fs = FieldStorage()
+        fs.file = StringIO('fake_content')
+
+        values = {'data':fs}
+        entity = self.provider.create(File, values)
+
+        values = {'data':fs, 'file_id':entity.file_id}
+        self.provider.update(File, values)
 
     def test_create_with_engine(self):
         provider = SAORMProvider(engine)
