@@ -5,12 +5,20 @@ from tw.dojo.selectshuttle import DojoSelectShuttleField, DojoSortedSelectShuttl
 from tw.api import JSSource
 from sprox.widgets import PropertyMixin
 
+from tw.dojo import DojoBase, tundragrid_css, tundra_css, dojo_css, dojo_js
+from tw.core import JSLink
+
+sprox_grid_js = JSLink(modname="sprox",
+                       filename="widgets/static/dojo_grid.js",
+                       )
+
 class SproxDojoGrid(DojoBase):
     engine_name=None
     available_engines = ['mako','genshi']
-    css = [grid_css, tundragrid_css]
-    require = ['dojox.grid.DataGrid', 'dojox.data.QueryReadStore']
+    css = [grid_css, tundragrid_css, tundra_css]
+    javascript=[dojo_js, sprox_grid_js]
     dojoType = 'dojox.grid.DataGrid'
+    require = ['dojox.grid.DataGrid', 'twdojo.data.TWDojoRestStore']
     params = ['id', 'attrs', 'columns', 'jsId', 'action',
               'rowsPerPage', 'model', 'delayScroll', 'cssclass', 'actions',
               'columnResizing', 'columnReordering', 'column_widths', 'default_column_width', 'headers','column_options', 'default_column_options','dojoStoreType','dojoStoreWidget'
