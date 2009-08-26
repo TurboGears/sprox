@@ -31,7 +31,8 @@ class ProviderSelector:
     def get_identifier(self, entity, **hints):
         raise NotImplementedError
 
-    def get_provider(self, entity, **hints):
+    def get_provider(self, entity=None, hint=None, **hints):
+        #BUG this signature is wrong
         raise NotImplementedError
 
 class _SAORMSelector(ProviderSelector):

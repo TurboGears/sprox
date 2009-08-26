@@ -93,3 +93,9 @@ class IProvider:
     def delete(self, entity, params):
         """Delete an entry of typeentity which matches the params."""
         raise NotImplementedError
+
+    def query(self,entity,*kargs):
+        raise NotImplementedError
+        
+    def is_binary(self,entity,name):
+        raise NotImplementedError

@@ -284,12 +284,14 @@ class SAORMProvider(IProvider):
         return params
 
     def get(self, entity, params):
+        #FIXME either the docstring of iprovider or this implemention is wrong
         pk_name = self.get_primary_field(entity)
         obj = self.session.query(entity).get(params[pk_name])
         return self.dictify(obj)
 
     def query(self, entity, limit=None, offset=None, limit_fields=None, order_by=None, desc=False, **kw):
         query = self.session.query(entity)
+        #FIXME, this will load ALL your shows just to get the count!!
         count = query.count()
         if order_by is not None:
             field = self.get_field(entity, order_by)
@@ -347,7 +349,6 @@ class SAORMProvider(IProvider):
         params = self._modify_params_for_relationships(entity, params)
         pk_name = self.get_primary_field(entity)
         obj = self.session.query(entity).get(params[pk_name])
-        relations = self.get_relations(entity)
         for key, value in params.iteritems():
             setattr(obj, key, value)
         

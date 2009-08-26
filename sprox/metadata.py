@@ -42,11 +42,8 @@ class Metadata(dict):
         raise NotImplementedError
 
     def __getitem__(self, item):
-        try:
-            value = self._do_get_item(item)
-            return value
-        except NotFoundError:
-            return dict.__getitem__(self, item)
+        value = self._do_get_item(item)
+        return value
 
     def keys(self):
         r = self._do_keys()
@@ -80,9 +77,9 @@ class FieldsMetadata(Metadata):
     def _do_get_item(self, item):
         try:
             return self.provider.get_field(self.entity, item)
-        except:
-            pass
-        raise NotFoundError
+        except AttributeError:
+            #XXX I'm not sure  if we should change the type,but we shouldn't swallow with except:
+            raise NotFoundError(self.entity,item)
 
     def _do_keys(self):
         return self.provider.get_fields(self.entity)
