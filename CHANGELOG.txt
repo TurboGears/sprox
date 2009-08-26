@@ -1,3 +1,7 @@
+0.6.5
+Alessandro Molina contributed FieldStorage support
+IE 6 support for sprox dojo
+
 0.6.4
 Fixed _method forcing "missing value" error on TG2
 Interval Support (Graham Higgins)
