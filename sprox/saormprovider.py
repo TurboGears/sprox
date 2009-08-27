@@ -362,7 +362,7 @@ class SAORMProvider(IProvider):
             # this is done to cast any integer columns into ints before they are 
             # sent off to the interpreter.  Oracle really needs this.
             try:
-                if value and isinstance(mapper.columns[key].type, Integer):
+                if key not in relations and value and isinstance(mapper.columns[key].type, Integer):
                     value = int(value)
             except KeyError:
                 pass
