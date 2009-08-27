@@ -359,8 +359,10 @@ class SAORMProvider(IProvider):
         for key, value in params.iteritems():
             if isinstance(value, FieldStorage):
                 value = value.file.read()
+            # this is done to cast any integer columns into ints before they are 
+            # sent off to the interpreter.  Oracle really needs this.
             try:
-                if isinstance(mapper.columns[key].type, Integer):
+                if value and isinstance(mapper.columns[key].type, Integer):
                     value = int(value)
             except KeyError:
                 pass
