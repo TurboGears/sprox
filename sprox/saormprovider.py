@@ -355,9 +355,15 @@ class SAORMProvider(IProvider):
         pk_name = self.get_primary_field(entity)
         obj = self.session.query(entity).get(params[pk_name])
         relations = self.get_relations(entity)
+        mapper = object_mapper(obj)
         for key, value in params.iteritems():
             if isinstance(value, FieldStorage):
                 value = value.file.read()
+            try:
+                if isinstance(mapper.columns[key].type, Integer):
+                    value = int(value)
+            except KeyError:
+                pass
             setattr(obj, key, value)
         
         self._remove_related_empty_params(obj, params)
