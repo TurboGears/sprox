@@ -20,7 +20,7 @@ Released under MIT license.
 """
 import inspect
 import re
-from sqlalchemy import and_, or_, DateTime, Date, Interval, Binary, MetaData, desc as _desc
+from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, Binary, MetaData, desc as _desc
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
@@ -225,18 +225,25 @@ class SAORMProvider(IProvider):
                                 object_mapper(v)
                                 target_obj.append(v)
                             except UnmappedInstanceError:
+                                #xxx: make this work for multiple pks
+                                if isinstance(target.primary_key[0].type, Integer):
+                                    v = int(v)
                                 target_obj.append(self.session.query(target).get(v))
                     elif prop.uselist:
                         try:
                             object_mapper(value)
                             target_obj = [value]
                         except UnmappedInstanceError:
+                            if isinstance(target.primary_key[0].type, Integer):
+                                value = int(value)
                             target_obj = [self.session.query(target).get(value)]
                     else:
                         try:
                             object_mapper(value)
                             target_obj = value
                         except UnmappedInstanceError:
+                            if isinstance(target.primary_key[0].type, Integer):
+                                value = int(value)
                             target_obj = self.session.query(target).get(value)
                     params[relation] = target_obj
                 else:
