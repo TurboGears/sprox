@@ -255,10 +255,17 @@ class SAORMProvider(IProvider):
         params = self._modify_params_for_relationships(entity, params)
         obj = entity()
         
+        relations = self.get_relations(entity)
+        mapper = class_mapper(entity)
         for key, value in params.iteritems():
             if value is not None:
                 if isinstance(value, FieldStorage):
                     value = value.file.read()
+                try:
+                    if key not in relations and value and isinstance(mapper.columns[key].type, Integer):
+                        value = int(value)
+                except KeyError:
+                    pass
                 setattr(obj, key, value)
 
         self.session.add(obj)
