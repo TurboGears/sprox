@@ -14,7 +14,7 @@ sprox_grid_js = JSLink(modname="sprox",
 
 class SproxDojoGrid(DojoBase):
     engine_name=None
-    available_engines = ['mako','genshi']
+    available_engines = ['mako', 'genshi']
     css = [grid_css, tundragrid_css, tundra_css]
     javascript=[dojo_js, sprox_grid_js]
     dojoType = 'dojox.grid.DataGrid'
@@ -33,7 +33,7 @@ class SproxDojoGrid(DojoBase):
     column_options = {}
     default_column_options = {}
     headers = {}
-    default_column_width = "10em"
+    default_column_width = "30px"
     include_dynamic_js_calls = True
     action='.json'
     model = None
@@ -41,6 +41,7 @@ class SproxDojoGrid(DojoBase):
     dojoStoreType = 'dojox.data.QueryReadStore'
     dojoStoreWidget = None
     template = "sprox.widgets.templates.dojogrid"
+    attrs = {'style':"height:200px"}
     def update_params(self,d):
         d['dojoStoreWidget']=DojoQueryReadStore()
         super(SproxDojoGrid, self).update_params(d)

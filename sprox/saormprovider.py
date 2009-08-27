@@ -31,9 +31,17 @@ from cgi import FieldStorage
 from datetime import datetime, timedelta
 from warnings import warn
 
+from widgetselector import SAWidgetSelector
+from validatorselector import SAValidatorSelector
+
 class SAORMProviderError(Exception):pass
 
 class SAORMProvider(IProvider):
+    
+    
+    default_widget_selector_type = SAWidgetSelector
+    default_validator_selector_type = SAValidatorSelector
+    
     def __init__(self, hint=None, **hints):
         """
         initialize me with a engine, bound metadata or bound session object
@@ -109,16 +117,14 @@ class SAORMProvider(IProvider):
         field = self.get_field(entity, name)
         if isinstance(field, PropertyLoader):
             field = field.local_side[0]
-        # I am unsure what this is needed for, so it will be removed in the next version, and is for now
-        # commented until someone reports a bug.
-        #if not hasattr(field, 'type'):
-        #    return False
+        if isinstance(field, SynonymProperty):
+            field = self.get_field(entity, field.name)
         return isinstance(field.type, Binary)
 
     def is_nullable(self, entity, name):
         field = self.get_field(entity, name)
         if isinstance(field, SynonymProperty):
-            return
+            field = self.get_field(entity, field.name)
         if isinstance(field, PropertyLoader):
             return field.local_side[0].nullable
         return field.nullable
@@ -252,6 +258,8 @@ class SAORMProvider(IProvider):
         
         for key, value in params.iteritems():
             if value is not None:
+                if isinstance(value, FieldStorage):
+                    value = value.file.read()
                 setattr(obj, key, value)
 
         self.session.add(obj)
@@ -350,6 +358,8 @@ class SAORMProvider(IProvider):
         pk_name = self.get_primary_field(entity)
         obj = self.session.query(entity).get(params[pk_name])
         for key, value in params.iteritems():
+            if isinstance(value, FieldStorage):
+                value = value.file.read()
             setattr(obj, key, value)
         
         self._remove_related_empty_params(obj, params)

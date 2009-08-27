@@ -130,6 +130,9 @@ class EntitiesBase(ViewBase):
     <a href="Example/">Example</a>
     </div>
     <div class="entitylabelwidget">
+    <a href="File/">File</a>
+    </div>
+    <div class="entitylabelwidget">
     <a href="Group/">Group</a>
     </div>
     <div class="entitylabelwidget">

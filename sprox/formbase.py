@@ -157,10 +157,15 @@ class FormBase(ViewBase):
     #object overrides
     __base_widget_type__       = TableForm
 
-    __widget_selector_type__   = SAWidgetSelector
-
+    @property
+    def __widget_selector_type__(self):
+        return self.__provider__.default_widget_selector_type
+    
     __validator_selector__      = None
-    __validator_selector_type__ = SAValidatorSelector
+    
+    @property
+    def __validator_selector_type__(self):
+        return self.__provider__.default_validator_selector_type
 
     __field_validators__       = None
     __field_validator_types__  = None

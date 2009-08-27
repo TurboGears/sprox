@@ -12,7 +12,14 @@ from sprox.iprovider import IProvider
 from mongokit.pylons.document import MongoDocument
 from pymongo.binary import Binary
 
+from widgetselector import MongoKitWidgetSelector
+from validatorselector import MongoKitValidatorSelector
+
 class MongoKitProvider(IProvider):
+    
+    default_widget_selector_type = MongoKitWidgetSelector
+    default_validator_selector_type = MongoKitValidatorSelector
+    
     def __init__(self,mapper):
         self.mapper = mapper
 
@@ -72,8 +79,6 @@ class MongoKitProvider(IProvider):
         if view_field is None:
             view_field = fields[0]
         return view_field
-
-        raise NotImplementedError
 
     def get_dropdown_options(self, entity, field_name, view_names=None):
         """Get all dropdown options for a given entity field.
@@ -141,7 +146,6 @@ class MongoKitProvider(IProvider):
         obj.save()
         return obj
 
-        raise NotImplementedError
 
     def delete(self, entity, params):
         """Delete an entry of typeentity which matches the params."""
@@ -161,7 +165,7 @@ class MongoKitProvider(IProvider):
         if offset is not None:
             pass #TODO
         if limit is not None:
-            query.limit(limit=limit)
+            query.limit(limit=int(limit))
 
         objs = entity.all()
 

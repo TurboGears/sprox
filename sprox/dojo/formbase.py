@@ -11,6 +11,7 @@ Released under MIT license.
 from sprox.formbase import FormBase, EditableForm, AddRecordForm
 from sprox.widgetselector import SAWidgetSelector
 from sprox.widgets.dojo import SproxDojoSelectShuttleField, SproxDojoSortedSelectShuttleField
+from sprox.saormprovider import SAORMProvider
 
 class DojoSAWidgetSelector(SAWidgetSelector):
     """Dojo-Specific Widget Selector"""
@@ -22,7 +23,11 @@ class DojoFormBase(FormBase):
     see :class:`sprox.formbase.FormBase`
     
     """
-    __widget_selector_type__ = DojoSAWidgetSelector
+    @property
+    def __widget_selector_type__(self):
+        if isinstance(self.__provider__, SAORMProvider):
+            return DojoSAWidgetSelector
+        return super(DojoFormBase, self).__widget_selector_type__
     
 class DojoEditableForm(EditableForm):
     """Creates a form for editing records that has select shuttles for the multiple relations.
@@ -54,9 +59,9 @@ class DojoEditableForm(EditableForm):
                     <input type="text" id="user_name" class="textfield" name="user_name" value="" />
                 </td>
             </tr>
-            <tr class="odd" id=".container" title="" >
+            <tr class="odd" id="groups.container" title="" >
                 <td class="labelcol">
-                    <label id=".label" for="" class="fieldlabel">Groups</label>
+                    <label id="groups.label" for="groups" class="fieldlabel">Groups</label>
                 </td>
                 <td class="fieldcol" >
                     <div xmlns="http://www.w3.org/1999/xhtml" dojoType="twdojo.SelectShuttle" id="groups_SelectShuttle">
@@ -94,7 +99,11 @@ class DojoEditableForm(EditableForm):
         </table>
     </form>
 """
-    __widget_selector_type__ = DojoSAWidgetSelector
+    @property
+    def __widget_selector_type__(self):
+        if isinstance(self.__provider__, SAORMProvider):
+            return DojoSAWidgetSelector
+        return super(EditableForm, self).__widget_selector_type__
 
 class DojoAddRecordForm(AddRecordForm):
     """
@@ -126,9 +135,9 @@ class DojoAddRecordForm(AddRecordForm):
                     <input type="text" id="user_name" class="textfield" name="user_name" value="" />
                 </td>
             </tr>
-            <tr class="odd" id=".container" title="" >
+            <tr class="odd" id="groups.container" title="" >
                 <td class="labelcol">
-                    <label id=".label" for="" class="fieldlabel">Groups</label>
+                    <label id="groups.label" for="groups" class="fieldlabel">Groups</label>
                 </td>
                 <td class="fieldcol" >
                     <div xmlns="http://www.w3.org/1999/xhtml" dojoType="twdojo.SelectShuttle" id="groups_SelectShuttle">
@@ -166,4 +175,8 @@ class DojoAddRecordForm(AddRecordForm):
         </table>
     </form>
 """
-    __widget_selector_type__ = DojoSAWidgetSelector
+    @property
+    def __widget_selector_type__(self):
+        if isinstance(self.__provider__, SAORMProvider):
+            return DojoSAWidgetSelector
+        return super(AddRecordForm, self).__widget_selector_type__
