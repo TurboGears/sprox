@@ -234,7 +234,7 @@ class SAORMProvider(IProvider):
                             object_mapper(value)
                             target_obj = [value]
                         except UnmappedInstanceError:
-                            if isinstance(target.primary_key[0].type, Integer):
+                            if isinstance(class_mapper(target).primary_key[0].type, Integer):
                                 value = int(value)
                             target_obj = [self.session.query(target).get(value)]
                     else:
@@ -242,7 +242,7 @@ class SAORMProvider(IProvider):
                             object_mapper(value)
                             target_obj = value
                         except UnmappedInstanceError:
-                            if isinstance(target.primary_key[0].type, Integer):
+                            if isinstance(prop.remote_side[0].type, Integer):
                                 value = int(value)
                             target_obj = self.session.query(target).get(value)
                     params[relation] = target_obj
