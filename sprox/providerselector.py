@@ -18,7 +18,7 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm.attributes import ClassManager
 
 from sprox.saormprovider import SAORMProvider
-from sprox.mongokitprovider import MongoKitProvider
+from sprox.mongo.provider import MongoKitProvider
 from sprox.dummyentity import DummyEntity
 
 class ProviderSelector:

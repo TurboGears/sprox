@@ -8,9 +8,10 @@ Original Version by Jorge Vargas 2009
 Released under MIT license.
 """
 from sprox.iprovider import IProvider
-
+from sprox.util import timestamp
 from mongokit.pylons.document import MongoDocument
 from pymongo.binary import Binary
+import datetime
 
 from widgetselector import MongoKitWidgetSelector
 from validatorselector import MongoKitValidatorSelector
@@ -120,7 +121,11 @@ class MongoKitProvider(IProvider):
     def create(self, entity, params):
         """Create an entry of type entity with the given params."""
         obj = entity()
-        for key,value in params.iteritmes():
+        for key,value in params.iteritems():
+            if key not in entity.structure:
+                continue;
+            if entity.structure[key] == datetime.datetime:
+                value = timestamp(value)
             if value is not None:
                 setattr(obj,key,value)
         obj.save()
