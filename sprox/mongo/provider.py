@@ -118,14 +118,18 @@ class MongoKitProvider(IProvider):
         """Get the default values for form filling based on the database schema."""
         return entity.default_values
 
+    def _cast_value(self, entity, key, value):
+        if entity.structure[key] == datetime.datetime:
+            return timestamp(value)
+        return value
+    
     def create(self, entity, params):
         """Create an entry of type entity with the given params."""
         obj = entity()
         for key,value in params.iteritems():
             if key not in entity.structure:
                 continue;
-            if entity.structure[key] == datetime.datetime:
-                value = timestamp(value)
+            value = self._cast_value(entity, key, value)
             if value is not None:
                 setattr(obj,key,value)
         obj.save()
@@ -146,16 +150,18 @@ class MongoKitProvider(IProvider):
         params.pop('sprox_id')
         params.pop('_method')
         for key, value in params.iteritems():
-            setattr(obj, key, value)
-
+            if key not in entity.structure:
+                continue;
+            value = self._cast_value(entity, key, value)
+            if value is not None:
+                setattr(obj,key,value)
         obj.save()
         return obj
-
 
     def delete(self, entity, params):
         """Delete an entry of typeentity which matches the params."""
         pk_name = self.get_primary_field(entity)
-        obj = entity.get_from_id(ph_name)
+        obj = entity.get_from_id(params[pk_name])
         obj.delete()
         return obj
         
