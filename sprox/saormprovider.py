@@ -24,7 +24,7 @@ from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, Binary, Met
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper
+from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper, Mapper
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
@@ -234,7 +234,10 @@ class SAORMProvider(IProvider):
                             object_mapper(value)
                             target_obj = [value]
                         except UnmappedInstanceError:
-                            if isinstance(class_mapper(target).primary_key[0].type, Integer):
+                            mapper = target
+                            if not isinstance(target, Mapper):
+                                mapper = class_mapper(target)
+                            if isinstance(mapper.primary_key[0].type, Integer):
                                 value = int(value)
                             target_obj = [self.session.query(target).get(value)]
                     else:
