@@ -1,3 +1,7 @@
+0.6.6
+Alessandro Molina contributed speedup for dictify.
+Better IE support for dojo table (preventCache added)
+
 0.6.5
 Alessandro Molina contributed FieldStorage support
 IE 6 support for sprox dojo
