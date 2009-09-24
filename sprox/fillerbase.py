@@ -238,7 +238,7 @@ class EditFormFiller(FormFiller):
     """
     def get_value(self, values=None, **kw):
         values = super(EditFormFiller, self).get_value(values, **kw)
-        values = self.__provider__.get(self.__entity__, params=values)
+        values = self.__provider__.get(self.__entity__, params=values, fields=self.__fields__)
         return values
 
 class RecordFiller(EditFormFiller):pass
