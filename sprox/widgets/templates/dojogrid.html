@@ -7,7 +7,7 @@ return str.replace(/&lt;/gi, "<");
 }
 //]]>
 </script>
-<div dojoType="${dojoStoreType}" jsId="${jsId}_store"  id="${jsId}_store" url="${action}"/>
+<div dojoType="${dojoStoreType}" jsId="${jsId}_store"  id="${jsId}_store" xhrArgs="{preventCache:true}" url="${action}"/>
 <table xmlns="http://www.w3.org/1999/xhtml"
        xmlns:py="http://genshi.edgewall.org/"
         dojoType="$dojoType"

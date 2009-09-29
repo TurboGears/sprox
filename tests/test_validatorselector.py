@@ -3,8 +3,7 @@ from sprox.validatorselector import ValidatorSelector, SAValidatorSelector
 from sprox.test.base import *
 from formencode.validators  import *
 from formencode.compound import All
-from sqlalchemy import Column, Integer
-from sqlalchemy.databases.oracle import *
+from sqlalchemy import Column, Integer, String
 from sprox.saormprovider import SAORMProvider
 from types import NoneType
 
@@ -60,12 +59,6 @@ class TestSAValidatorSelector(SproxTest):
     (TIMESTAMP,   DateValidator),
     (Unicode,     UnicodeString),
     (VARCHAR,     UnicodeString),
-    (OracleNumeric,      Number),
-    (OracleDate,         DateValidator),
-    (OracleDateTime,     DateValidator),
-    (OracleInteger,      Int),
-    (OracleSmallInteger, Int),
-
     )
 
     def setup(self):
@@ -80,14 +73,14 @@ class TestSAValidatorSelector(SproxTest):
             args={}
             if isinstance(type, Text):
                 args['size'] = 100
-            c = Column('asdf', type, args)
+            c = Column('asdf', type, **args)
             yield self._test_select, c, expected
 
     def _test_select(self, column, expected):
         validator = self.validator_selector.select(column)
-        assert isinstance(validator, expected) or issubclass(validator, expected), validator
+        assert isinstance(validator, expected) or issubclass(validator, expected), "got: %s, expected: %s"%(validator, expected)
 
     def test_name_based_validator_select(self):
-        c = Column('email_address', String)
-        validator = self.validator_selector.select(c)
+        column = Column('email_address', String)
+        validator = self.validator_selector.select(column)
         assert issubclass(validator, Email), validator
