@@ -143,7 +143,7 @@ class ProviderTypeSelector(object):
             return SAORMSelector
         elif inspect.isclass(entity) and issubclass(entity, DummyEntity):
             return SAORMSelector
-        elif hasattr(entity, '_use_pylons') or hasttr(entity,'_enable_autoref'):
+        elif hasattr(entity, '_use_pylons') or hasattr(entity,'_enable_autoref'):
             #FIXME find a better marker
             return MongoKitSelector
         #other helper definitions are going in here
