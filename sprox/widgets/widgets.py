@@ -20,7 +20,8 @@ class SproxCalendarDateTimePicker(CalendarDateTimePicker):
     date_format = '%Y-%m-%d %H:%M:%S'
 
 class SproxDataGrid(DataGrid):
-    template = "genshi:sprox.widgets.templates.datagrid"
+    available_engines = ['mako', 'genshi']
+    template = "sprox.widgets.templates.datagrid"
     params = ['pks', 'controller', 'xml_fields']
     xml_fields = ['actions']
 
@@ -33,7 +34,8 @@ class TableLabelWidget(Widget):
     params = ["identifier", "controller"]
 
 class ModelLabelWidget(Widget):
-    template = "genshi:sprox.widgets.templates.modelLabel"
+    available_engines = ['mako', 'genshi']
+    template = "sprox.widgets.templates.modelLabel"
     params = ["identifier", "controller"]
 
 class EntityLabelWidget(Widget):
@@ -62,13 +64,13 @@ class TableWidget(Widget):
     template = "genshi:sprox.widgets.templates.table"
 
 class SproxTableForm(TableForm):
-    available_engines = ['genshi']
+    available_engines = ['mako', 'genshi']
     validator = Schema(ignore_missing_keys=True, allow_extra_fields=True)
-    template = "genshi:sprox.widgets.templates.tableForm"
+    template = "sprox.widgets.templates.tableForm"
 
 #custom checkbox widget since I am not happy with the behavior of the TW one
 class SproxCheckBox(InputField):
-    available_engines = ['genshi']
+    available_engines = ['mako', 'genshi']
     template = "sprox.widgets.templates.checkbox"
     validator = StringBool
     def update_params(self, d):
@@ -94,14 +96,17 @@ class PropertyMixin(Widget):
         return d
 
 class PropertySingleSelectField(SingleSelectField, PropertyMixin):
-    params=["nullable"]
+    params=["nullable", "disabled"]
     nullable=False
+    disabled=False
     def update_params(self, d):
         self._my_update_params(d,nullable=self.nullable)
         SingleSelectField.update_params(self, d)
         return d
 
 class PropertyMultipleSelectField(MultipleSelectField, PropertyMixin):
+    params=["disabled"]
+    disabled=False
     def update_params(self, d):
         self._my_update_params(d)
         MultipleSelectField.update_params(self, d)

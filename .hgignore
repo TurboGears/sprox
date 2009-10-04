@@ -6,6 +6,7 @@ syntax:glob
 *.db
 *.sw?
 *.orig
+*.class
 build/*
 docs/.build/*
 dist/*
