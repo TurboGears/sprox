@@ -3,7 +3,6 @@ from tw.forms.fields import *
 from tw.api import Widget
 from sqlalchemy import Column, Integer
 from sqlalchemy.types import *
-from sqlalchemy.databases.oracle import *
 from sqlalchemy.orm import class_mapper
 
 from sprox.widgetselector import WidgetSelector, SAWidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
@@ -71,12 +70,6 @@ class TestSAWidgetSelector:
     (Unicode(100),     TextField),
     (Unicode,     TextArea),
     (VARCHAR(100),     TextField),
-    (OracleNumeric,      TextField),
-    (OracleDate,         SproxCalendarDatePicker),
-    (OracleDateTime,     SproxCalendarDateTimePicker),
-    (OracleInteger,      TextField),
-    (OracleSmallInteger, TextField),
-
     )
 
     def setup(self):
@@ -94,7 +87,7 @@ class TestSAWidgetSelector:
             args={}
             if isinstance(type, Text):
                 args['size'] = 100
-            c = Column('asdf', type, args)
+            c = Column('asdf', type, **args)
             yield self._testSelect, c, expected
 
     @raises(TypeError)
