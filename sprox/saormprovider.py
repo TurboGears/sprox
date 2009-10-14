@@ -118,8 +118,8 @@ class SAORMProvider(IProvider):
         if isinstance(field, SynonymProperty):
             field = self.get_field(entity, field.name)
         if isinstance(field, PropertyLoader):
-            return field.local_side[0].nullable
-        return field.nullable
+            return getattr(field.local_side[0], 'nullable')
+        return getattr(field, 'nullable', True)
 
     def get_primary_fields(self, entity):
         #for now we are only supporting entities with a single primary field
