@@ -275,13 +275,16 @@ class SAORMProvider(IProvider):
         self.session.flush()
         return obj
 
-    def dictify(self, obj, fields=None):
+    def dictify(self, obj, fields=None, omit_fields=None):
         if obj is None:
             return {}
         r = {}
         mapper = class_mapper(obj.__class__)
         for prop in mapper.iterate_properties:
             if fields and prop.key not in fields:
+                continue
+
+            if omit_fields and prop.key in omit_fields:
                 continue
 
             value = getattr(obj, prop.key)
@@ -303,10 +306,10 @@ class SAORMProvider(IProvider):
     def get_default_values(self, entity, params):
         return params
 
-    def get(self, entity, params, fields=None):
+    def get(self, entity, params, fields=None, omit_fields=None):
         pk_name = self.get_primary_field(entity)
         obj = self.session.query(entity).get(params[pk_name])
-        return self.dictify(obj, fields)
+        return self.dictify(obj, fields, omit_fields)
 
     def query(self, entity, limit=None, offset=None, limit_fields=None, order_by=None, desc=False, **kw):
         query = self.session.query(entity)

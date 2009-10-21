@@ -141,6 +141,12 @@ class TestSAORMProvider(SproxTest):
         eq_(d['user_name'], 'asdf')
         eq_(d.keys(), ['user_name'])
 
+    def test_dictify_omit_fields(self):
+        d = self.provider.dictify(self.user, omit_fields=['password', '_password'])
+        assert 'password' not in d.keys()
+        assert '_password' not in d.keys()
+        assert 'user_name' in d.keys()
+
     def test_dictify_none(self):
         d = self.provider.dictify(None)
         eq_(d, {})
