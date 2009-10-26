@@ -18,7 +18,12 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm.attributes import ClassManager
 
 from sprox.saormprovider import SAORMProvider
-from sprox.mongo.provider import MongoKitProvider
+MongoKitProvider = None
+try:
+    from sprox.mongo.provider import MongoKitProvider
+except ImportError:
+    pass
+
 from sprox.dummyentity import DummyEntity
 
 class ProviderSelector:
@@ -52,7 +57,6 @@ class _SAORMSelector(ProviderSelector):
         self._providers = {}
 
     def _get_engine(self, hint, hints):
-        metadata = hints.get('metadata', None)
         metadata = hints.get('metadata', None)
         engine   = hints.get('engine', None)
         session  = hints.get('session', None)
@@ -144,7 +148,7 @@ class ProviderTypeSelector(object):
         elif inspect.isclass(entity) and issubclass(entity, DummyEntity):
             return SAORMSelector
         elif hasattr(entity, '_use_pylons') or hasattr(entity,'_enable_autoref'):
-            #FIXME find a better marker
+            #xxx: find a better marker
             return MongoKitSelector
         #other helper definitions are going in here
         else:
