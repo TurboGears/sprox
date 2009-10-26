@@ -51,32 +51,22 @@ class TestViewCache(SproxTest):
     def test_get_empty(self):
         base = self.cache['listing__User']
         b = base()
-        assert """<table class="grid">
+        assert """<div>
+<table
+       id="None" class="grid">
     <thead>
         <tr>
-            <th class="col_0">
-            actions
-            </th><th class="col_1">
-            _password
-            </th><th class="col_2">
-            user_id
-            </th><th class="col_3">
-            user_name
-            </th><th class="col_4">
-            email_address
-            </th><th class="col_5">
-            display_name
-            </th><th class="col_6">
-            created
-            </th><th class="col_7">
-            town_id
-            </th><th class="col_8">
-            town
-            </th><th class="col_9">
-            password
-            </th><th class="col_10">
-            groups
-            </th>
+                <th  class=col_0>actions</th>
+                <th  class=col_1>_password</th>
+                <th  class=col_2>user_id</th>
+                <th  class=col_3>user_name</th>
+                <th  class=col_4>email_address</th>
+                <th  class=col_5>display_name</th>
+                <th  class=col_6>created</th>
+                <th  class=col_7>town_id</th>
+                <th  class=col_8>town</th>
+                <th  class=col_9>password</th>
+                <th  class=col_10>groups</th>
         </tr>
     </thead>
     <tbody>

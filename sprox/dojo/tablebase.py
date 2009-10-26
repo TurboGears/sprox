@@ -7,8 +7,17 @@ class DojoTableBase(TableBase):
     """This class allows you to credate a table widget.
 
     :Modifiers:
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | Name                              | Description                                | Default                      |
+    +===================================+============================================+==============================+
+    | __url__                           | url that points to the method for data     | None                         |
+    |                                   | filler for this table                      |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __column_options__                | a pass-thru to the Dojo Table Widget       | {}                           |
+    |                                   | column_options attribute                   |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
 
-    see modifiers in :mod:`sprox.tablebase`
+    also see modifiers in :mod:`sprox.tablebase`
 
     """
 

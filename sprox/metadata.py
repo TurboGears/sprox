@@ -29,7 +29,10 @@ class Metadata(dict):
         self.entity = entity
 
     def __setitem__(self, key, value):
-        self._do_check_set_item(key, value)
+        try:
+            self._do_check_set_item(key, value)
+        except NotFoundError:
+            pass
         dict.__setitem__(self, key, value)
 
     def _do_get_item(self, item):
@@ -79,6 +82,8 @@ class FieldsMetadata(Metadata):
             return self.provider.get_field(self.entity, item)
         except AttributeError:
             #XXX I'm not sure  if we should change the type,but we shouldn't swallow with except:
+            if dict.__contains__(self, item):
+                return dict.get(self, item)
             raise NotFoundError(self.entity,item)
 
     def _do_keys(self):

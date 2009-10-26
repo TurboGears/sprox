@@ -36,17 +36,14 @@ class TableBase(ViewBase):
     ...    __model__ = Town
     >>> town_table = TownTable(session)
     >>> print town_table()
-    <div xmlns="http://www.w3.org/1999/xhtml">
-    <table class="grid">
+    <div>
+    <table
+           id="None" class="grid">
         <thead>
             <tr>
-                <th class="col_0">
-                actions
-                </th><th class="col_1">
-                town_id
-                </th><th class="col_2">
-                name
-                </th>
+                    <th  class=col_0>actions</th>
+                    <th  class=col_1>town_id</th>
+                    <th  class=col_2>name</th>
             </tr>
         </thead>
         <tbody>
@@ -114,41 +111,46 @@ class TableBase(ViewBase):
     ...     __omit_fields__ = ['__actions__']
     >>> town_table = TownTable(session)
     >>> print town_table.__widget__(value=value)
-    <div xmlns="http://www.w3.org/1999/xhtml">
-    <table class="grid">
+    <div>
+    <table
+           id="None" class="grid">
         <thead>
             <tr>
-                <th class="col_0">
-                town_id
-                </th><th class="col_1">
-                name
-                </th>
+                    <th  class=col_0>town_id</th>
+                    <th  class=col_1>name</th>
             </tr>
         </thead>
         <tbody>
             <tr class="even">
                 <td>
-                            1
-                </td><td>
-                            Arvada
+                        1
                 </td>
-            </tr><tr class="odd">
                 <td>
-                            2
-                </td><td>
-                            Denver
+                        Arvada
                 </td>
-            </tr><tr class="even">
+            </tr>
+            <tr class="odd">
                 <td>
-                            3
-                </td><td>
-                            Golden
+                        2
                 </td>
-            </tr><tr class="odd">
                 <td>
-                            4
-                </td><td>
-                            Boulder
+                        Denver
+                </td>
+            </tr>
+            <tr class="even">
+                <td>
+                        3
+                </td>
+                <td>
+                        Golden
+                </td>
+            </tr>
+            <tr class="odd">
+                <td>
+                        4
+                </td>
+                <td>
+                        Boulder
                 </td>
             </tr>
         </tbody>

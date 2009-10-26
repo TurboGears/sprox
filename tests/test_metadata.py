@@ -3,7 +3,7 @@ from nose.tools import raises, eq_
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from sprox.metadata import Metadata, MetadataError, FieldsMetadata, FieldMetadata, EntitiesMetadata
+from sprox.metadata import Metadata, MetadataError, FieldsMetadata, FieldMetadata, EntitiesMetadata, NotFoundError
 from sprox.saormprovider import SAORMProvider
 from sprox.iprovider import IProvider
 from sprox.test.base import *
@@ -54,7 +54,7 @@ class TestFieldsMetadata(MetadataTest):
         field = self.metadata['binary']
         eq_(field.name, 'binary')
 
-    @raises(KeyError)
+    @raises(NotFoundError)
     def test_get_item_key_error(self):
         self.metadata['asdf']
 
@@ -92,6 +92,6 @@ class TestEntitiesMetadata:
     def test_get_item(self):
         eq_(User, self.metadata['User'])
 
-    @raises(KeyError)
+    @raises(NotFoundError)
     def test_get_item_not_found(self):
         self.metadata['no_findy']

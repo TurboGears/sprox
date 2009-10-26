@@ -20,12 +20,13 @@ Released under MIT license.
 """
 import inspect
 import re
-from sqlalchemy import and_, or_, DateTime, Date, Interval, Binary, MetaData, desc as _desc
+from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, Binary, MetaData, desc as _desc
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper
+from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper, Mapper
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
+from sqlalchemy.exc import InvalidRequestError
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
 from datetime import datetime, timedelta
@@ -110,8 +111,13 @@ class SAORMProvider(IProvider):
         mapper = class_mapper(entity)
         try:
             return getattr(mapper.c, name)
-        except AttributeError:
-            return mapper.get_property(name)
+        except (InvalidRequestError, AttributeError):
+            try:
+                return mapper.get_property(name)
+            except InvalidRequestError:
+                raise AttributeError
+                
+
 
     def is_binary(self, entity, name):
         field = self.get_field(entity, name)
@@ -126,8 +132,8 @@ class SAORMProvider(IProvider):
         if isinstance(field, SynonymProperty):
             field = self.get_field(entity, field.name)
         if isinstance(field, PropertyLoader):
-            return field.local_side[0].nullable
-        return field.nullable
+            return getattr(field.local_side[0], 'nullable')
+        return getattr(field, 'nullable', True)
 
     def get_primary_fields(self, entity):
         #for now we are only supporting entities with a single primary field
@@ -233,18 +239,28 @@ class SAORMProvider(IProvider):
                                 object_mapper(v)
                                 target_obj.append(v)
                             except UnmappedInstanceError:
+                                #xxx: make this work for multiple pks
+                                if isinstance(target.primary_key[0].type, Integer):
+                                    v = int(v)
                                 target_obj.append(self.session.query(target).get(v))
                     elif prop.uselist:
                         try:
                             object_mapper(value)
                             target_obj = [value]
                         except UnmappedInstanceError:
+                            mapper = target
+                            if not isinstance(target, Mapper):
+                                mapper = class_mapper(target)
+                            if isinstance(mapper.primary_key[0].type, Integer):
+                                value = int(value)
                             target_obj = [self.session.query(target).get(value)]
                     else:
                         try:
                             object_mapper(value)
                             target_obj = value
                         except UnmappedInstanceError:
+                            if isinstance(prop.remote_side[0].type, Integer):
+                                value = int(value)
                             target_obj = self.session.query(target).get(value)
                     params[relation] = target_obj
                 else:
@@ -256,22 +272,35 @@ class SAORMProvider(IProvider):
         params = self._modify_params_for_relationships(entity, params)
         obj = entity()
         
+        relations = self.get_relations(entity)
+        mapper = class_mapper(entity)
         for key, value in params.iteritems():
             if value is not None:
                 if isinstance(value, FieldStorage):
                     value = value.file.read()
+                try:
+                    if key not in relations and value and isinstance(mapper.columns[key].type, Integer):
+                        value = int(value)
+                except KeyError:
+                    pass
                 setattr(obj, key, value)
 
         self.session.add(obj)
         self.session.flush()
         return obj
 
-    def dictify(self, obj):
+    def dictify(self, obj, fields=None, omit_fields=None):
         if obj is None:
             return {}
         r = {}
         mapper = class_mapper(obj.__class__)
         for prop in mapper.iterate_properties:
+            if fields and prop.key not in fields:
+                continue
+
+            if omit_fields and prop.key in omit_fields:
+                continue
+
             value = getattr(obj, prop.key)
             if value is not None:
                 if isinstance(prop, PropertyLoader):
@@ -291,11 +320,10 @@ class SAORMProvider(IProvider):
     def get_default_values(self, entity, params):
         return params
 
-    def get(self, entity, params):
-        #FIXME either the docstring of iprovider or this implemention is wrong
+    def get(self, entity, params, fields=None, omit_fields=None):
         pk_name = self.get_primary_field(entity)
         obj = self.session.query(entity).get(params[pk_name])
-        return self.dictify(obj)
+        return self.dictify(obj, fields, omit_fields)
 
     def query(self, entity, limit=None, offset=None, limit_fields=None, order_by=None, desc=False, **kw):
         query = self.session.query(entity)
@@ -357,9 +385,18 @@ class SAORMProvider(IProvider):
         params = self._modify_params_for_relationships(entity, params)
         pk_name = self.get_primary_field(entity)
         obj = self.session.query(entity).get(params[pk_name])
+        relations = self.get_relations(entity)
+        mapper = object_mapper(obj)
         for key, value in params.iteritems():
             if isinstance(value, FieldStorage):
                 value = value.file.read()
+            # this is done to cast any integer columns into ints before they are 
+            # sent off to the interpreter.  Oracle really needs this.
+            try:
+                if key not in relations and value and isinstance(mapper.columns[key].type, Integer):
+                    value = int(value)
+            except KeyError:
+                pass
             setattr(obj, key, value)
         
         self._remove_related_empty_params(obj, params)

@@ -136,6 +136,17 @@ class TestSAORMProvider(SproxTest):
         eq_(d['groups'], [5])
         eq_(d['user_name'], 'asdf')
 
+    def test_dictify_limit_fields(self):
+        d = self.provider.dictify(self.user, fields=['user_name'])
+        eq_(d['user_name'], 'asdf')
+        eq_(d.keys(), ['user_name'])
+
+    def test_dictify_omit_fields(self):
+        d = self.provider.dictify(self.user, omit_fields=['password', '_password'])
+        assert 'password' not in d.keys()
+        assert '_password' not in d.keys()
+        assert 'user_name' in d.keys()
+
     def test_dictify_none(self):
         d = self.provider.dictify(None)
         eq_(d, {})
@@ -186,6 +197,9 @@ class TestSAORMProvider(SproxTest):
         params = self.provider._modify_params_for_relationships(User, params)
         assert params['groups'] == [group], params
     
+    def test_create_with_unicode_cast_to_int(self):
+        self.provider.create(User, dict(user_id=u'34', user_name='something'))
+
     def test_create_relationships_with_wacky_relation(self):
         obj = session.query(Group).first()
         params = {'group_id':obj.group_id, 'users':1}
