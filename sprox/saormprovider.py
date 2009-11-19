@@ -351,11 +351,14 @@ class SAORMProvider(IProvider):
                     params[key] = dt
         return params
 
-    def _remove_related_empty_params(self, obj, params):
+    def _remove_related_empty_params(self, obj, params, omit_fields=None):
         entity = obj.__class__
         mapper = class_mapper(entity)
         relations = self.get_relations(entity)
         for relation in relations:
+            if omit_fields and relation in omit_fields:
+                continue
+
             #clear out those items which are not found in the params list.
             if relation not in params or not params[relation]:
                 related_items = getattr(obj, relation)
@@ -365,7 +368,7 @@ class SAORMProvider(IProvider):
                     else:
                         setattr(obj, relation, None)
                         
-    def update(self, entity, params):
+    def update(self, entity, params, omit_fields=None):
         params = self._modify_params_for_dates(entity, params)
         params = self._modify_params_for_relationships(entity, params)
         pk_name = self.get_primary_field(entity)
@@ -373,6 +376,9 @@ class SAORMProvider(IProvider):
         relations = self.get_relations(entity)
         mapper = object_mapper(obj)
         for key, value in params.iteritems():
+            if omit_fields and key in omit_fields:
+                continue
+
             if isinstance(value, FieldStorage):
                 value = value.file.read()
             # this is done to cast any integer columns into ints before they are 
@@ -384,7 +390,7 @@ class SAORMProvider(IProvider):
                 pass
             setattr(obj, key, value)
         
-        self._remove_related_empty_params(obj, params)
+        self._remove_related_empty_params(obj, params, omit_fields)
         self.session.flush()
         return obj
 

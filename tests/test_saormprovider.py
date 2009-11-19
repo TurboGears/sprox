@@ -171,6 +171,20 @@ class TestSAORMProvider(SproxTest):
         q_user = self.session.query(User).get(2)
         eq_(new_user.email_address, u'asdf@asdf.commy')
 
+    def test_update_omit(self):
+        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
+        new_user = self.provider.create(User, params)
+
+        params = {}
+        params['email_address'] = u'asdf@asdf.commy'
+        params['created'] = '2008-3-30 12:21:21'
+        params['user_id'] = 2
+        new_user = self.provider.update(User, params, omit_fields=['email_address', 'groups'])
+        q_user = self.session.query(User).get(2)
+
+        eq_(q_user.email_address, u'email@addy.com')
+        eq_([group.group_id for group in q_user.groups], [1,4])
+
     def test_get_default_values(self):
         assert {} == self.provider.get_default_values(User, {})
 
