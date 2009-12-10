@@ -238,7 +238,14 @@ class EditFormFiller(FormFiller):
     """
     def get_value(self, values=None, **kw):
         values = super(EditFormFiller, self).get_value(values, **kw)
-        values = self.__provider__.get(self.__entity__, params=values, fields=self.__fields__, omit_fields=self.__omit_fields__)
+#        values = self.__provider__.get(self.__entity__, params=values, fields=self.__fields__, omit_fields=self.__omit_fields__)
+        obj = self.__provider__.get_obj(self.__entity__, params=values, fields=self.__fields__)
+        values = self.__provider__.dictify(obj, self.__fields__, self.__omit_fields__)
+        for key in self.__fields__:
+            if hasattr(self, key):
+                method = getattr(self, key)
+                if inspect.ismethod(method):
+                    values[key] = method(obj, **kw)
         return values
 
 class RecordFiller(EditFormFiller):pass

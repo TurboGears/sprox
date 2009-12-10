@@ -306,9 +306,13 @@ class SAORMProvider(IProvider):
     def get_default_values(self, entity, params):
         return params
 
-    def get(self, entity, params, fields=None, omit_fields=None):
+    def get_obj(self, entity, params, fields=None, omit_fields=None):
         pk_name = self.get_primary_field(entity)
         obj = self.session.query(entity).get(params[pk_name])
+        return obj
+        
+    def get(self, entity, params, fields=None, omit_fields=None):
+        obj = self.get_obj(entity, params, fields)
         return self.dictify(obj, fields, omit_fields)
 
     def query(self, entity, limit=None, offset=None, limit_fields=None, order_by=None, desc=False, **kw):

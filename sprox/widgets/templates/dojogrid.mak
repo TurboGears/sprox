@@ -18,6 +18,7 @@ return str.replace(/&lt;/gi, "<");
  rowsPerPage="${rowsPerPage}"\
  model="${model}"\
  delayScroll="${delayScroll}"\
+ autoHeight="${autoHeight}"\
  class="${cssclass}"\
  ${tw.attrs(attrs=attrs)}\
 >
