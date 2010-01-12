@@ -52,7 +52,6 @@ class TestViewCache(SproxTest):
     def test_get_empty(self):
         base = self.cache['listing__User']
         b = base()
-        print b
         assert_in_xhtml("""<thead>
         <tr>
                 <th  class="col_0">actions</th>

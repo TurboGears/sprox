@@ -41,7 +41,7 @@ class ValidatorSelector(object):
                 if hasattr(base, attr):
                     current =  getattr(cls, attr)
                     current.update(getattr(base, attr))
-        return object.__new__(cls, *args, **kw)
+        return object.__new__(cls)
 
     def __getitem__(self, field):
         return self.select(field)

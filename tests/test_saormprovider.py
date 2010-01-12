@@ -210,9 +210,9 @@ class TestSAORMProvider(SproxTest):
         params = {'groups':group}
         params = self.provider._modify_params_for_relationships(User, params)
         assert params['groups'] == [group], params
-    
+
     def test_create_with_unicode_cast_to_int(self):
-        self.provider.create(User, dict(user_id=u'34', user_name='something'))
+        self.provider.create(User, dict(user_id=u'34', user_name=u'something'))
 
     def test_create_relationships_with_wacky_relation(self):
         obj = session.query(Group).first()
@@ -228,12 +228,12 @@ class TestSAORMProvider(SproxTest):
         session.flush()
         user = session.query(User).get(1)
         assert user not in obj.users
-        
+
     def test_create_relationships_remove_town(self):
         town = session.query(Town).first()
-        
+
         self.user.town = town
         self.session.flush()
-        
+
         self.provider.update(User, {'user_id':self.user.user_id, 'town':None})
         assert self.user.town is None
