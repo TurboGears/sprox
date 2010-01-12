@@ -5,6 +5,7 @@ from sprox.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid
+from strainer.operators import assert_in_xhtml
 
 session = None
 engine  = None
@@ -29,14 +30,18 @@ class TestTableBase:
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert """<th class="col_0">
-            actions
-            </th><th class="col_1">
-            _password
-            </th><th class="col_2">
-            user_id
-            </th><th class="col_3">
-            user_name
-            </th><th class="col_4">
-            email_address
-            </th>""" in rendered, rendered
+        assert_in_xhtml("""<thead>
+        <tr>
+                <th  class="col_0">actions</th>
+                <th  class="col_1">_password</th>
+                <th  class="col_2">user_id</th>
+                <th  class="col_3">user_name</th>
+                <th  class="col_4">email_address</th>
+                <th  class="col_5">display_name</th>
+                <th  class="col_6">created</th>
+                <th  class="col_7">town_id</th>
+                <th  class="col_8">town</th>
+                <th  class="col_9">password</th>
+                <th  class="col_10">groups</th>
+        </tr>
+    </thead>""", rendered)

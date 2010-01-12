@@ -1,8 +1,11 @@
 #most of this file was taken from turbogears default template
 from hashlib import sha1
 import os
-import md5
-import sha
+try:
+    from hashlib import md5, sha1 as sha
+except ImportError:
+    import md5
+    import sha
 from datetime import datetime
 
 #from sqlalchemy.types import *

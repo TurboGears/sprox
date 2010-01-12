@@ -4,7 +4,7 @@
     <thead>
         <tr>
             % for i, col in enumerate(columns):
-                <th  class=col_${i}>${col.title}</th>
+                <th  class="col_${i}">${col.title}</th>
             % endfor
         </tr>
     </thead>
