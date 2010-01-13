@@ -252,6 +252,11 @@ class FormBase(ViewBase):
         """Override this function to define how
         """
         fields = super(FormBase, self)._do_get_fields()
+        provider = self.__provider__
+        for relation in provider.get_relations(self.__entity__):
+            for rel in provider.relation_fields(self.__entity__, relation):
+                if rel in fields:
+                    fields.remove(rel)
         if 'sprox_id' not in fields:
             fields.append('sprox_id')
         return fields
@@ -397,15 +402,7 @@ class AddRecordForm(FormBase):
                     <input type="password" id="verify_password" class="passwordfield" name="verify_password" value="" />
                 </td>
             </tr>
-            <tr class="odd" id="town_id.container" title="" >
-                <td class="labelcol">
-                    <label id="town_id.label" for="town_id" class="fieldlabel">Town Id</label>
-                </td>
-                <td class="fieldcol" >
-                    <input type="text" id="town_id" class="textfield" name="town_id" value="" />
-                </td>
-            </tr>
-            <tr class="even" id="submit.container" title="" >
+            <tr class="odd" id="submit.container" title="" >
                 <td class="labelcol">
                     <label id="submit.label" for="submit" class="fieldlabel"></label>
                 </td>
@@ -415,7 +412,7 @@ class AddRecordForm(FormBase):
             </tr>
         </table>
     </form>
-
+    
     What is unique about the AddRecord form, is that if the fields in the database are labeled unique, it will
     automatically vaidate against uniqueness for that field.  Here is a simple user form definition, where the
     user_name in the model is unique:

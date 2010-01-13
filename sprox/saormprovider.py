@@ -193,6 +193,10 @@ class SAORMProvider(IProvider):
         if isinstance(mapper.get_property(field_name), PropertyLoader):
             return True
 
+    def relation_fields(self, entity, field_name):
+        field = getattr(entity, field_name)
+        return [ col.name for col in field.property.local_side ]
+
     def is_unique(self, entity, field_name, value):
         field = getattr(entity, field_name)
         try:

@@ -21,7 +21,7 @@ connect = None
 
 sorted_user_columns = ['_password', 'created', 'display_name', 'email_address',
                        'groups', 'password', 'sprox_id', 'town',
-                       'town_id', 'user_id', 'user_name']
+                       'user_name']
 
 def remove_whitespace_nodes(node):
     new_node = copy(node)
