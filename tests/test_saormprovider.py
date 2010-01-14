@@ -38,12 +38,17 @@ class TestSAORMProvider(SproxTest):
     def setup(self):
         super(TestSAORMProvider, self).setup()
         self.provider = SAORMProvider(session)
+        session.add(Department(department_id=1, name=u'Marketing'))
+        session.add(Department(department_id=2, name=u'Accounting'))
+        session.add(DocumentCategory(document_category_id=1, department_id=1, name=u'Brochure'))
+        session.add(DocumentCategory(document_category_id=2, department_id=1, name=u'Flyer'))
+        session.add(DocumentCategory(document_category_id=3, department_id=2, name=u'Balance Sheet'))
+        #session.add(DocumentRating(user_id=1, document_id=1, rating=5))
+        session.flush()
+        
 
     def test_get_fields_with_func(self):
         eq_(self.provider.get_fields(lambda: Town), ['town_id', 'name', 'town_id', 'name'])
-
-    def test_create(self):
-        pass
 
     def test_isbinary_related(self):
         assert not self.provider.is_binary(User, 'groups')
@@ -94,6 +99,10 @@ class TestSAORMProvider(SproxTest):
         fields = self.provider.get_primary_fields(User)
         eq_(fields, ['user_id'])
 
+    def test_get_primary_fields_multi(self):
+        fields = self.provider.get_primary_fields(DocumentCategory)
+        eq_(fields, ['document_category_id', 'department_id'])
+
     def test_get_primary_field_function(self):
         field = self.provider.get_primary_field(lambda: User)
         eq_(field, 'user_id')
@@ -117,6 +126,10 @@ class TestSAORMProvider(SproxTest):
     def test_get_dropdown_options_fk(self):
         options = self.provider.get_dropdown_options(User, 'town')
         eq_(options, [(1, u'Arvada'), (2, u'Denver'), (3, u'Golden'), (4, u'Boulder')])
+
+    def test_get_dropdown_options_fk_multi(self):
+        options = self.provider.get_dropdown_options(Document, 'category')
+        eq_(options, [('1/1', u'Brochure'), ('2/1', u'Flyer'), ('3/2', u'Balance Sheet')])
 
     def test_get_dropdown_options_join(self):
         options = self.provider.get_dropdown_options(User, 'groups')
@@ -164,6 +177,18 @@ class TestSAORMProvider(SproxTest):
         new_user = self.provider.create(User, params)
         q_user = self.session.query(User).get(2)
         assert q_user == new_user
+
+    def test_create2(self):
+        params = {'category': '1/1'}
+        new_ref = self.provider.create(DocumentCategoryReference, params)
+        q_ref = self.session.query(DocumentCategoryReference).get(1)
+        assert new_ref == q_ref
+
+    def test_create3(self):
+        params = {'categories': ['1/1', '1/2']}
+        new_ratingref = self.provider.create(DocumentCategoryTag, params)
+        q_ratingref = self.session.query(DocumentCategoryTag).get(1)
+        assert new_ratingref == q_ratingref
 
     def test_query(self):
         r = self.provider.query(User, limit=20, offset=0)

@@ -24,7 +24,7 @@ from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, Binary, Met
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper, Mapper
+from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
@@ -122,18 +122,25 @@ class SAORMProvider(IProvider):
         return getattr(field, 'nullable', True)
 
     def get_primary_fields(self, entity):
-        #for now we are only supporting entities with a single primary field
-        return [self.get_primary_field(entity)]
-
-    def get_primary_field(self, entity):
         #sometimes entities get surrounded by functions, not sure why.
         if inspect.isfunction(entity):
             entity = entity()
         mapper = class_mapper(entity)
+        fields = []
+
         for field_name in self.get_fields(entity):
-            value = getattr(mapper.c, field_name)
-            if value.primary_key:
-                return value.key
+            try:
+                value = getattr(mapper.c, field_name)
+            except AttributeError:
+                # Relations won't be attributes, but can't be primary anyway.
+                continue
+            if value.primary_key and not value.key in fields:
+                fields.append(value.key)
+        return fields
+
+    def get_primary_field(self, entity):
+        fields = self.get_primary_fields(entity)
+        return fields[0] if len(fields) > 0 else None
 
     def _find_title_column(self, entity):
         for column in class_mapper(entity).columns:
@@ -184,11 +191,20 @@ class SAORMProvider(IProvider):
         if isinstance(target_field, Mapper):
             target_field = target_field.class_
 
-        pk_name = self.get_primary_field(target_field)
+        pk_fields = self.get_primary_fields(target_field)
+        
         view_name = self.get_view_field_name(target_field, view_names)
 
         rows = self.session.query(target_field).all()
-        return  [(getattr(row, pk_name), getattr(row, view_name)) for row in rows]
+
+        if len(pk_fields) == 1:
+            def build_pk(row):
+                return getattr(row, pk_fields[0])
+        else:
+            def build_pk(row):
+                return "/".join([str(getattr(row, pk)) for pk in pk_fields])
+        
+        return [ (build_pk(row), getattr(row, view_name)) for row in rows ] 
 
     def get_relations(self, entity):
         mapper = class_mapper(entity)
@@ -215,6 +231,11 @@ class SAORMProvider(IProvider):
     def get_synonyms(self, entity):
         mapper = class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, SynonymProperty)]
+    
+    def _adapt_type(self, value, primary_key):
+        if isinstance(primary_key.type, Integer):
+            value = int(value)
+        return value
 
     def _modify_params_for_relationships(self, entity, params, delete_first=True):
         
@@ -236,9 +257,14 @@ class SAORMProvider(IProvider):
                                 object_mapper(v)
                                 target_obj.append(v)
                             except UnmappedInstanceError:
-                                #xxx: make this work for multiple pks
-                                if isinstance(target.primary_key[0].type, Integer):
-                                    v = int(v)
+                            	pk = target.primary_key if hasattr(target, 'primary_key') else class_mapper(target).primary_key
+                                    
+                                if isinstance(v, basestring) and "/" in v:
+                                    v = map(self._adapt_type, v.split("/"), pk)
+                                    v = tuple(v)
+                                else:
+                                    v = self._adapt_type(v, pk[0])
+                                    
                                 target_obj.append(self.session.query(target).get(v))
                     elif prop.uselist:
                         try:
@@ -256,8 +282,11 @@ class SAORMProvider(IProvider):
                             object_mapper(value)
                             target_obj = value
                         except UnmappedInstanceError:
-                            if isinstance(prop.remote_side[0].type, Integer):
-                                value = int(value)
+                            if isinstance(value, basestring) and "/" in value:
+                                value = map(self._adapt_type, value.split("/"), prop.remote_side)
+                                value = tuple(value)
+                            else:
+                                value = self._adapt_type(value, prop.remote_side[0])
                             target_obj = self.session.query(target).get(value)
                     params[relation] = target_obj
                 else:
@@ -318,8 +347,7 @@ class SAORMProvider(IProvider):
         return params
 
     def get_obj(self, entity, params, fields=None, omit_fields=None):
-        pk_name = self.get_primary_field(entity)
-        obj = self.session.query(entity).get(params[pk_name])
+        obj = self._get_obj(entity, params)
         return obj
         
     def get(self, entity, params, fields=None, omit_fields=None):
@@ -382,12 +410,16 @@ class SAORMProvider(IProvider):
                         setattr(obj, relation, [])
                     else:
                         setattr(obj, relation, None)
-                        
+
+    def _get_obj(self, entity, pkdict):
+        pk_names = self.get_primary_fields(entity)
+        pks = tuple([pkdict[n] for n in pk_names])
+        return self.session.query(entity).get(pks)
+
     def update(self, entity, params, omit_fields=None):
         params = self._modify_params_for_dates(entity, params)
         params = self._modify_params_for_relationships(entity, params)
-        pk_name = self.get_primary_field(entity)
-        obj = self.session.query(entity).get(params[pk_name])
+        obj = self._get_obj(entity, params)
         relations = self.get_relations(entity)
         mapper = object_mapper(obj)
         for key, value in params.iteritems():
@@ -410,7 +442,6 @@ class SAORMProvider(IProvider):
         return obj
 
     def delete(self, entity, params):
-        pk_name = self.get_primary_field(entity)
-        obj = self.session.query(entity).get(params[pk_name])
+        obj = self._get_obj(entity, params)
         self.session.delete(obj)
         return obj

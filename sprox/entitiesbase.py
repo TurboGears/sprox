@@ -124,7 +124,19 @@ class EntitiesBase(ViewBase):
     >>> print base()
     <div xmlns="http://www.w3.org/1999/xhtml" class="containerwidget">
     <div class="entitylabelwidget">
+    <a href="Department/">Department</a>
+    </div>
+    <div class="entitylabelwidget">
     <a href="Document/">Document</a>
+    </div>
+    <div class="entitylabelwidget">
+    <a href="DocumentCategory/">DocumentCategory</a>
+    </div>
+    <div class="entitylabelwidget">
+    <a href="DocumentCategoryReference/">DocumentCategoryReference</a>
+    </div>
+    <div class="entitylabelwidget">
+    <a href="DocumentCategoryTag/">DocumentCategoryTag</a>
     </div>
     <div class="entitylabelwidget">
     <a href="Example/">Example</a>
