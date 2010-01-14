@@ -200,6 +200,26 @@ class TestFormBase(SproxTest):
         <option value="5">4</option>
 </select>
             </td>""", rendered)
+            
+    def test_entity_with_dropdown_field_names_title(self):
+        class GroupFormFieldNames(FormBase):
+            __entity__ = Group
+            __dropdown_field_names__ = {'groups':'group_name'}
+        form = GroupFormFieldNames(session)
+        rendered = form()
+        assert_in_xml("""<select name="users" class="propertymultipleselectfield" id="users" multiple="multiple" size="5">
+        <option value="1">asdf@asdf.com</option>
+</select>""", rendered)
+
+    def test_entity_with_dropdown_field_names_title_overridden(self):
+        class GroupFormFieldNames(FormBase):
+            __entity__ = Group
+            __dropdown_field_names__ = {'users':'user_name'}
+        form = GroupFormFieldNames(session)
+        rendered = form()
+        assert_in_xml("""<select name="users" class="propertymultipleselectfield" id="users" multiple="multiple" size="5">
+        <option value="1">asdf</option>
+</select>""", rendered)
 
     def test_entity_with_dropdown_field_names_dict(self):
         class UserFormFieldNames(FormBase):

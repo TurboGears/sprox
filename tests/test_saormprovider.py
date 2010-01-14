@@ -99,12 +99,20 @@ class TestSAORMProvider(SproxTest):
         eq_(field, 'user_id')
 
     def test_get_view_field_name(self):
+        field = self.provider.get_view_field_name(Group, ['name'])
+        eq_(field, 'group_name')
+
+    def test_get_view_field_name_with_title(self):
+        """ 
+        if it exists, saormprovider should use the 'title' info attribute to 
+        determine the title column
+        """
         field = self.provider.get_view_field_name(User, ['name'])
-        eq_(field, 'user_name')
+        eq_(field, 'email_address')
 
     def test_get_view_field_name_not_found(self):
-        field = self.provider.get_view_field_name(User, [])
-        eq_(field, '_password')
+        field = self.provider.get_view_field_name(Group, [])
+        eq_(field, 'group_id')
 
     def test_get_dropdown_options_fk(self):
         options = self.provider.get_dropdown_options(User, 'town')
@@ -116,7 +124,7 @@ class TestSAORMProvider(SproxTest):
 
     def test_get_dropdown_options_join_2(self):
         options = self.provider.get_dropdown_options(Group, 'users')
-        eq_(options, [(1, u'asdf'),])
+        eq_(options, [(1, u'asdf@asdf.com'),])
 
     def test_dropdown_options_warn(self):
         provider = SAORMProvider(metadata)

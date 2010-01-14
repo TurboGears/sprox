@@ -135,9 +135,16 @@ class SAORMProvider(IProvider):
             if value.primary_key:
                 return value.key
 
+    def _find_title_column(self, entity):
+        for column in class_mapper(entity).columns:
+            if 'title' in column.info and column.info['title']:
+                return column.key
+        return None
+
     def get_view_field_name(self, entity, possible_names):
+        view_field = self._find_title_column(entity)
+        
         fields = self.get_fields(entity)
-        view_field = None
         for column_name in possible_names:
             for actual_name in fields:
                 if column_name == actual_name:
