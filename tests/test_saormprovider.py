@@ -178,13 +178,13 @@ class TestSAORMProvider(SproxTest):
         q_user = self.session.query(User).get(2)
         assert q_user == new_user
 
-    def test_create2(self):
+    def test_create_many_to_one_multi(self):
         params = {'category': '1/1'}
         new_ref = self.provider.create(DocumentCategoryReference, params)
         q_ref = self.session.query(DocumentCategoryReference).get(1)
         assert new_ref == q_ref
 
-    def test_create3(self):
+    def test_create_many_to_many_multi(self):
         params = {'categories': ['1/1', '1/2']}
         new_ratingref = self.provider.create(DocumentCategoryTag, params)
         q_ratingref = self.session.query(DocumentCategoryTag).get(1)
