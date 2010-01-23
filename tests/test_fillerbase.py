@@ -53,7 +53,7 @@ class TestTableFiller(SproxTest):
     def test_get_list_data_value_array_values(self):
         r = self.filler._get_list_data_value(User, ['something', 'something else'])
         assert r == ['something', 'something else'], r
-        
+
     @raises(ConfigBaseError)
     def test_count_without_get(self):
         self.filler.get_count()
@@ -77,6 +77,16 @@ class TestEditFormFiller(SproxTest):
         eq_(value['groups'], [5])
         eq_(value['town'], 1)
 
+    def test_get_value_method(self):
+        class FillerWithMethod(EditFormFiller):
+            __entity__ = User
+            def town(self, obj):
+                return 'Unionville'
+        filler = FillerWithMethod(session)
+        value = filler.get_value(values={'user_id':1})
+        assert value['town']== 'Unionville', value['town']
+
+
 class TestAddFormFiller(SproxTest):
     def setup(self):
         super(TestAddFormFiller, self).setup()
@@ -89,4 +99,5 @@ class TestAddFormFiller(SproxTest):
     def test_get_value(self):
         value = self.filler.get_value(values={'user_id':1})
         eq_(value['user_id'], 1)
+
 
