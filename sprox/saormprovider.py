@@ -140,7 +140,9 @@ class SAORMProvider(IProvider):
 
     def get_primary_field(self, entity):
         fields = self.get_primary_fields(entity)
-        return fields[0] if len(fields) > 0 else None
+        if len(fields) == 0:
+            return None
+        return fields[0]
 
     def _find_title_column(self, entity):
         for column in class_mapper(entity).columns:
@@ -150,7 +152,7 @@ class SAORMProvider(IProvider):
 
     def get_view_field_name(self, entity, possible_names):
         view_field = self._find_title_column(entity)
-        
+
         fields = self.get_fields(entity)
         for column_name in possible_names:
             for actual_name in fields:
@@ -192,7 +194,7 @@ class SAORMProvider(IProvider):
             target_field = target_field.class_
 
         pk_fields = self.get_primary_fields(target_field)
-        
+
         view_name = self.get_view_field_name(target_field, view_names)
 
         rows = self.session.query(target_field).all()
@@ -203,7 +205,7 @@ class SAORMProvider(IProvider):
         else:
             def build_pk(row):
                 return "/".join([str(getattr(row, pk)) for pk in pk_fields])
-        
+
         return [ (build_pk(row), getattr(row, view_name)) for row in rows ] 
 
     def get_relations(self, entity):
@@ -227,21 +229,21 @@ class SAORMProvider(IProvider):
         except NoResultFound:
             return True
         return False
-    
+
     def get_synonyms(self, entity):
         mapper = class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, SynonymProperty)]
-    
+
     def _adapt_type(self, value, primary_key):
         if isinstance(primary_key.type, Integer):
             value = int(value)
         return value
 
     def _modify_params_for_relationships(self, entity, params, delete_first=True):
-        
+
         mapper = class_mapper(entity)
         relations = self.get_relations(entity)
-        
+
         for relation in relations:
             if relation in params:
                 prop = mapper.get_property(relation)
@@ -257,14 +259,14 @@ class SAORMProvider(IProvider):
                                 object_mapper(v)
                                 target_obj.append(v)
                             except UnmappedInstanceError:
-                            	pk = target.primary_key if hasattr(target, 'primary_key') else class_mapper(target).primary_key
-                                    
+                                pk = target.primary_key if hasattr(target, 'primary_key') else class_mapper(target).primary_key
+
                                 if isinstance(v, basestring) and "/" in v:
                                     v = map(self._adapt_type, v.split("/"), pk)
                                     v = tuple(v)
                                 else:
                                     v = self._adapt_type(v, pk[0])
-                                    
+
                                 target_obj.append(self.session.query(target).get(v))
                     elif prop.uselist:
                         try:
@@ -292,12 +294,12 @@ class SAORMProvider(IProvider):
                 else:
                     del params[relation]
         return params
-    
+
     def create(self, entity, params):
         params = self._modify_params_for_dates(entity, params)
         params = self._modify_params_for_relationships(entity, params)
         obj = entity()
-        
+
         relations = self.get_relations(entity)
         mapper = class_mapper(entity)
         for key, value in params.iteritems():
@@ -349,7 +351,7 @@ class SAORMProvider(IProvider):
     def get_obj(self, entity, params, fields=None, omit_fields=None):
         obj = self._get_obj(entity, params)
         return obj
-        
+
     def get(self, entity, params, fields=None, omit_fields=None):
         obj = self.get_obj(entity, params, fields)
         return self.dictify(obj, fields, omit_fields)
@@ -386,11 +388,11 @@ class SAORMProvider(IProvider):
                     params[key] = dt
                 if hasattr(field, 'type') and isinstance(field.type, Interval) and not isinstance(value, timedelta):
                     d = re.match(
-                            r'((?P<days>\d+) days, )?(?P<hours>\d+):'
-                            r'(?P<minutes>\d+):(?P<seconds>\d+)',
-                            str(value)).groupdict(0)
+                        r'((?P<days>\d+) days, )?(?P<hours>\d+):'
+                        r'(?P<minutes>\d+):(?P<seconds>\d+)',
+                        str(value)).groupdict(0)
                     dt = timedelta(**dict(( (key, int(value))
-                                              for key, value in d.items() )))
+                                            for key, value in d.items() )))
                     params[key] = dt
         return params
 
@@ -436,7 +438,7 @@ class SAORMProvider(IProvider):
             except KeyError:
                 pass
             setattr(obj, key, value)
-        
+
         self._remove_related_empty_params(obj, params, omit_fields)
         self.session.flush()
         return obj
