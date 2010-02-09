@@ -140,8 +140,7 @@ class SAORMProvider(IProvider):
 
     def get_primary_field(self, entity):
         fields = self.get_primary_fields(entity)
-        if len(fields) == 0:
-            return None
+        assert len(fields) > 0
         return fields[0]
 
     def _find_title_column(self, entity):
@@ -259,8 +258,10 @@ class SAORMProvider(IProvider):
                                 object_mapper(v)
                                 target_obj.append(v)
                             except UnmappedInstanceError:
-                                pk = target.primary_key if hasattr(target, 'primary_key') else class_mapper(target).primary_key
-
+                                if hasattr(target, 'primary_key'):
+                                    pk = target.primary_key 
+                                else:
+                                    pk = class_mapper(target).primary_key
                                 if isinstance(v, basestring) and "/" in v:
                                     v = map(self._adapt_type, v.split("/"), pk)
                                     v = tuple(v)
