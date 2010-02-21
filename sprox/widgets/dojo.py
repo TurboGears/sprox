@@ -21,8 +21,12 @@ class SproxDojoGrid(DojoBase):
     require = ['dojox.grid.DataGrid', 'twdojo.data.TWDojoRestStore']
     params = ['id', 'attrs', 'columns', 'jsId', 'action',
               'rowsPerPage', 'model', 'delayScroll', 'cssclass', 'actions',
-              'columnResizing', 'columnReordering', 'column_widths', 'default_column_width', 'headers','column_options', 'default_column_options','dojoStoreType','dojoStoreWidget'
+              'columnResizing', 'columnReordering', 'column_widths', 
+              'default_column_width', 'headers','column_options', 
+              'default_column_options','dojoStoreType','dojoStoreWidget',
+              'autoHeight'
               ]
+    autoHeight="false"
     delayScroll = "true"
     cssclass="sprox-dojo-grid"
     rowsPerPage = 20
@@ -41,7 +45,7 @@ class SproxDojoGrid(DojoBase):
     dojoStoreType = 'dojox.data.QueryReadStore'
     dojoStoreWidget = None
     template = "sprox.widgets.templates.dojogrid"
-    attrs = {'style':"height:200px"}
+    #attrs = {'style':"height:200px"}
     def update_params(self,d):
         d['dojoStoreWidget']=DojoQueryReadStore()
         super(SproxDojoGrid, self).update_params(d)
@@ -67,7 +71,8 @@ class SproxEditableDojoGrid(DojoBase):
     dojoType = 'dojox.grid.DataGrid'
     params = ['id', 'attrs', 'columns', 'jsId', 'action',
               'rowsPerPage', 'model', 'delayScroll', 'cssclass', 'actions',
-              'columnResizing', 'columnReordering', 'column_widths', 'default_column_width', 'headers','column_options', 'default_column_options','dojoStoreType','dojoStoreWidget'
+              'columnResizing', 'columnReordering', 'column_widths', 'default_column_width', 'headers','column_options', 'default_column_options','dojoStoreType','dojoStoreWidget',
+              'autoHeight'
               ]
     delayScroll = "true"
     cssclass="sprox-dojo-grid"

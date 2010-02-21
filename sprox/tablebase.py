@@ -30,7 +30,7 @@ class TableBase(ViewBase):
 
     Here is an example listing of the towns in the test database.
 
-    
+
     >>> from sprox.tablebase import TableBase
     >>> class TownTable(TableBase):
     ...    __model__ = Town
@@ -41,9 +41,9 @@ class TableBase(ViewBase):
            id="None" class="grid">
         <thead>
             <tr>
-                    <th  class=col_0>actions</th>
-                    <th  class=col_1>town_id</th>
-                    <th  class=col_2>name</th>
+                    <th  class="col_0">actions</th>
+                    <th  class="col_1">town_id</th>
+                    <th  class="col_2">name</th>
             </tr>
         </thead>
         <tbody>
@@ -116,8 +116,8 @@ class TableBase(ViewBase):
            id="None" class="grid">
         <thead>
             <tr>
-                    <th  class=col_0>town_id</th>
-                    <th  class=col_1>name</th>
+                    <th  class="col_0">town_id</th>
+                    <th  class="col_1">name</th>
             </tr>
         </thead>
         <tbody>
@@ -165,7 +165,7 @@ class TableBase(ViewBase):
     __column_widths__    = None
     __xml_fields__       = None
     __default_column_width__ = "10em"
-    
+
     def _do_get_fields(self):
         fields = super(TableBase, self)._do_get_fields()
         if '__actions__' not in self.__omit_fields__ and '__actions__' not in fields:
@@ -173,7 +173,7 @@ class TableBase(ViewBase):
             if '__actions__' not in self.__headers__:
                 self.__headers__['__actions__'] = 'actions'
         return fields
-    
+
     def _do_init_attrs(self):
         super(TableBase, self)._do_init_attrs()
         if self.__headers__ is None:
@@ -182,7 +182,7 @@ class TableBase(ViewBase):
             self.__column_widths__ = {}
         if self.__xml_fields__ is None:
             self.__xml_fields__ = {}
-    
+
     def _do_get_widget_args(self):
         args = super(TableBase, self)._do_get_widget_args()
         args['pks'] = None

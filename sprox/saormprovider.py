@@ -24,7 +24,7 @@ from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, Binary, Met
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper, Mapper
+from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sqlalchemy.exc import InvalidRequestError
 from sprox.iprovider import IProvider
@@ -136,22 +136,37 @@ class SAORMProvider(IProvider):
         return getattr(field, 'nullable', True)
 
     def get_primary_fields(self, entity):
-        #for now we are only supporting entities with a single primary field
-        return [self.get_primary_field(entity)]
-
-    def get_primary_field(self, entity):
         #sometimes entities get surrounded by functions, not sure why.
         if inspect.isfunction(entity):
             entity = entity()
         mapper = class_mapper(entity)
+        fields = []
+
         for field_name in self.get_fields(entity):
-            value = getattr(mapper.c, field_name)
-            if value.primary_key:
-                return value.key
+            try:
+                value = getattr(mapper.c, field_name)
+            except AttributeError:
+                # Relations won't be attributes, but can't be primary anyway.
+                continue
+            if value.primary_key and not value.key in fields:
+                fields.append(value.key)
+        return fields
+
+    def get_primary_field(self, entity):
+        fields = self.get_primary_fields(entity)
+        assert len(fields) > 0
+        return fields[0]
+
+    def _find_title_column(self, entity):
+        for column in class_mapper(entity).columns:
+            if 'title' in column.info and column.info['title']:
+                return column.key
+        return None
 
     def get_view_field_name(self, entity, possible_names):
+        view_field = self._find_title_column(entity)
+
         fields = self.get_fields(entity)
-        view_field = None
         for column_name in possible_names:
             for actual_name in fields:
                 if column_name == actual_name:
@@ -191,11 +206,20 @@ class SAORMProvider(IProvider):
         if isinstance(target_field, Mapper):
             target_field = target_field.class_
 
-        pk_name = self.get_primary_field(target_field)
+        pk_fields = self.get_primary_fields(target_field)
+
         view_name = self.get_view_field_name(target_field, view_names)
 
         rows = self.session.query(target_field).all()
-        return  [(getattr(row, pk_name), getattr(row, view_name)) for row in rows]
+
+        if len(pk_fields) == 1:
+            def build_pk(row):
+                return getattr(row, pk_fields[0])
+        else:
+            def build_pk(row):
+                return "/".join([str(getattr(row, pk)) for pk in pk_fields])
+
+        return [ (build_pk(row), getattr(row, view_name)) for row in rows ] 
 
     def get_relations(self, entity):
         mapper = class_mapper(entity)
@@ -207,6 +231,10 @@ class SAORMProvider(IProvider):
         if isinstance(mapper.get_property(field_name), PropertyLoader):
             return True
 
+    def relation_fields(self, entity, field_name):
+        field = getattr(entity, field_name)
+        return [ col.name for col in field.property.local_side ]
+
     def is_unique(self, entity, field_name, value):
         field = getattr(entity, field_name)
         try:
@@ -214,16 +242,21 @@ class SAORMProvider(IProvider):
         except NoResultFound:
             return True
         return False
-    
+
     def get_synonyms(self, entity):
         mapper = class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, SynonymProperty)]
 
+    def _adapt_type(self, value, primary_key):
+        if isinstance(primary_key.type, Integer):
+            value = int(value)
+        return value
+
     def _modify_params_for_relationships(self, entity, params, delete_first=True):
-        
+
         mapper = class_mapper(entity)
         relations = self.get_relations(entity)
-        
+
         for relation in relations:
             if relation in params:
                 prop = mapper.get_property(relation)
@@ -239,9 +272,16 @@ class SAORMProvider(IProvider):
                                 object_mapper(v)
                                 target_obj.append(v)
                             except UnmappedInstanceError:
-                                #xxx: make this work for multiple pks
-                                if isinstance(target.primary_key[0].type, Integer):
-                                    v = int(v)
+                                if hasattr(target, 'primary_key'):
+                                    pk = target.primary_key 
+                                else:
+                                    pk = class_mapper(target).primary_key
+                                if isinstance(v, basestring) and "/" in v:
+                                    v = map(self._adapt_type, v.split("/"), pk)
+                                    v = tuple(v)
+                                else:
+                                    v = self._adapt_type(v, pk[0])
+
                                 target_obj.append(self.session.query(target).get(v))
                     elif prop.uselist:
                         try:
@@ -259,19 +299,22 @@ class SAORMProvider(IProvider):
                             object_mapper(value)
                             target_obj = value
                         except UnmappedInstanceError:
-                            if isinstance(prop.remote_side[0].type, Integer):
-                                value = int(value)
+                            if isinstance(value, basestring) and "/" in value:
+                                value = map(self._adapt_type, value.split("/"), prop.remote_side)
+                                value = tuple(value)
+                            else:
+                                value = self._adapt_type(value, prop.remote_side[0])
                             target_obj = self.session.query(target).get(value)
                     params[relation] = target_obj
                 else:
                     del params[relation]
         return params
-    
+
     def create(self, entity, params):
         params = self._modify_params_for_dates(entity, params)
         params = self._modify_params_for_relationships(entity, params)
         obj = entity()
-        
+
         relations = self.get_relations(entity)
         mapper = class_mapper(entity)
         for key, value in params.iteritems():
@@ -320,9 +363,12 @@ class SAORMProvider(IProvider):
     def get_default_values(self, entity, params):
         return params
 
+    def get_obj(self, entity, params, fields=None, omit_fields=None):
+        obj = self._get_obj(entity, params)
+        return obj
+
     def get(self, entity, params, fields=None, omit_fields=None):
-        pk_name = self.get_primary_field(entity)
-        obj = self.session.query(entity).get(params[pk_name])
+        obj = self.get_obj(entity, params, fields)
         return self.dictify(obj, fields, omit_fields)
 
     def query(self, entity, limit=None, offset=None, limit_fields=None, order_by=None, desc=False, **kw):
@@ -358,19 +404,22 @@ class SAORMProvider(IProvider):
                     params[key] = dt
                 if hasattr(field, 'type') and isinstance(field.type, Interval) and not isinstance(value, timedelta):
                     d = re.match(
-                            r'((?P<days>\d+) days, )?(?P<hours>\d+):'
-                            r'(?P<minutes>\d+):(?P<seconds>\d+)',
-                            str(value)).groupdict(0)
+                        r'((?P<days>\d+) days, )?(?P<hours>\d+):'
+                        r'(?P<minutes>\d+):(?P<seconds>\d+)',
+                        str(value)).groupdict(0)
                     dt = timedelta(**dict(( (key, int(value))
-                                              for key, value in d.items() )))
+                                            for key, value in d.items() )))
                     params[key] = dt
         return params
 
-    def _remove_related_empty_params(self, obj, params):
+    def _remove_related_empty_params(self, obj, params, omit_fields=None):
         entity = obj.__class__
         mapper = class_mapper(entity)
         relations = self.get_relations(entity)
         for relation in relations:
+            if omit_fields and relation in omit_fields:
+                continue
+
             #clear out those items which are not found in the params list.
             if relation not in params or not params[relation]:
                 related_items = getattr(obj, relation)
@@ -379,15 +428,22 @@ class SAORMProvider(IProvider):
                         setattr(obj, relation, [])
                     else:
                         setattr(obj, relation, None)
-                        
-    def update(self, entity, params):
+
+    def _get_obj(self, entity, pkdict):
+        pk_names = self.get_primary_fields(entity)
+        pks = tuple([pkdict[n] for n in pk_names])
+        return self.session.query(entity).get(pks)
+
+    def update(self, entity, params, omit_fields=None):
         params = self._modify_params_for_dates(entity, params)
         params = self._modify_params_for_relationships(entity, params)
-        pk_name = self.get_primary_field(entity)
-        obj = self.session.query(entity).get(params[pk_name])
+        obj = self._get_obj(entity, params)
         relations = self.get_relations(entity)
         mapper = object_mapper(obj)
         for key, value in params.iteritems():
+            if omit_fields and key in omit_fields:
+                continue
+
             if isinstance(value, FieldStorage):
                 value = value.file.read()
             # this is done to cast any integer columns into ints before they are 
@@ -398,13 +454,12 @@ class SAORMProvider(IProvider):
             except KeyError:
                 pass
             setattr(obj, key, value)
-        
-        self._remove_related_empty_params(obj, params)
+
+        self._remove_related_empty_params(obj, params, omit_fields)
         self.session.flush()
         return obj
 
     def delete(self, entity, params):
-        pk_name = self.get_primary_field(entity)
-        obj = self.session.query(entity).get(params[pk_name])
+        obj = self._get_obj(entity, params)
         self.session.delete(obj)
         return obj

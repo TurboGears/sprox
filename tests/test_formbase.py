@@ -22,12 +22,12 @@ def setup():
 
 class UserForm(FormBase):
     __entity__ = User
-    
+
 class TestField:
-    
+
     def setup(self):
         self.field = Field(TextField, NotEmpty)
-        
+
     def test_create(self):
         assert self.field.widget == TextField
         assert self.field.validator == NotEmpty
@@ -35,7 +35,7 @@ class TestField:
 class TestsEmptyDropdownWorks:
     def setup(self):
         self.base = UserForm(session)
-        
+
     def test__widget__(self):
         rendered = self.base.__widget__()
         assert_in_xml("""<td class="fieldcol" >
@@ -154,7 +154,7 @@ class TestFormBase(SproxTest):
             __entity__ = User
             field = TextField()
         bogus = BogusUserForm(session)
-        
+
     def test_entity_with_synonym(self):
         class DocumentForm(FormBase):
             __entity__ = Document
@@ -184,7 +184,7 @@ class TestFormBase(SproxTest):
         <option value="5">4</option>
 </select>
             </td>""", rendered)
-        
+
     def test_entity_with_dropdown_field_names2(self):
         class UserFormFieldNames(FormBase):
             __entity__ = User
@@ -200,6 +200,26 @@ class TestFormBase(SproxTest):
         <option value="5">4</option>
 </select>
             </td>""", rendered)
+            
+    def test_entity_with_dropdown_field_names_title(self):
+        class GroupFormFieldNames(FormBase):
+            __entity__ = Group
+            __dropdown_field_names__ = {'groups':'group_name'}
+        form = GroupFormFieldNames(session)
+        rendered = form()
+        assert_in_xml("""<select name="users" class="propertymultipleselectfield" id="users" multiple="multiple" size="5">
+        <option value="1">asdf@asdf.com</option>
+</select>""", rendered)
+
+    def test_entity_with_dropdown_field_names_title_overridden(self):
+        class GroupFormFieldNames(FormBase):
+            __entity__ = Group
+            __dropdown_field_names__ = {'users':'user_name'}
+        form = GroupFormFieldNames(session)
+        rendered = form()
+        assert_in_xml("""<select name="users" class="propertymultipleselectfield" id="users" multiple="multiple" size="5">
+        <option value="1">asdf</option>
+</select>""", rendered)
 
     def test_entity_with_dropdown_field_names_dict(self):
         class UserFormFieldNames(FormBase):
@@ -216,8 +236,8 @@ class TestFormBase(SproxTest):
         <option value="5">4</option>
 </select>
             </td>""", rendered)
-        
-        
+
+
     def test_require_field(self):
         class RegistrationForm(FormBase):
             __entity__ = User
@@ -267,7 +287,7 @@ class TestAddRecordForm(SproxTest):
         try:
             registration_form.validate(params={'password':'blah', 'verify_password':'not_blah'})
         except Invalid, exc:
-            assert 'Passwords do not match' in exc.message
+            assert 'Passwords do not match' in exc.msg
 
 class TestEditableForm(SproxTest):
     def setup(self):
@@ -290,7 +310,7 @@ class TestEditableForm(SproxTest):
                 <input type="text" id="user_name" class="textfield" name="user_name" value="" />
             </td>
         </tr>""", rendered)
-        
+
 class TestDisabledForm(SproxTest):
     def setup(self):
         super(TestDisabledForm, self).setup()

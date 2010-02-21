@@ -34,16 +34,7 @@ class TestDojoTableBase:
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert_in_xml("""<div> <!-- begin table widget mako! -->
-<script>
-//<![CDATA[
-function lessThan(str) {
-return str.replace(/&lt;/gi, "<");
-}
-//]]>
-</script>
-<div dojoType="dojox.data.QueryReadStore" jsId="listing__User_store"  id="listing__User_store" url="./something.json"></div>
-<table  dojoType="dojox.grid.DataGrid" jsId="listing__User" id="None" store="listing__User_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" class="sprox-dojo-grid" style="height:200px">
+        assert_in_xml("""<table  dojoType="dojox.grid.DataGrid" jsId="listing__User" id="None" store="listing__User_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" autoHeight="false" class="sprox-dojo-grid" >
     <thead>
             <tr>
                     <th formatter="lessThan" width="10em" name="actions" field="__actions__" >__actions__</th>
@@ -59,8 +50,7 @@ return str.replace(/&lt;/gi, "<");
                     <th formatter="lessThan" width="10em" name="groups" field="groups" >groups</th>
             </tr>
     </thead>
-</table>
-</div> <!-- end table widget -->""",rendered)
+</table>""",rendered)
 
 class TestDojoEditableTableBase:
     def setup(self):
@@ -71,15 +61,7 @@ class TestDojoEditableTableBase:
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert_in_xml("""<div> <!-- begin table widget mako! -->
-<script>
-//<![CDATA[
-function lessThan(str) {
-return str.replace(/&lt;/gi, "<");
-}
-//]]>
-</script>
-<table  dojoType="dojox.grid.DataGrid" jsId="None" id="None" store="None_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" class="sprox-dojo-grid" >
+        assert_in_xml("""<table  dojoType="dojox.grid.DataGrid" jsId="None" id="None" store="None_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" autoHeight="None" class="sprox-dojo-grid" >
     <thead>
             <tr>
                     <th formatter="lessThan" width="10em" name="actions" field="__actions__"                             editable="true">__actions__</th>
@@ -95,6 +77,5 @@ return str.replace(/&lt;/gi, "<");
                     <th formatter="lessThan" width="10em" name="groups" field="groups"                             editable="true">groups</th>
             </tr>
     </thead>
-</table>
-</div> <!-- end table widget -->""", rendered)
+</table>""", rendered)
 

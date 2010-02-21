@@ -1,8 +1,11 @@
 #most of this file was taken from turbogears default template
 from hashlib import sha1
 import os
-import md5
-import sha
+try:
+    from hashlib import md5, sha1 as sha
+except ImportError:
+    import md5
+    import sha
 from datetime import datetime
 
 #from sqlalchemy.types import *
@@ -61,7 +64,7 @@ class User(DeclarativeBase):
 
     user_id = Column(Integer, autoincrement=True, primary_key=True)
     user_name = Column(Unicode(16), unique=True)
-    email_address = Column(Unicode(255), unique=True)
+    email_address = Column(Unicode(255), unique=True, info={'title':True})
     display_name = Column(Unicode(255))
     _password = Column('password', Unicode(40))
     created = Column(DateTime, default=datetime.now)
@@ -194,6 +197,67 @@ class Example(DeclarativeBase):
     varchar         = Column(VARCHAR(200)  )
     password        = Column(String(20)    )
 
+
+class Department(DeclarativeBase):
+    __tablename__ = 'department'
+    
+    department_id = Column(Integer, primary_key=True)
+    name = Column(Unicode(255))
+
+
+class DocumentCategory(DeclarativeBase):
+    __tablename__ = 'document_category'
+    
+    document_category_id = Column(Integer, primary_key=True)
+    department_id = Column(Integer, ForeignKey('department.department_id'), primary_key=True)
+    name = Column(Unicode(255))
+
+document_category_tag_association_table = Table(
+    'document_category_tag_assignment', metadata,
+    Column('document_category_id', None, ForeignKey('document_category.document_category_id',
+        onupdate="CASCADE", ondelete="CASCADE"), primary_key=True),
+    Column('department_id', None, ForeignKey('document_category.department_id',
+        onupdate="CASCADE", ondelete="CASCADE"), primary_key=True),
+    Column('document_category_tag_id', None, ForeignKey('document_category_tag.document_category_tag_id',
+        onupdate="CASCADE", ondelete="CASCADE"), primary_key=True),
+)
+
+
+class DocumentCategoryTag(DeclarativeBase):
+    __tablename__ = 'document_category_tag'
+    
+    document_category_tag_id = Column(Integer, primary_key=True)
+    categories = relation(
+        DocumentCategory, 
+        secondary=document_category_tag_association_table, 
+        primaryjoin=document_category_tag_id == document_category_tag_association_table.c.document_category_tag_id,
+        secondaryjoin=and_(
+            DocumentCategory.document_category_id == document_category_tag_association_table.c.document_category_id,
+            DocumentCategory.department_id == document_category_tag_association_table.c.department_id
+            ),
+        backref='tags')
+
+
+class DocumentCategoryReference(DeclarativeBase):
+    __tablename__ = 'document_category_ref'
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['document_category_id','department_id'], ['document_category.document_category_id', 'document_category.department_id'])
+    )
+    
+    id = Column(Integer, primary_key=True)
+    
+    document_category_id = Column(Integer, ForeignKey('document_category.document_category_id'))
+    department_id = Column(Integer, ForeignKey('document_category.department_id'))
+    
+    category = relation(DocumentCategory, 
+        primaryjoin=and_(
+            document_category_id == DocumentCategory.document_category_id,
+            department_id == DocumentCategory.department_id
+            )
+        )
+
+
 class Document(DeclarativeBase):
 
     __tablename__ = 'document'
@@ -202,6 +266,7 @@ class Document(DeclarativeBase):
     blob            = Column(BLOB          )
     owner           = Column(Integer, ForeignKey('tg_user.user_id'))
     url             = Column(String(500))
+    document_category_id = Column(None, ForeignKey('document_category.document_category_id'))
 
     def _get_address(self):
         return self.url
@@ -211,6 +276,8 @@ class Document(DeclarativeBase):
 
     address = synonym('address', descriptor=property(_get_address,
                                                        _set_address))
+    category = relation(DocumentCategory)
+
 
 class File(DeclarativeBase):
     __tablename__ = 'attachments'
@@ -222,4 +289,5 @@ class File(DeclarativeBase):
     @property
     def content(self):
         return self.data
+
 

@@ -82,22 +82,22 @@ class TableFiller(FillerBase):
     see modifiers also in :mod:`sprox.configbase`.
 
     :Relations:
-    
+
     By default, TableFiller will populate relations (join or foreign_key) with either the value
-    from the related table, or a comma-separated list of values.  These values are derived from 
+    from the related table, or a comma-separated list of values.  These values are derived from
     the related object given the field names provided by the __possible_field_names__ modifier.
     For instance, if you have a User class which is related to Groups, the groups item in the result
     dictionaries will be populated with Group.group_name.  The default field names are:
     _name, name, description, title.
 
     :RESTful Actions:
-    
+
     By default, Table filler provides an "__actions__" item in the resultant dictionary list.  This provides
     and edit, and (javascript) delete link which provide edit and DELETE functionality as HTML verbs in REST.
     For more information on developing RESTful URLs, please visit `http://microformats.org/wiki/rest/urls <http://microformats.org/wiki/rest/urls/>`_ .
-    
+
     :Usage:
-    
+
     Here is how we would get the values to fill up a user's table, minus the action column, and created date.
 
     >>> class UsersFiller(TableFiller):
@@ -107,8 +107,8 @@ class TableFiller(FillerBase):
     >>> users_filler = UsersFiller(session)
     >>> value = users_filler.get_value(values={}, limit=20, offset=0)
     >>> print value #doctest: +IGNORE_WHITESPACE
-    [{'town': u'Arvada', 'user_id': u'1', 'user_name': u'asdf', 
-    'town_id': u'1', 'groups': u'4', '_password': '******', 'password': '******', 
+    [{'town': u'Arvada', 'user_id': u'1', 'user_name': u'asdf',
+    'town_id': u'1', 'groups': u'4', '_password': '******', 'password': '******',
     'email_address': u'asdf@asdf.com', 'display_name': u'None'}]
     """
     __actions__ = True
@@ -141,7 +141,7 @@ class TableFiller(FillerBase):
         if not hasattr(self, '__count__'):
             raise ConfigBaseError('Count not yet set for filler.  try calling get_value() first.')
         return self.__count__
-    
+
     def _do_get_fields(self):
         fields = super(TableFiller, self)._do_get_fields()
         if '__actions__' not in self.__omit_fields__ and '__actions__' not in fields:
@@ -171,7 +171,7 @@ class TableFiller(FillerBase):
         count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__, order_by, desc)
         self.__count__ = count
         return count, objs
-    
+
     def get_value(self, values=None, **kw):
         """
         Get the values to fill a form widget.
@@ -218,14 +218,14 @@ class EditFormFiller(FormFiller):
     """
     This class will help to return a single record for use within a form or otherwise.
     The values are returned in dictionary form.
-    
+
     :Modifiers:
-    
+
     see :mod:`sprox.configbase`.
 
-    
+
     :Usage:
-    
+
     >>> class UserFiller(EditFormFiller):
     ...     __model__ = User
     >>> users_filler = UsersFiller(session)
@@ -238,7 +238,14 @@ class EditFormFiller(FormFiller):
     """
     def get_value(self, values=None, **kw):
         values = super(EditFormFiller, self).get_value(values, **kw)
-        values = self.__provider__.get(self.__entity__, params=values, fields=self.__fields__, omit_fields=self.__omit_fields__)
+#        values = self.__provider__.get(self.__entity__, params=values, fields=self.__fields__, omit_fields=self.__omit_fields__)
+        obj = self.__provider__.get_obj(self.__entity__, params=values, fields=self.__fields__)
+        values = self.__provider__.dictify(obj, self.__fields__, self.__omit_fields__)
+        for key in self.__fields__:
+            if hasattr(self, key):
+                method = getattr(self, key)
+                if inspect.ismethod(method):
+                    values[key] = method(obj, **kw)
         return values
 
 class RecordFiller(EditFormFiller):pass
