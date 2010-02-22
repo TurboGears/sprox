@@ -17,112 +17,18 @@ Functions:
 None
 
 
-Copyright (c) 2007 Christopher Perkins
+Copyright (c) 2007-10 Christopher Perkins
 Original Version by Christopher Perkins 2007Database
 Released under MIT license.
 """
-from sqlalchemy.schema import Column
-from sqlalchemy.types import *
-from sqlalchemy.orm import PropertyLoader, SynonymProperty
+import warnings
 
-from tw.api import Widget
-from tw.forms.fields import *
+from sprox._widgetselector import *
+from sprox.sa.widgetselector import SAWidgetSelector as _SAWidgetSelector
 
-from sprox.widgets import *
 
-class WidgetSelector:
-    def select(self, field):
-        return Widget
+class SAWidgetSelector(_SAWidgetSelector):
 
-class EntitiesViewWidgetSelector(WidgetSelector):
-    def select(self, field):
-        return EntityLabelWidget
-
-class EntityDefWidgetSelector(WidgetSelector):
-    def select(self, field):
-        return EntityDefWidget
-
-class RecordViewWidgetSelector(WidgetSelector):
-    def select(self, field):
-        return RecordFieldWidget
-
-text_field_limit=100
-
-import datetime
-import pymongo
-class MongoKitWidgetSelector(WidgetSelector):
-    #XXX this is a copy of authorized_types from monogokit/pylons/document
-    default_widgets = {
-#    type(None):
-    bool: SproxCheckBox,
-    int: TextField,
-    float: TextField,
-    unicode: TextField,
-#    list:
-#    dict:
-    datetime.datetime: SproxCalendarDateTimePicker,
-    pymongo.binary.Binary:FileField
-#    pymongo.objectid.ObjectId:
-#    pymongo.dbref.DBRef:
-#    pymongo.code.Code:
-#    type(re.compile("")):
-#    MongoDocument:
-    }
-    def select(self,field):
-        return self.default_widgets[field]
-
-class SAWidgetSelector(WidgetSelector):
-
-    default_widgets = {
-    String:   TextField,
-    Integer:  TextField,
-    Numeric:  TextField,
-    DateTime: SproxCalendarDateTimePicker,
-    Date:     SproxCalendarDatePicker,
-    Time:     SproxTimePicker,
-    Binary:   FileField,
-    BLOB:   FileField,
-    PickleType: TextField,
-    Boolean: SproxCheckBox,
-#    NullType: TextField
-    }
-
-    default_name_based_widgets = {}
-
-    default_multiple_select_field_widget_type = PropertyMultipleSelectField
-    default_single_select_field_widget_type = PropertySingleSelectField
-
-    def select(self, field):
-
-        if hasattr(field, 'name'):
-            if field.name in self.default_name_based_widgets:
-                return self.default_name_based_widgets[field.name]
-
-            if field.name.lower() == 'password':
-                return PasswordField
-
-        if hasattr(field, 'key') and field.key.lower() == 'password':
-            return PasswordField
-
-        # this is really the best we can do, since we cannot know
-        # what type the field represents until execution occurs.
-        if isinstance(field, SynonymProperty):
-            #fix to handle weird synonym prop stuff
-            if isinstance(field.descriptor, property) or field.descriptor.__class__.__name__.endswith('SynonymProp'):
-                return TextField
-
-        if isinstance(field, PropertyLoader):
-            if field.uselist:
-                return self.default_multiple_select_field_widget_type
-            return self.default_single_select_field_widget_type
-
-        type_ = String
-        for t in self.default_widgets.keys():
-            if isinstance(field.type, t):
-                type_ = t
-                break
-
-        widget = self.default_widgets[type_]
-        if widget is TextField and hasattr(field.type, 'length') and (field.type.length is None or field.type.length>text_field_limit):
-            widget = TextArea
-        return widget
+    def __init__(self, *args, **kw):
+        warnings.warn('This class has moved to the sprox.sa.widgetselector module.')
+        _SAWidgetSelector.__init__(self, *args, **kw)
