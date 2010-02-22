@@ -7,18 +7,17 @@ Copyright (c) 2008 Christopher Perkins
 Original Version by Christopher Perkins 2008
 Released under MIT license.
 """
-import inspect
 from tw.api import Widget
 from tw.forms import HiddenField, TableForm
-from viewbase import ViewBase, ViewBaseError
+
 from formencode import Schema, All
 from formencode import Validator
-from sprox.validators import UniqueValue
 from formencode.validators import UnicodeString, String
-from sprox.sa.widgetselector import SAWidgetSelector
-from sprox.sa.validatorselector import SAValidatorSelector
+
+from sprox.validators import UniqueValue
 from sprox.metadata import FieldsMetadata
 from sprox.widgets.widgets import SproxMethodPutHiddenField
+from sprox.viewbase import ViewBase, ViewBaseError
 
 class FilteringSchema(Schema):
     """This makes formencode work for most forms, because some wsgi apps append extra values to the parameter list."""

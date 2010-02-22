@@ -3,14 +3,13 @@ fillerbase Module
 
 Classes to help fill widgets with data
 
-Copyright (c) 2008 Christopher Perkins
+Copyright (c) 2008-10 Christopher Perkins
 Original Version by Christopher Perkins 2008
 Released under MIT license.
 """
 
 from configbase import ConfigBase, ConfigBaseError
 from metadata import FieldsMetadata
-from genshi import XML
 import inspect
 
 class FillerBase(ConfigBase):
