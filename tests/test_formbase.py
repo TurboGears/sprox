@@ -2,7 +2,7 @@ from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm, 
 from sprox.viewbase import ViewBaseError
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document, assert_in_xml
 from sprox.test.model import User, Group
-from sprox.widgetselector import SAWidgetSelector
+from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid, Schema
@@ -200,7 +200,7 @@ class TestFormBase(SproxTest):
         <option value="5">4</option>
 </select>
             </td>""", rendered)
-            
+
     def test_entity_with_dropdown_field_names_title(self):
         class GroupFormFieldNames(FormBase):
             __entity__ = Group

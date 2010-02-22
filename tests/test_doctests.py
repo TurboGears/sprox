@@ -12,8 +12,10 @@ import unittest
 
 from nose.plugins import doctests as nose_doctest
 
-from sprox import configbase, fillerbase, formbase, saormprovider, sprockets, tablebase, metadata, validators, validatorselector, widgets, widgetselector
+from sprox import configbase, fillerbase, formbase, sprockets, tablebase, metadata, validators, validatorselector, widgets, widgetselector
 from sprox.dojo import formbase as dojo_formbase
+
+from sprox.sa import provider as saormprovider
 
 import sprox
 
@@ -28,7 +30,7 @@ def setup():
     user = setup_records(session)
     #this may be needed if we end up testing the provider with doctests
     #session.commit()
-    
+
 
 def check_output_xml(want, got, optionsflags):
     return eq_xml(want, got)
@@ -54,7 +56,7 @@ def test_doctests():
     global session, metadata
     import unittest
     import doctest
-    
+
     def setUp(self):
         #this may be needed if we end up testing the provider with doctests
         pass

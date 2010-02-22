@@ -15,9 +15,9 @@ from formencode import Schema, All
 from formencode import Validator
 from sprox.validators import UniqueValue
 from formencode.validators import UnicodeString, String
-from widgetselector import SAWidgetSelector
+from sprox.sa.widgetselector import SAWidgetSelector
+from sprox.sa.validatorselector import SAValidatorSelector
 from sprox.metadata import FieldsMetadata
-from validatorselector import SAValidatorSelector
 from sprox.widgets.widgets import SproxMethodPutHiddenField
 
 class FilteringSchema(Schema):
@@ -160,9 +160,9 @@ class FormBase(ViewBase):
     @property
     def __widget_selector_type__(self):
         return self.__provider__.default_widget_selector_type
-    
+
     __validator_selector__      = None
-    
+
     @property
     def __validator_selector_type__(self):
         return self.__provider__.default_validator_selector_type
@@ -188,7 +188,7 @@ class FormBase(ViewBase):
         if self.__dropdown_field_names__ is None:
             self.__dropdown_field_names__ = ['name', '_name', 'description', '_description']
 
-        #bring in custom declared validators 
+        #bring in custom declared validators
         for attr in dir(self):
             if not attr.startswith('__'):
                 value = getattr(self, attr)
@@ -219,7 +219,7 @@ class FormBase(ViewBase):
                         self.__field_validator_types__[attr] = value
                 except TypeError:
                     pass
-    
+
     def validate(self, params, state=None):
         """A pass-thru to the widget's validate function."""
         return self.__widget__.validate(params, state)
@@ -420,7 +420,7 @@ class AddRecordForm(FormBase):
             </tr>
         </table>
     </form>
-    
+
     What is unique about the AddRecord form, is that if the fields in the database are labeled unique, it will
     automatically vaidate against uniqueness for that field.  Here is a simple user form definition, where the
     user_name in the model is unique:
@@ -497,7 +497,7 @@ class DisabledForm(FormBase):
             </tr>
         </table>
     </form>
-    
+
     You may notice in the above example that disabled fields pass in a hidden value for each disabled field.
 
     """

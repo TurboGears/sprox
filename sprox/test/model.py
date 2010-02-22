@@ -6,9 +6,8 @@ try:
 except ImportError:
     import md5
     import sha
-from datetime import datetime
 
-#from sqlalchemy.types import *
+from datetime import datetime
 from sqlalchemy import *
 from sqlalchemy.orm import relation, backref, synonym
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base, synonym_for
@@ -200,14 +199,14 @@ class Example(DeclarativeBase):
 
 class Department(DeclarativeBase):
     __tablename__ = 'department'
-    
+
     department_id = Column(Integer, primary_key=True)
     name = Column(Unicode(255))
 
 
 class DocumentCategory(DeclarativeBase):
     __tablename__ = 'document_category'
-    
+
     document_category_id = Column(Integer, primary_key=True)
     department_id = Column(Integer, ForeignKey('department.department_id'), primary_key=True)
     name = Column(Unicode(255))
@@ -225,11 +224,11 @@ document_category_tag_association_table = Table(
 
 class DocumentCategoryTag(DeclarativeBase):
     __tablename__ = 'document_category_tag'
-    
+
     document_category_tag_id = Column(Integer, primary_key=True)
     categories = relation(
-        DocumentCategory, 
-        secondary=document_category_tag_association_table, 
+        DocumentCategory,
+        secondary=document_category_tag_association_table,
         primaryjoin=document_category_tag_id == document_category_tag_association_table.c.document_category_tag_id,
         secondaryjoin=and_(
             DocumentCategory.document_category_id == document_category_tag_association_table.c.document_category_id,
@@ -244,13 +243,13 @@ class DocumentCategoryReference(DeclarativeBase):
         ForeignKeyConstraint(
             ['document_category_id','department_id'], ['document_category.document_category_id', 'document_category.department_id'])
     )
-    
+
     id = Column(Integer, primary_key=True)
-    
+
     document_category_id = Column(Integer, ForeignKey('document_category.document_category_id'))
     department_id = Column(Integer, ForeignKey('document_category.department_id'))
-    
-    category = relation(DocumentCategory, 
+
+    category = relation(DocumentCategory,
         primaryjoin=and_(
             document_category_id == DocumentCategory.document_category_id,
             department_id == DocumentCategory.department_id

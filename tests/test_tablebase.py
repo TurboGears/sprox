@@ -1,7 +1,7 @@
 from sprox.tablebase import TableBase
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example
 from sprox.test.model import User
-from sprox.widgetselector import SAWidgetSelector
+from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid

@@ -1,7 +1,7 @@
 from sprox.dojo.tablebase import DojoTableBase, DojoEditableTableBase
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, assert_in_xml
 from sprox.test.model import User
-from sprox.widgetselector import SAWidgetSelector
+from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid

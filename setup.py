@@ -12,10 +12,10 @@ setup(
   author_email="chris@percious.com",
   license="MIT",
   url="http://www.sprox.org",
-  install_requires=['sqlalchemy>=0.5',
-                    'tw.forms>=0.9.7.2',
+  install_requires=['tw.forms>=0.9.7.2',
                     'formencode>=1.2.2',
                     ],
+  tests_require=['sqlalchemy'],
   packages = find_packages(),
   classifiers=[
         "Development Status :: 4 - Beta",

@@ -32,17 +32,17 @@ from cgi import FieldStorage
 from datetime import datetime, timedelta
 from warnings import warn
 
-from widgetselector import SAWidgetSelector
-from validatorselector import SAValidatorSelector
+from sprox.sa.widgetselector import SAWidgetSelector
+from sprox.sa.validatorselector import SAValidatorSelector
 
 class SAORMProviderError(Exception):pass
 
 class SAORMProvider(IProvider):
-    
-    
+
+
     default_widget_selector_type = SAWidgetSelector
     default_validator_selector_type = SAValidatorSelector
-    
+
     def __init__(self, hint=None, **hints):
         """
         initialize me with a engine, bound metadata or bound session object
@@ -116,7 +116,7 @@ class SAORMProvider(IProvider):
                 return mapper.get_property(name)
             except InvalidRequestError:
                 raise AttributeError
-                
+
 
 
     def is_binary(self, entity, name):
@@ -189,8 +189,8 @@ class SAORMProvider(IProvider):
             view_names = ['_name', 'name', 'description', 'title']
         if self.session is None:
             warn('No dropdown options will be shown for %s.  '
-                 'Try passing the session into the initialization'
-                 'of your form base object so that this sprocket'
+                 'Try passing the session into the initialization '
+                 'of your form base object so that this sprocket '
                  'can have values in the drop downs'%entity)
             return []
 
@@ -219,7 +219,7 @@ class SAORMProvider(IProvider):
             def build_pk(row):
                 return "/".join([str(getattr(row, pk)) for pk in pk_fields])
 
-        return [ (build_pk(row), getattr(row, view_name)) for row in rows ] 
+        return [ (build_pk(row), getattr(row, view_name)) for row in rows ]
 
     def get_relations(self, entity):
         mapper = class_mapper(entity)
@@ -273,7 +273,7 @@ class SAORMProvider(IProvider):
                                 target_obj.append(v)
                             except UnmappedInstanceError:
                                 if hasattr(target, 'primary_key'):
-                                    pk = target.primary_key 
+                                    pk = target.primary_key
                                 else:
                                     pk = class_mapper(target).primary_key
                                 if isinstance(v, basestring) and "/" in v:
@@ -446,7 +446,7 @@ class SAORMProvider(IProvider):
 
             if isinstance(value, FieldStorage):
                 value = value.file.read()
-            # this is done to cast any integer columns into ints before they are 
+            # this is done to cast any integer columns into ints before they are
             # sent off to the interpreter.  Oracle really needs this.
             try:
                 if key not in relations and value and isinstance(mapper.columns[key].type, Integer):

@@ -2,7 +2,7 @@ from nose.tools import raises
 from sprox.validators import UniqueValue
 from sprox.test.base import *
 from formencode import Invalid
-from sprox.saormprovider import SAORMProvider
+from sprox.sa.provider import SAORMProvider
 
 session = None
 engine = None

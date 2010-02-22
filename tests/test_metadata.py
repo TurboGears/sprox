@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from sprox.metadata import Metadata, MetadataError, FieldsMetadata, FieldMetadata, EntitiesMetadata, NotFoundError
-from sprox.saormprovider import SAORMProvider
+from sprox.sa.provider import SAORMProvider
 from sprox.iprovider import IProvider
 from sprox.test.base import *
 

@@ -1,10 +1,11 @@
 from nose.tools import raises, eq_
-from sprox.validatorselector import ValidatorSelector, SAValidatorSelector
+from sprox.validatorselector import ValidatorSelector
+from sprox.sa.validatorselector import SAValidatorSelector
 from sprox.test.base import *
 from formencode.validators  import *
 from formencode.compound import All
 from sqlalchemy import Column, Integer, String
-from sprox.saormprovider import SAORMProvider
+from sprox.sa.provider import SAORMProvider
 from types import NoneType
 
 session = None

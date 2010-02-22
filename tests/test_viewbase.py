@@ -1,7 +1,7 @@
 from sprox.viewbase import ViewBase
 from sprox.test.base import setup_database
 from sprox.test.model import User
-from sprox.widgetselector import SAWidgetSelector
+from sprox.sa.widgetselector import SAWidgetSelector
 from nose.tools import raises, eq_
 
 from tw.forms import TextField, HiddenField, Widget
@@ -32,8 +32,8 @@ class DummyMetadata(object):
 
 class DummyWidget(Widget):
     params = ['test_param']
-    
-    
+
+
 class UserView(ViewBase):
     __entity__ = User
     __metadata_type__ = DummyMetadata
@@ -122,7 +122,7 @@ class TestViewBase:
         user_view = UserView()
         widget = user_view.__widget__
         assert 'junk' not in widget.children.keys()
-        
+
     def test_widget_attrs(self):
         class UserView(ViewBase):
             __entity__ = User

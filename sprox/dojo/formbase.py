@@ -9,9 +9,9 @@ Released under MIT license.
 """
 
 from sprox.formbase import FormBase, EditableForm, AddRecordForm
-from sprox.widgetselector import SAWidgetSelector
+from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.widgets.dojo import SproxDojoSelectShuttleField, SproxDojoSortedSelectShuttleField
-from sprox.saormprovider import SAORMProvider
+from sprox.sa.provider import SAORMProvider
 
 class DojoSAWidgetSelector(SAWidgetSelector):
     """Dojo-Specific Widget Selector"""
@@ -21,22 +21,22 @@ class DojoFormBase(FormBase):
     """FormBase for Dojo
 
     see :class:`sprox.formbase.FormBase`
-    
+
     """
     @property
     def __widget_selector_type__(self):
         if isinstance(self.__provider__, SAORMProvider):
             return DojoSAWidgetSelector
         return super(DojoFormBase, self).__widget_selector_type__
-    
+
 class DojoEditableForm(EditableForm):
     """Creates a form for editing records that has select shuttles for the multiple relations.
-    
+
     :Modifiers:
       see :class:`sprox.formbase.FormBase`
 
     :Usage:
-    
+
     >>> from sprox.dojo.formbase import DojoEditableForm
     >>> from formencode import Schema
     >>> from formencode.validators import FieldsMatch
@@ -108,12 +108,12 @@ class DojoEditableForm(EditableForm):
 class DojoAddRecordForm(AddRecordForm):
     """
     Creates a form for adding records that has select shuttles for the multiple relations.
-    
+
     :Modifiers:
       see :class:`sprox.formbase.FormBase`
 
     :Usage:
-    
+
     >>> from sprox.dojo.formbase import DojoAddRecordForm
     >>> from formencode import Schema
     >>> from formencode.validators import FieldsMatch

@@ -17,7 +17,11 @@ from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm.attributes import ClassManager
 
-from sprox.saormprovider import SAORMProvider
+SAORMProvider = None
+try:
+    from sprox.sa.provider import SAORMProvider
+except ImportError:
+    pass
 MongoKitProvider = None
 try:
     from sprox.mongo.provider import MongoKitProvider
@@ -48,8 +52,8 @@ class _MongoKitSelector(ProviderSelector):
     def get_provider(self, entity=None, hint=None, **hints):
         #TODO cache
         return MongoKitProvider(None)
-        
-        
+
+
 
 class _SAORMSelector(ProviderSelector):
 
@@ -107,7 +111,7 @@ class _SAORMSelector(ProviderSelector):
         The provider's are cached as not to waste computation/memory.
 
         :Usage:
-        
+
         >>> from sprox.providerselector import SAORMSelector
         >>> provider = SAORMSelector.get_provider(User, session=session)
         >>> provider.engine.url.drivername

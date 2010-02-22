@@ -1,7 +1,7 @@
-from sprox.saormprovider import SAORMProvider
+from sprox.sa.provider import SAORMProvider
 from sprox.test.base import setup_database, setup_records, SproxTest
 from sprox.test.model import *
-from sprox.widgetselector import SAWidgetSelector
+from sprox.sa.widgetselector import SAWidgetSelector
 from sqlalchemy.orm import mapper
 from sqlalchemy import MetaData, Table, Column, Integer
 from sqlalchemy.engine import Engine
@@ -45,7 +45,7 @@ class TestSAORMProvider(SproxTest):
         session.add(DocumentCategory(document_category_id=3, department_id=2, name=u'Balance Sheet'))
         #session.add(DocumentRating(user_id=1, document_id=1, rating=5))
         session.flush()
-        
+
 
     def test_get_fields_with_func(self):
         eq_(self.provider.get_fields(lambda: Town), ['town_id', 'name', 'town_id', 'name'])
@@ -112,8 +112,8 @@ class TestSAORMProvider(SproxTest):
         eq_(field, 'group_name')
 
     def test_get_view_field_name_with_title(self):
-        """ 
-        if it exists, saormprovider should use the 'title' info attribute to 
+        """
+        if it exists, saormprovider should use the 'title' info attribute to
         determine the title column
         """
         field = self.provider.get_view_field_name(User, ['name'])
