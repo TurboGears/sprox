@@ -73,7 +73,8 @@ class SAValidatorSelector(ValidatorSelector):
     DateTime: DateValidator,
     Date:     DateValidator,
     Time:     DateValidator,
-#    Binary:   UnicodeString,
+    Binary:   None,
+    BLOB:   None,
     PickleType: UnicodeString,
 #    Boolean: UnicodeString,
 #    NullType: TextField

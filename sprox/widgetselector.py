@@ -53,12 +53,12 @@ import pymongo
 class MongoKitWidgetSelector(WidgetSelector):
     #XXX this is a copy of authorized_types from monogokit/pylons/document
     default_widgets = {
-#    type(None): 
+#    type(None):
     bool: SproxCheckBox,
     int: TextField,
     float: TextField,
     unicode: TextField,
-#    list: 
+#    list:
 #    dict:
     datetime.datetime: SproxCalendarDateTimePicker,
     pymongo.binary.Binary:FileField
@@ -81,13 +81,14 @@ class SAWidgetSelector(WidgetSelector):
     Date:     SproxCalendarDatePicker,
     Time:     SproxTimePicker,
     Binary:   FileField,
+    BLOB:   FileField,
     PickleType: TextField,
     Boolean: SproxCheckBox,
 #    NullType: TextField
     }
 
     default_name_based_widgets = {}
-    
+
     default_multiple_select_field_widget_type = PropertyMultipleSelectField
     default_single_select_field_widget_type = PropertySingleSelectField
 
