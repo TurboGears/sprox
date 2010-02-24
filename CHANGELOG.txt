@@ -1,3 +1,16 @@
+0.6.8
+Fixes to not remove relations that are listed in field order.
+Python 2.4 support
+
+0.6.7
+better support for mulitple primary keys.
+hiding of FKs for things that display relations already.
+python 2.6 deprecation removal.
+autoheight support
+omit fields on update
+SA 0.6. support
+mako templates for a few widgets.
+
 0.6.6
 Alessandro Molina contributed speedup for dictify.
 Better IE support for dojo table (preventCache added)
@@ -20,23 +33,23 @@ Bugfix Release
 Bugfix Release
 
 0.6.0
-* TableFiller can provide field_methods for customization of output. 
-* You can now customize the query TableFiller uses. 
-* TableBase now has __xml_field__ modifier that un-escapes the data 
-provided by the given list of fields. 
-* There is a new tutorial for TableFiller: http://www.sprox.org/tutorials/table.html 
-. 
-* Sqashed #8: Synonym Properties causing Tracebacks. 
-* Added Mako Templates for every sprox widget. (SPEED!) 
-* Fixed the way relation form fields render. 
-* Brandon Rhodes provided a fix for TableBase that allows fields to 
-render with any Widget type. 
-* Teajay Bernard provided *experimental* support for Editable Dojo 
-Grid. 
+* TableFiller can provide field_methods for customization of output.
+* You can now customize the query TableFiller uses.
+* TableBase now has __xml_field__ modifier that un-escapes the data
+provided by the given list of fields.
+* There is a new tutorial for TableFiller: http://www.sprox.org/tutorials/table.html
+.
+* Sqashed #8: Synonym Properties causing Tracebacks.
+* Added Mako Templates for every sprox widget. (SPEED!)
+* Fixed the way relation form fields render.
+* Brandon Rhodes provided a fix for TableBase that allows fields to
+render with any Widget type.
+* Teajay Bernard provided *experimental* support for Editable Dojo
+Grid.
 * Test framework fixed to be more forgiving of XML.
-* Declarative Validation overrides now work properly. 
-* Field Class added so that you may override both the Widget _and_ a 
-Validator for a field (documentation pending). 
+* Declarative Validation overrides now work properly.
+* Field Class added so that you may override both the Widget _and_ a
+Validator for a field (documentation pending).
 
 
 0.5.5
