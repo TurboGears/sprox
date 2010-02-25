@@ -24,7 +24,14 @@ except ImportError:
     pass
 MongoKitProvider = None
 try:
-    from sprox.mongo.provider import MongoKitProvider
+    from sprox.mk.provider import MongoKitProvider
+except ImportError:
+    pass
+MingProvider = None
+MappedClass = None
+try:
+    from sprox.mg.provider import MingProvider
+    from ming.orm.mapped_class import MappedClass
 except ImportError:
     pass
 
@@ -53,6 +60,13 @@ class _MongoKitSelector(ProviderSelector):
         #TODO cache
         return MongoKitProvider(None)
 
+class _MingSelector(ProviderSelector):
+    def get_identifier(self, entity, **hints):
+        return entity.__name__
+
+    def get_provider(self, entity=None, hint=None, **hints):
+        #TODO cache
+        return MingProvider()
 
 
 class _SAORMSelector(ProviderSelector):
@@ -136,6 +150,7 @@ class _SAORMSelector(ProviderSelector):
 
 SAORMSelector = _SAORMSelector()
 MongoKitSelector = _MongoKitSelector()
+MingSelector = _MingSelector()
 
 #XXX:
 #StormSelector = _StormSelector()
@@ -154,6 +169,8 @@ class ProviderTypeSelector(object):
         elif hasattr(entity, '_use_pylons') or hasattr(entity,'_enable_autoref'):
             #xxx: find a better marker
             return MongoKitSelector
+        elif inspect.isclass(entity) and MappedClass is not None and issubclass(entity, MappedClass):
+            return MingSelector
         #other helper definitions are going in here
         else:
             raise ProviderTypeSelectorError('Entity %s has no known provider mapping.'%entity)
