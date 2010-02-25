@@ -463,3 +463,16 @@ class SAORMProvider(IProvider):
         obj = self._get_obj(entity, params)
         self.session.delete(obj)
         return obj
+
+    def get_field_widget_args(self, entity, field_name, field):
+        args = {}
+        if isinstance(field, PropertyLoader):
+            args['provider'] = self
+            args['nullable'] = self.is_nullable(entity, field_name)
+        return args
+
+    def is_unique_field(self, entity, field_name):
+        field = self.get_field(entity, field_name)
+        if hasattr(field, 'unique') and field.unique:
+            return True
+        return False

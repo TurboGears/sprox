@@ -2,7 +2,6 @@ import inspect
 from tw.api import Widget
 from tw.forms import HiddenField
 from configbase import ConfigBase, ConfigBaseError
-from sqlalchemy.orm import PropertyLoader
 from widgetselector import WidgetSelector
 
 class ClassViewer(object):
@@ -137,9 +136,7 @@ class ViewBase(ConfigBase):
         if field_name in self.__field_attrs__:
             args['attrs'] = self.__field_attrs__[field_name]
 
-        if isinstance(field, PropertyLoader):
-            args['provider'] = self.__provider__
-            args['nullable'] = self.__provider__.is_nullable(self.__entity__, field_name)
+        args.update(self.__provider__.get_field_widget_args(self.__entity__, field_name, field))
 
         if field_name in self.__field_widget_args__:
             args.update(self.__field_widget_args__[field_name])

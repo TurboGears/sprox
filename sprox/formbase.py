@@ -282,7 +282,7 @@ class FormBase(ViewBase):
             return
         args = self._do_get_validator_args(field_name, field, v_type)
         v = v_type(**args)
-        if hasattr(field, 'unique') and field.unique and self.__check_if_unique__:
+        if self.__check_if_unique__ and self.__provider__.is_unique_field(self.__entity__, field_name):
             v = All(UniqueValue(self.__provider__, self.__entity__, field_name), v)
         return v
 
