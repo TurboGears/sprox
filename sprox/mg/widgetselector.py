@@ -44,7 +44,7 @@ class MingWidgetSelector(WidgetSelector):
     S.ObjectId: TextField
     }
     def select(self,field):
-        
+
         if isinstance(field, RelationProperty):
             join = field._infer_join()
             if isinstance(join, ManyToOneJoin):
@@ -52,16 +52,16 @@ class MingWidgetSelector(WidgetSelector):
             if isinstance(join, OneToManyJoin):
                 return self.default_multiple_select_field_widget_type
             raise NotImplementedError("Unknown join type %r" % join)	# pragma: no cover
-        
+
         schemaitem = S.SchemaItem.make(field.field_type)
         if isinstance(schemaitem, S.OneOf):
             return self.default_single_select_field_widget_type
-            
+
         sprox_meta = getattr(field, "sprox_meta", {})
         if sprox_meta.get("narrative"):
             return TextArea
         if sprox_meta.get("password"):
             return PasswordField
-            
-        return self.default_widgets[schemaitem.__class__]
+
+        return self.default_widgets.get(schemaitem.__class__, TextField)
 

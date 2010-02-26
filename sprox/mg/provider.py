@@ -14,16 +14,17 @@ import datetime, inspect
 from ming.orm import mapper, FieldProperty, RelationProperty, MappedClass
 from ming.orm.property import OneToManyJoin, ManyToOneJoin
 from ming import schema as S
+from pymongo.objectid import ObjectId
 
 from widgetselector import MingWidgetSelector
 from validatorselector import MingValidatorSelector
 from pymongo import ASCENDING, DESCENDING
 
 class MingProvider(IProvider):
-    
+
     default_widget_selector_type = MingWidgetSelector
     default_validator_selector_type = MingValidatorSelector
-    
+
     def get_field(self, entity, name):
         """Get a field with the given field name."""
         return mapper(entity).property_index[name]
@@ -54,7 +55,7 @@ class MingProvider(IProvider):
         """Returns the value of the given sprox meta property for the field."""
         field = self.get_field(entity, field_name)
         return getattr(field, "sprox_meta", {}).get(metaprop, None)
-        
+
     def get_view_field_name(self, entity, possible_names):
         """Get the name of the field which first matches the possible colums
 
@@ -109,13 +110,13 @@ class MingProvider(IProvider):
             field = self.get_field(entity_or_field, field_name)
         else:
             field = entity_or_field
-            
+
         if isinstance(field, FieldProperty):
             schemaitem = S.SchemaItem.make(field.field_type)
             if isinstance(schemaitem, S.OneOf):
                 return [ (opt,opt) for opt in schemaitem.options ]
             raise NotImplementedError("get_dropdown_options doesn't know how to get the options for field %r of type %r" % (field, schemaitem))
-        
+
         if not isinstance(field, RelationProperty):
             raise NotImplementedError("get_dropdown_options expected a FieldProperty or RelationProperty field, but got %r" % field)
         join = field._infer_join()
@@ -144,7 +145,7 @@ class MingProvider(IProvider):
 
     def _cast_value(self, entity, key, value):
         return value
-    
+
     def create(self, entity, params):
         """Create an entry of type entity with the given params."""
         obj = entity()
@@ -159,7 +160,7 @@ class MingProvider(IProvider):
 
     def get_obj(self, entity, params):
         return entity.query.find(params).first()
-        
+
     def get(self, entity, params, fields=None, omit_fields=None):
         return self.dictify(self.get_obj(entity, params), fields, omit_fields)
 
@@ -182,16 +183,16 @@ class MingProvider(IProvider):
 
     def delete(self, entity, params):
         """Delete an entry of typeentity which matches the params."""
-        obj = entity.query.find({"_id": params["_id"]}).first()
+        obj = entity.query.get(_id=ObjectId(params["_id"]))
         obj.delete()
         return obj
-        
+
     def query(self, entity, limit=None, offset=None, limit_fields=None, order_by=None, desc=False, **kw):
         if offset is None:
             offset = 0
-        iter = entity.query.find(skip=offset)
+        iter = entity.query.find(skip=int(offset))
         if limit is not None:
-            iter = iter.limit(limit)
+            iter = iter.limit(int(limit))
         if order_by is not None:
             if desc:
                 dir = DESCENDING
@@ -213,7 +214,7 @@ class MingProvider(IProvider):
     def relation_entity(self, entity, field_name):
         """If the field in the entity is a relation field, then returns the
         entity which it relates to.
-        
+
         :Returns:
           Related entity for the field
         """
@@ -229,13 +230,13 @@ class MingProvider(IProvider):
     def is_unique(self, entity, field_name, value):
         iter = entity.query.find({ field_name: value })
         return iter.count() == 0
-    
+
     def is_unique_field(self, entity, field_name):
         for idx in getattr(entity.__mongometa__, "unique_indexes", ()):
             if idx == (field_name,):
                 return True
         return False
-        
+
     def dictify(self, obj, fields=None, omit_fields=None):
         if obj is None:
             return {}
