@@ -12,6 +12,7 @@ from configbase import ConfigBase, ConfigBaseError
 from metadata import FieldsMetadata
 from genshi import XML
 import inspect
+from datetime import datetime
 
 class FillerBase(ConfigBase):
     """
@@ -153,12 +154,12 @@ class TableFiller(FillerBase):
         """Override this function to define how action links should be displayed for the given record."""
         primary_fields = self.__provider__.get_primary_fields(self.__entity__)
         pklist = '/'.join(map(lambda x: str(getattr(obj, x)), primary_fields))
-        value = '<div><div>&nbsp;<a href="'+pklist+'/edit" style="text-decoration:none">edit</a>'\
+        value = '<div><div><a class="edit_link" href="'+pklist+'/edit" style="text-decoration:none">edit</a>'\
               '</div><div>'\
               '<form method="POST" action="'+pklist+'" class="button-to">'\
             '<input type="hidden" name="_method" value="DELETE" />'\
             '<input class="delete-button" onclick="return confirm(\'Are you sure?\');" value="delete" type="submit" '\
-            'style="background: transparent; float:left; border:0; color: #286571; display: inline; margin: 0; padding: 0;"/>'\
+            'style="background-color: transparent; float:left; border:0; color: #286571; display: inline; margin: 0; padding: 0;"/>'\
         '</form>'\
         '</div></div>'
         return value
@@ -206,6 +207,8 @@ class TableFiller(FillerBase):
                         continue
                     elif isinstance(value, list):
                         value = self._get_list_data_value(field, value)
+                    elif isinstance(value, datetime):
+                        value = value.strftime("%m/%d/%Y %H:%M%p")
                     elif self.__provider__.is_relation(self.__entity__, field) and value is not None:
                         value = self._get_relation_value(field, value)
                     elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
