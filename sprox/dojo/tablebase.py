@@ -27,6 +27,7 @@ class DojoTableBase(TableBase):
     __column_options__ = {}
     def _do_get_widget_args(self):
         args = super(DojoTableBase, self)._do_get_widget_args()
+
         if self.__url__ is not None:
             args['action'] = self.__url__
         args['columns'] = self.__fields__

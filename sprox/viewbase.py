@@ -9,7 +9,7 @@ class ClassViewer(object):
     """class wrapper to expose items of a class.  Needed to pass classes to TW as params"""
     def __init__(self, klass):
         self.__name__ = klass.__name__
-        
+
 
 class ViewBaseError(Exception):pass
 
