@@ -215,6 +215,8 @@ class TableFiller(FillerBase):
                         value = self._get_relation_value(field, value)
                     elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
                         value = '&lt;file&gt;'
+                if isinstance(value, str):
+                    value = unicode(value, encoding='utf-8')
                 row[field] = unicode(value)
             rows.append(row)
         return rows
