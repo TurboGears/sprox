@@ -14,6 +14,8 @@ from genshi import XML
 import inspect
 from datetime import datetime
 
+encoding = 'utf-8'
+
 class FillerBase(ConfigBase):
     """
     :Modifiers:
