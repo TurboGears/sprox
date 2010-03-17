@@ -16,7 +16,7 @@ setup(
                     'tw.forms>=0.9.7.2',
                     'formencode>=1.2.2',
                     ],
-  packages = find_packages(),
+  packages = find_packages(exclude=['tests']),
   classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
