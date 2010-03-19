@@ -121,40 +121,40 @@ class TableBase(ViewBase):
            id="None" class="grid">
         <thead>
             <tr>
-                    <th  class="col_0">town_id</th>
-                    <th  class="col_1">name</th>
+                    <th class="col_0">town_id</th>
+                    <th class="col_1">name</th>
             </tr>
         </thead>
         <tbody>
             <tr class="even">
-                <td>
+                <td class="col_0">
                         1
                 </td>
-                <td>
+                <td class="col_1">
                         Arvada
                 </td>
             </tr>
             <tr class="odd">
-                <td>
+                <td class="col_0">
                         2
                 </td>
-                <td>
+                <td class="col_1">
                         Denver
                 </td>
             </tr>
             <tr class="even">
-                <td>
+                <td class="col_0">
                         3
                 </td>
-                <td>
+                <td class="col_1">
                         Golden
                 </td>
             </tr>
             <tr class="odd">
-                <td>
+                <td class="col_0">
                         4
                 </td>
-                <td>
+                <td class="col_1">
                         Boulder
                 </td>
             </tr>
