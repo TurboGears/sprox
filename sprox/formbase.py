@@ -312,8 +312,13 @@ class EditableForm(FormBase):
 
         """
         fields = super(EditableForm, self)._do_get_fields()
+        primary_field = self.__provider__.get_primary_field(self.__entity__)
+        if primary_field not in fields:
+            fields.append(primary_field)
+        
         if '_method' not in fields:
             fields.append('_method')
+            
         return fields
 
     def _do_get_field_widgets(self, fields):
