@@ -173,8 +173,6 @@ class MingProvider(IProvider):
 
     def update(self, entity, params):
         """Update an entry of type entity which matches the params."""
-        if 'created' in params:
-            params.pop('created')
         obj = self.get_obj(entity, params)
         params.pop('_id')
         try:
@@ -200,10 +198,10 @@ class MingProvider(IProvider):
         obj.delete()
         return obj
 
-    def query(self, entity, limit=None, offset=None, limit_fields=None, order_by=None, desc=False, **kw):
-        if offset is None:
-            offset = 0
-        iter = entity.query.find(skip=int(offset))
+    def query(self, entity, limit=None, offset=0, limit_fields=None, order_by=None, desc=False, **kw):
+        iter = entity.query.find()
+        if offset:
+            iter = iter.skip(int(offset))
         if limit is not None:
             iter = iter.limit(int(limit))
         if order_by is not None:
