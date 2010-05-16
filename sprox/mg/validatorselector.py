@@ -22,7 +22,38 @@ Mongo Contributions by Jorge Vargas
 """
 
 from sprox.validatorselector import ValidatorSelector
+from tw.forms.validators import *
+from ming import schema as s
+import ming.orm as o
+import inspect
 
 class MingValidatorSelector(ValidatorSelector):
-    pass
 
+    default_validators = {
+    #s.Bool: SproxCheckBox,
+    s.Int: Int,
+    s.Float: Number,
+    s.DateTime: DateValidator,
+    s.Binary: None,
+    s.Value: None,
+    s.ObjectId: None,
+    s.String: UnicodeString,
+    }
+
+    def select(self, field):
+
+        #xxx: make this a "one of" validator
+        if isinstance(field, o.RelationProperty):
+            return UnicodeString
+
+        field_type = field.field_type
+        type_ = s.String
+        for t in self.default_validators.keys():
+            if isinstance(field_type, s.OneOf):
+                break;
+            if inspect.isclass(field_type) and issubclass(field_type, t):
+                type_ = t
+                break
+
+        validator_type = self.default_validators.get(type_, None)
+        return validator_type
