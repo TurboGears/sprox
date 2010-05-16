@@ -31,7 +31,7 @@ Definitions:
     Dictify
         An alternative representation of a mapped object as a dictionary; see
         the dictify method docstring for details.
-    
+
 
 
 Copyright &copy 2008 Christopher Perkins
@@ -40,6 +40,8 @@ Released under MIT license.
 """
 
 class IProvider:
+    def __init__(self, hint=None, **hints):
+        pass
     def get_field(self, entity, name):
         """Get a field with the given field name."""
         raise NotImplementedError
@@ -50,7 +52,7 @@ class IProvider:
         :Arguments:
           entity
             An entity or entity thunk.
-                   
+
         :Returns:
         A list of names of the fields that are not foreign keys in the entity."""
         raise NotImplementedError
@@ -65,7 +67,7 @@ class IProvider:
 
     def get_primary_fields(self, entity):
         """Get the fields in the entity which uniquely identifies a record.
-        
+
         :Returns:
         A sequence of fields which when taken together uniquely identify a record."""
         raise NotImplementedError
@@ -73,7 +75,7 @@ class IProvider:
     def get_primary_field(self, entity):
         """Get the single primary field for an entity. A single primary field is
         required for EditableForm and AddRecordForm-based forms.
-        
+
         :Returns:
         A field which unique identifies a record. Raises an exception if there is no
         such field."""
@@ -111,7 +113,7 @@ class IProvider:
 
     def get_relations(self, entity):
         """Get all of the field names in an enity which are relation fields.
-        
+
         :Returns:
         A list of names of relation fields in the entity."""
         raise NotImplementedError
@@ -139,7 +141,7 @@ class IProvider:
 
     def get(self, entity, params, fields=None, omit_fields=None):
         """Get a single dictify of type entity which matches the params.
-        
+
         Equivalent to dictify(get(entity, params), fields, omit_fields)."""
         raise NotImplementedError
 
@@ -153,7 +155,7 @@ class IProvider:
 
     def query(self,entity,limit=None,offset=None,limit_fields=None,order_by=None,desc=False):
         """Perform a query against this entity.
-        
+
         :Arguments:
           entity
             the entity to be queried
@@ -167,27 +169,27 @@ class IProvider:
             the name of a field to sort by. If unspecified, no sorting is done
           desc
             if true, the sort order is descending. Otherwise, it is ascending.
-        
+
         :Returns:
         A tuple (count, iter) where iter is an iterator of mapped objects.
         """
         raise NotImplementedError
-        
+
     def is_binary(self,entity,name):
         """Determine if the field in the entity is a binary field."""
         raise NotImplementedError
 
     def relation_fields(self, entity, field_name):
         """For the relation field with the given name, return the corresponding foreign key field(s) in the entity.
-        
+
         :Returns:
         A list of the names of the foreign key fields.
         """
         raise NotImplementedError
-        
+
     def get_field_widget_args(self, entity, field_name, field):
         """Return a dict with any additional arguments that should be passed for the widget for the field in the entity.
-        
+
         :Returns:
         A dict of additional widget arguments."""
         return {}
@@ -196,17 +198,17 @@ class IProvider:
         """Return true if the value for field is not yet used within the entity."""
         # XXX rename this method to something better
         return True
-        
+
     def is_unique_field(self, entity, field_name):
         """Return true if the field within the entity is a primary or alternate key."""
         return False
-        
+
     def dictify(self, obj, fields=None, omit_fields=None):
         """Return a dictionary with keys being the names of fields in te object
         and values being the values of those fields, except that values that are
         mapped objects are replaced with the value of the corresponding primary
         key of the related object instead of the actual mapped object.
-    
+
         :Arguments:
           obj
             a mapped object or None. If None, the return value is {}
@@ -216,7 +218,7 @@ class IProvider:
             fields and not in omit_fields are returned.
           omit_fields:
             a container of field names or None. If None, no fields are omitted.
-            
+
         :Returns:
         A dictionary of {field_name: value} where field_name is the name of a
         property field or relation field, and value is the value of the property
@@ -226,4 +228,4 @@ class IProvider:
         # we may not necessary be able to derive a primary key reference to
         # a subdocument. (if they embedded in a non-relational db)
         raise NotImplementedError
-        
+

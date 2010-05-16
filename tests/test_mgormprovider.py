@@ -392,7 +392,7 @@ class TestMingWidgetSelector:
         assert widget is TextField
 
 # tablebase tests
-        
+
 class UserTable(TableBase):
     __entity__ = User
 
@@ -418,20 +418,21 @@ class TestTableBase:
                 <th  class="col_8">email_address</th>
         </tr>
     </thead>""", rendered)
-        
+
 # provider tests
 
 class TestMGORMProvider(SproxTest):
     def setup(self):
         super(TestMGORMProvider, self).setup()
-        self.provider = MingProvider()
+        self.provider = MingProvider(User.__mongometa__.session)
         Department(_id=1, name=u'Marketing')
         Department(_id=2, name=u'Accounting')
         DocumentCategory(_id=1, department_id=1, name=u'Brochure')
         DocumentCategory(_id=2, department_id=1, name=u'Flyer')
         DocumentCategory(_id=3, department_id=2, name=u'Balance Sheet')
         #session.add(DocumentRating(user_id=1, document_id=1, rating=5))
-        session.flush()
+        session.flush_all()
+        #session.close_all()
         self.asdf_user_id = self.provider.get_obj(User, {'user_name': 'asdf'})._id
 
 
@@ -609,7 +610,7 @@ class TestMGORMProvider(SproxTest):
     def test_query_sort_desc(self):
         cnt, r = self.provider.query(Town, order_by="name", desc=True)
         eq_([t.name for t in r], [u'Golden', u'Denver', u'Boulder', u'Arvada'])
-        
+
     # expected failure; needs updatable RelationProperty
     @raises(TypeError)
     def test_update(self):
@@ -674,7 +675,7 @@ class TestMGORMProvider(SproxTest):
     @raises(TypeError)
     def test_relation_fields_invalid(self):
         self.provider.relation_fields(User, "_id")
-        
+
     # expected failure; needs updatable RelationProperty
     @raises(TypeError)
     def test_update_omit(self):

@@ -1,5 +1,5 @@
 """
-mongokitprovider Module
+mingprovider Module
 
 This contains the class which allows sprox to interface with any database.
 
@@ -24,6 +24,9 @@ class MingProvider(IProvider):
 
     default_widget_selector_type = MingWidgetSelector
     default_validator_selector_type = MingValidatorSelector
+
+    def __init__(self, hint, **hints):
+        self.session = hint
 
     def get_field(self, entity, name):
         """Get a field with the given field name."""
@@ -56,7 +59,7 @@ class MingProvider(IProvider):
         field = self.get_field(entity, field_name)
         return getattr(field, "sprox_meta", {}).get(metaprop, None)
 
-    def get_view_field_name(self, entity, possible_names):
+    def get_view_field_name(self, entity, possible_names=None):
         """Get the name of the field which first matches the possible colums
 
         :Arguments:
@@ -156,22 +159,32 @@ class MingProvider(IProvider):
             value = self._cast_value(entity, key, value)
             if value is not None:
                 setattr(obj,key,value)
+        self.session.flush_all()
+        self.session.close_all()
         return obj
 
     def get_obj(self, entity, params):
-        return entity.query.find(params).first()
+        if '_id' in params:
+            return entity.query.find_by(_id=ObjectId(params['_id'])).first()
+        return entity.query.find_by(**params).first()
 
     def get(self, entity, params, fields=None, omit_fields=None):
         return self.dictify(self.get_obj(entity, params), fields, omit_fields)
 
     def update(self, entity, params):
         """Update an entry of type entity which matches the params."""
-        obj = entity.query.find({"_id": params["_id"]}).first()
+        if 'created' in params:
+            params.pop('created')
+        obj = self.get_obj(entity, params)
         params.pop('_id')
-        if params.has_key('sprox_id'):
+        try:
             params.pop('sprox_id')
-        if params.has_key('_method'):
+        except KeyError:
+            pass
+        try:
             params.pop('_method')
+        except KeyError:
+            pass
         fields = self.get_fields(entity)
         for key, value in params.iteritems():
             if key not in fields:
@@ -183,7 +196,7 @@ class MingProvider(IProvider):
 
     def delete(self, entity, params):
         """Delete an entry of typeentity which matches the params."""
-        obj = entity.query.get(_id=ObjectId(params["_id"]))
+        obj = self.get_obj(entity, params)
         obj.delete()
         return obj
 

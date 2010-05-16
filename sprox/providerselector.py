@@ -66,7 +66,7 @@ class _MingSelector(ProviderSelector):
 
     def get_provider(self, entity=None, hint=None, **hints):
         #TODO cache
-        return MingProvider()
+        return MingProvider(entity.__mongometa__.session)
 
 
 class _SAORMSelector(ProviderSelector):
