@@ -3,6 +3,7 @@ from tw.api import Widget
 from tw.forms import HiddenField
 from configbase import ConfigBase, ConfigBaseError
 from sqlalchemy.orm import PropertyLoader
+from sqlalchemy.schema import Column
 from widgetselector import WidgetSelector
 
 class ClassViewer(object):
@@ -133,6 +134,12 @@ class ViewBase(ConfigBase):
             entity = ClassViewer(field)
 
         args = {'id':field_name, 'identity':self.__entity__.__name__+'_'+field_name, 'entity':entity}
+        if isinstance(entity, Column) and entity.default:
+            if isinstance(entity.default.arg, str) or \
+               isinstance(entity.default.arg, unicode) or \
+               isinstance(entity.default.arg, int) or \
+               isinstance(entity.default.arg, float):
+                   args['default'] = entity.default.arg
 
         if field_name in self.__field_attrs__:
             args['attrs'] = self.__field_attrs__[field_name]
