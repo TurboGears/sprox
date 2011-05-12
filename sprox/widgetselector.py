@@ -21,6 +21,7 @@ Copyright (c) 2007 Christopher Perkins
 Original Version by Christopher Perkins 2007Database
 Released under MIT license.
 """
+import itertools
 import sqlalchemy
 from sqlalchemy.schema import Column
 from sqlalchemy.types import *
@@ -77,6 +78,7 @@ class SAWidgetSelector(WidgetSelector):
     Boolean: SproxCheckBox,
 #    NullType: TextField
     }
+    default_widgets_priority = [ Enum ]
 
     default_name_based_widgets = {}
     
@@ -108,7 +110,7 @@ class SAWidgetSelector(WidgetSelector):
             return self.default_single_select_field_widget_type
 
         type_ = String
-        for t in self.default_widgets.keys():
+        for t in itertools.chain(self.default_widgets_priority, self.default_widgets.keys()):
             if isinstance(field.type, t):
                 type_ = t
                 break
