@@ -30,6 +30,12 @@ from formencode import Invalid
 from formencode.validators import StringBool
 from sqlalchemy.orm import PropertyLoader, SynonymProperty
 
+try:
+    from sqlalchemy.types import LargeBinary
+except:
+    class LargeBinary:
+        pass
+
 class ValidatorSelector(object):
     _name_based_validators = {}
 
@@ -90,7 +96,7 @@ class SAValidatorSelector(ValidatorSelector):
             return
 
         #do not validate boolean or binary arguments
-        if isinstance(field.type, (Boolean, Binary)):
+        if isinstance(field.type, (Boolean, Binary, LargeBinary)):
             return None
 
         if field.name in self.name_based_validators:

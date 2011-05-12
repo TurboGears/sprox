@@ -21,6 +21,7 @@ Copyright (c) 2007 Christopher Perkins
 Original Version by Christopher Perkins 2007Database
 Released under MIT license.
 """
+import sqlalchemy
 from sqlalchemy.schema import Column
 from sqlalchemy.types import *
 from sqlalchemy.orm import PropertyLoader, SynonymProperty
@@ -29,6 +30,18 @@ from tw.api import Widget
 from tw.forms.fields import *
 
 from sprox.widgets import *
+
+try:
+    from sqlalchemy.types import LargeBinary
+except:
+    class LargeBinary:
+        pass
+
+try:
+    from sqlalchemy.types import Enum
+except:
+    class Enum:
+        pass
 
 class WidgetSelector:
     def select(self, field):
@@ -51,6 +64,7 @@ text_field_limit=100
 class SAWidgetSelector(WidgetSelector):
 
     default_widgets = {
+    Enum: SingleSelectField,
     String:   TextField,
     Integer:  TextField,
     Numeric:  TextField,
@@ -58,6 +72,7 @@ class SAWidgetSelector(WidgetSelector):
     Date:     SproxCalendarDatePicker,
     Time:     SproxTimePicker,
     Binary:   FileField,
+    LargeBinary: FileField,
     PickleType: TextField,
     Boolean: SproxCheckBox,
 #    NullType: TextField

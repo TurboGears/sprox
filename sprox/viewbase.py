@@ -6,6 +6,12 @@ from sqlalchemy.orm import PropertyLoader
 from sqlalchemy.schema import Column
 from widgetselector import WidgetSelector
 
+try:
+    from sqlalchemy.types import Enum
+except:
+    class Enum:
+        pass
+
 class ClassViewer(object):
     """class wrapper to expose items of a class.  Needed to pass classes to TW as params"""
     def __init__(self, klass):
@@ -140,6 +146,9 @@ class ViewBase(ConfigBase):
                isinstance(entity.default.arg, int) or \
                isinstance(entity.default.arg, float):
                    args['default'] = entity.default.arg
+
+        if isinstance(entity, Column) and isinstance(entity.type, Enum):
+            args['options'] = entity.type.enums
 
         if field_name in self.__field_attrs__:
             args['attrs'] = self.__field_attrs__[field_name]
