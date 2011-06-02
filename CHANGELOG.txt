@@ -1,3 +1,13 @@
+0.6.11
+Support for sqlalchemy 0.7.x
+Removal of Enum Column support (didn't work before anyway)
+
+0.6.10
+Bugfix Release
+
+0.6.9
+Bugfix Release
+
 0.6.8
 Fixes to not remove relations that are listed in field order.
 Python 2.4 support
