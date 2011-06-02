@@ -14,7 +14,7 @@ Functions:
 None
 
 
-Copyright (c) 2007 Christopher Perkins
+Copyright (c) 2011 Christopher Perkins
 Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
@@ -267,8 +267,10 @@ class SAORMProvider(IProvider):
                                     v = tuple(v)
                                 else:
                                     v = self._adapt_type(v, pk[0])
-
-                                target_obj.append(self.session.query(target).get(v))
+                                #only add those items that come back
+                                new_v = self.session.query(target).get(v)
+                                if new_v is not None:
+                                    target_obj.append(new_v)
                     elif prop.uselist:
                         try:
                             object_mapper(value)

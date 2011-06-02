@@ -30,9 +30,10 @@ from formencode import Invalid
 from formencode.validators import StringBool
 from sqlalchemy.orm import PropertyLoader, SynonymProperty
 
-try:
+#im guessing SA 0.5 support
+try:  #pragma:no cover
     from sqlalchemy.types import LargeBinary
-except:
+except:  #pragma:no cover
     class LargeBinary:
         pass
 

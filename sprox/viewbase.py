@@ -6,9 +6,10 @@ from sqlalchemy.orm import PropertyLoader
 from sqlalchemy.schema import Column
 from widgetselector import WidgetSelector
 
-try:
+#sa 0.5 support
+try:  #pragma:no cover
     from sqlalchemy.types import Enum
-except:
+except:  #pragma:no cover
     class Enum:
         pass
 
@@ -145,10 +146,11 @@ class ViewBase(ConfigBase):
                isinstance(entity.default.arg, unicode) or \
                isinstance(entity.default.arg, int) or \
                isinstance(entity.default.arg, float):
-                   args['default'] = entity.default.arg
+                    args['default'] = entity.default.arg
 
-        if isinstance(entity, Column) and isinstance(entity.type, Enum):
-            args['options'] = entity.type.enums
+        #enum support works completely differently.
+        #if isinstance(entity, Column) and isinstance(entity.type, Enum):
+        #    args['options'] = entity.type.enums
 
         if field_name in self.__field_attrs__:
             args['attrs'] = self.__field_attrs__[field_name]

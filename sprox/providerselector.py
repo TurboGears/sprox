@@ -15,7 +15,12 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import _mapper_registry, class_mapper
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy.orm.attributes import ClassManager
+
+try: 
+    from sqlalchemy.orm.instrumentation import ClassManager
+except ImportError:
+    #sa 0.6- support
+    from sqlalchemy.orm.attributes import ClassManager
 
 from sprox.saormprovider import SAORMProvider
 from sprox.dummyentity import DummyEntity
