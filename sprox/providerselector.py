@@ -16,9 +16,9 @@ from sqlalchemy.orm import _mapper_registry, class_mapper
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
 
-try: 
+try: #pragma:no cover
     from sqlalchemy.orm.instrumentation import ClassManager
-except ImportError:
+except ImportError: #pragma:no cover
     #sa 0.6- support
     from sqlalchemy.orm.attributes import ClassManager
 

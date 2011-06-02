@@ -32,15 +32,15 @@ from tw.forms.fields import *
 
 from sprox.widgets import *
 
-try:
+try: #pragma:no cover
     from sqlalchemy.types import LargeBinary
-except:
+except: #pragma:no cover
     class LargeBinary:
         pass
 
-try:
+try: #pragma:no cover
     from sqlalchemy.types import Enum
-except:
+except: #pragma:no cover
     class Enum:
         pass
 
