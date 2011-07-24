@@ -18,6 +18,7 @@ setup(
   install_requires=['sqlalchemy>=0.5',
                     'tw.forms>=0.9.7.2',
                     'formencode>=1.2.2',
+                    'genshi',
                     ],
   packages = find_packages(exclude=['tests']),
   classifiers=[
