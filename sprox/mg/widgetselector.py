@@ -53,23 +53,20 @@ class MingWidgetSelector(WidgetSelector):
                 return self.default_multiple_select_field_widget_type
             raise NotImplementedError("Unknown join type %r" % join)	# pragma: no cover
         
-        f = getattr(field, 'field_type', None)
-        if f is not None:
-            schemaitem = S.SchemaItem.make(field.field_type)
-        
         f = getattr(field, 'field', None)
         if f is not None:
-            field = field.field
-            schemaitem = field.type
-            
+            schemaitem = S.SchemaItem.make(field.field.type)
+        else:
+            return TextField
 
         if isinstance(schemaitem, S.OneOf):
             return self.default_single_select_field_widget_type
 
+        #i don't think this works in the latest ming
         sprox_meta = getattr(field, "sprox_meta", {})
         if sprox_meta.get("narrative"):
             return TextArea
-        if sprox_meta.get("password"):
+        if field.name == "password":
             return PasswordField
 
         return self.default_widgets.get(schemaitem.__class__, TextField)

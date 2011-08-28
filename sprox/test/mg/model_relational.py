@@ -96,6 +96,8 @@ class User(SproxTestClass):
     display_name.sprox_meta = {'title': True}
     
     _password = FieldProperty(str)
+    _password.sprox_meta = {'password': True}
+    
     created = FieldProperty(datetime, if_missing=datetime.now)
     town_id = ForeignIdProperty(Town)
     town = RelationProperty(Town)

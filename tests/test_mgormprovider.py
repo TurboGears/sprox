@@ -264,7 +264,8 @@ class TestAddRecordForm(SproxTest):
         example_form = AddExampleForm()
         #print example_form()
         #assert "checkbox" in example_form()
-        assert "checkbox" in example_form({'boolean':"asdf"})
+        r = example_form({'boolean':"asdf"})
+        assert "checkbox" in r, r
 
 class TestEditableForm(SproxTest):
     def setup(self):
