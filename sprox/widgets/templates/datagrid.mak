@@ -11,8 +11,8 @@
     <tbody>
     % for i, row in enumerate(value):
         <tr class="${i%2 and 'odd' or 'even'}">
-            % for col in columns:
-            <td>
+            % for j, col in enumerate(columns):
+            <td class="col_${j}">
                 % if col.title == 'actions' or col.title in xml_fields:
                     ${col.get_field(row, displays_on='mako') | n}
                 % else:

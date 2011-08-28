@@ -11,6 +11,9 @@ Released under MIT license.
 from configbase import ConfigBase, ConfigBaseError
 from metadata import FieldsMetadata
 import inspect
+from datetime import datetime
+
+encoding = 'utf-8'
 
 class FillerBase(ConfigBase):
     """
@@ -205,10 +208,14 @@ class TableFiller(FillerBase):
                         continue
                     elif isinstance(value, list):
                         value = self._get_list_data_value(field, value)
+                    elif isinstance(value, datetime):
+                        value = value.strftime("%m/%d/%Y %H:%M%p")
                     elif self.__provider__.is_relation(self.__entity__, field) and value is not None:
                         value = self._get_relation_value(field, value)
                     elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
                         value = '&lt;file&gt;'
+                if isinstance(value, str):
+                    value = unicode(value, encoding='utf-8')
                 row[field] = unicode(value)
             rows.append(row)
         return rows
@@ -237,11 +244,8 @@ class EditFormFiller(FormFiller):
     """
     def get_value(self, values=None, **kw):
         values = super(EditFormFiller, self).get_value(values, **kw)
-        try:
-            del values['sprox_id']
-        except KeyError:
-            pass
-        obj = self.__provider__.get_obj(self.__entity__, params=values)
+#        values = self.__provider__.get(self.__entity__, params=values, fields=self.__fields__, omit_fields=self.__omit_fields__)
+        obj = self.__provider__.get_obj(self.__entity__, params=values, fields=self.__fields__)
         values = self.__provider__.dictify(obj, self.__fields__, self.__omit_fields__)
         for key in self.__fields__:
             if hasattr(self, key):

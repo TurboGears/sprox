@@ -45,8 +45,11 @@ class Metadata(dict):
         raise NotImplementedError
 
     def __getitem__(self, item):
-        value = self._do_get_item(item)
-        return value
+        try:
+            value = self._do_get_item(item)
+            return value
+        except NotFoundError:
+            return dict.__getitem__(self, item)
 
     def keys(self):
         r = self._do_keys()

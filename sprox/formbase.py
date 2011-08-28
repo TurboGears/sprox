@@ -7,9 +7,10 @@ Copyright (c) 2008 Christopher Perkins
 Original Version by Christopher Perkins 2008
 Released under MIT license.
 """
+import inspect
 from tw.api import Widget
 from tw.forms import HiddenField, TableForm
-
+from viewbase import ViewBase, ViewBaseError
 from formencode import Schema, All
 from formencode import Validator
 from formencode.validators import UnicodeString, String
@@ -316,8 +317,13 @@ class EditableForm(FormBase):
 
         """
         fields = super(EditableForm, self)._do_get_fields()
+        primary_field = self.__provider__.get_primary_field(self.__entity__)
+        if primary_field not in fields:
+            fields.append(primary_field)
+        
         if '_method' not in fields:
             fields.append('_method')
+            
         return fields
 
     def _do_get_field_widgets(self, fields):

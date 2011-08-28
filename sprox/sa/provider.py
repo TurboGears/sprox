@@ -281,8 +281,10 @@ class SAORMProvider(IProvider):
                                     v = tuple(v)
                                 else:
                                     v = self._adapt_type(v, pk[0])
-
-                                target_obj.append(self.session.query(target).get(v))
+                                #only add those items that come back
+                                new_v = self.session.query(target).get(v)
+                                if new_v is not None:
+                                    target_obj.append(new_v)
                     elif prop.uselist:
                         try:
                             object_mapper(value)
@@ -371,12 +373,25 @@ class SAORMProvider(IProvider):
         obj = self.get_obj(entity, params, fields)
         return self.dictify(obj, fields, omit_fields)
 
-    def query(self, entity, limit=None, offset=None, limit_fields=None, order_by=None, desc=False, **kw):
+    def query(self, entity, limit=None, offset=None, limit_fields=None,
+            order_by=None, desc=False, field_names=[], **kw):
         query = self.session.query(entity)
-        #FIXME, this will load ALL your shows just to get the count!!
         count = query.count()
         if order_by is not None:
-            field = self.get_field(entity, order_by)
+            if self.is_relation(entity, order_by):
+                mapper = class_mapper(entity)
+                class_ = None
+                for prop in mapper.iterate_properties:
+                    try:
+                        class_ = prop.mapper.class_
+                    except (AttributeError, KeyError):
+                        pass
+                query = self.session.query(entity).join(order_by)
+                f = self.get_view_field_name(class_, field_names)
+                field = self.get_field(class_, f)
+            else:
+                field = self.get_field(entity, order_by)
+
             if desc:
                 field = _desc(field)
             query = query.order_by(field)

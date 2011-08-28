@@ -54,6 +54,7 @@ class DojoEditableForm(EditableForm):
     <form action="" method="post" class="required tableform">
         <div>
                 <input type="hidden" id="sprox_id" class="hiddenfield" name="sprox_id" value="" />
+                <input type="hidden" id="user_id" class="hiddenfield" name="user_id" value="" />
                 <input xmlns="http://www.w3.org/1999/xhtml" type="hidden" name="_method" class="sproxmethodputhiddenfield" id="_method" value="PUT" />
         </div>
         <table border="0" cellspacing="0" cellpadding="2" >
@@ -94,7 +95,15 @@ class DojoEditableForm(EditableForm):
     </div>
                 </td>
             </tr>
-            <tr class="even" id="submit.container" title="" >
+            <tr class="even" id="user_id.container" title="" >
+                <td class="labelcol">
+                    <label id="user_id.label" for="user_id" class="fieldlabel required">User Id</label>
+                </td>
+                <td class="fieldcol" >
+                    <input type="text" id="user_id" class="textfield required" name="user_id" value="" disabled="disabled" />
+                </td>
+            </tr>
+            <tr class="odd" id="submit.container" title="" >
                 <td class="labelcol">
                     <label id="submit.label" for="submit" class="fieldlabel"></label>
                 </td>

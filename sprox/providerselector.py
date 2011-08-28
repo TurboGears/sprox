@@ -15,7 +15,12 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import _mapper_registry, class_mapper
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy.orm.attributes import ClassManager
+
+try: #pragma:no cover
+    from sqlalchemy.orm.instrumentation import ClassManager
+except ImportError: #pragma:no cover
+    #sa 0.6- support
+    from sqlalchemy.orm.attributes import ClassManager
 
 SAORMProvider = None
 try:
@@ -48,8 +53,7 @@ class ProviderSelector:
     def get_identifier(self, entity, **hints):
         raise NotImplementedError
 
-    def get_provider(self, entity=None, hint=None, **hints):
-        #BUG this signature is wrong
+    def get_provider(self, entity, **hints):
         raise NotImplementedError
 
 class _MongoKitSelector(ProviderSelector):

@@ -34,7 +34,7 @@ class TestDojoTableBase:
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert_in_xml("""<table  dojoType="dojox.grid.DataGrid" jsId="listing__User" id="None" store="listing__User_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" autoHeight="false" class="sprox-dojo-grid" >
+        assert_in_xml("""<table  dojoType="dojox.grid.DataGrid" jsId="listing__User" id="None" store="listing__User_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" autoHeight="false" class="sprox-dojo-grid"  escapeHTMLInData="False">
     <thead>
             <tr>
                     <th formatter="lessThan" width="10em" name="actions" field="__actions__" >__actions__</th>
@@ -61,7 +61,7 @@ class TestDojoEditableTableBase:
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert_in_xml("""<table  dojoType="dojox.grid.DataGrid" jsId="None" id="None" store="None_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" autoHeight="None" class="sprox-dojo-grid" >
+        assert_in_xml("""<table  dojoType="dojox.grid.DataGrid" jsId="None" id="None" store="None_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" autoHeight="None" class="sprox-dojo-grid"  escapeHTMLInData="False">
     <thead>
             <tr>
                     <th formatter="lessThan" width="10em" name="actions" field="__actions__"                             editable="true">__actions__</th>

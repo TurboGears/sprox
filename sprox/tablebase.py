@@ -73,42 +73,47 @@ class TableBase(ViewBase):
     >>> value = town_filler.get_value()
     >>> print town_table.__widget__(value=value) #doctest: +SKIP
     <div xmlns="http://www.w3.org/1999/xhtml">
-    <table class="grid">
+    <div>
+    <table
+           id="None" class="grid">
         <thead>
             <tr>
-                <th></th>
-                <th class="col_0">
-                town_id
-                </th><th class="col_1">
-                name
-                </th>
+                    <th class="col_0">town_id</th>
+                    <th class="col_1">name</th>
             </tr>
         </thead>
         <tbody>
             <tr class="even">
-                <td>
-                <a href="1/edit">edit</a> |
-                <a href="1/delete">delete</a>
+                <td class="col_0">
+                        1
                 </td>
-                <td>1</td><td>Arvada</td>
-            </tr><tr class="odd">
-                <td>
-                <a href="2/edit">edit</a> |
-                <a href="2/delete">delete</a>
+                <td class="col_1">
+                        Arvada
                 </td>
-                <td>2</td><td>Denver</td>
-            </tr><tr class="even">
-                <td>
-                <a href="3/edit">edit</a> |
-                <a href="3/delete">delete</a>
+            </tr>
+            <tr class="odd">
+                <td class="col_0">
+                        2
                 </td>
-                <td>3</td><td>Golden</td>
-            </tr><tr class="odd">
-                <td>
-                <a href="4/edit">edit</a> |
-                <a href="4/delete">delete</a>
+                <td class="col_1">
+                        Denver
                 </td>
-                <td>4</td><td>Boulder</td>
+            </tr>
+            <tr class="even">
+                <td class="col_0">
+                        3
+                </td>
+                <td class="col_1">
+                        Golden
+                </td>
+            </tr>
+            <tr class="odd">
+                <td class="col_0">
+                        4
+                </td>
+                <td class="col_1">
+                        Boulder
+                </td>
             </tr>
         </tbody>
     </table>
@@ -133,34 +138,34 @@ class TableBase(ViewBase):
         </thead>
         <tbody>
             <tr class="even">
-                <td>
+                <td class="col_0">
                         1
                 </td>
-                <td>
+                <td class="col_1">
                         Arvada
                 </td>
             </tr>
             <tr class="odd">
-                <td>
+                <td class="col_0">
                         2
                 </td>
-                <td>
+                <td class="col_1">
                         Denver
                 </td>
             </tr>
             <tr class="even">
-                <td>
+                <td class="col_0">
                         3
                 </td>
-                <td>
+                <td class="col_1">
                         Golden
                 </td>
             </tr>
             <tr class="odd">
-                <td>
+                <td class="col_0">
                         4
                 </td>
-                <td>
+                <td class="col_1">
                         Boulder
                 </td>
             </tr>

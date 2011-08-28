@@ -54,7 +54,7 @@ class TestFieldsMetadata(MetadataTest):
         field = self.metadata['binary']
         eq_(field.name, 'binary')
 
-    @raises(NotFoundError)
+    @raises(KeyError)
     def test_get_item_key_error(self):
         self.metadata['asdf']
 
@@ -92,6 +92,6 @@ class TestEntitiesMetadata:
     def test_get_item(self):
         eq_(User, self.metadata['User'])
 
-    @raises(NotFoundError)
+    @raises(KeyError)
     def test_get_item_not_found(self):
         self.metadata['no_findy']

@@ -41,8 +41,7 @@ class SAValidatorSelector(ValidatorSelector):
     DateTime: DateValidator,
     Date:     DateValidator,
     Time:     DateValidator,
-    Binary:   None,
-    BLOB:   None,
+#    Binary:   UnicodeString,
     PickleType: UnicodeString,
 #    Boolean: UnicodeString,
 #    NullType: TextField
@@ -62,7 +61,7 @@ class SAValidatorSelector(ValidatorSelector):
             return
 
         #do not validate boolean or binary arguments
-        if isinstance(field.type, (Boolean, Binary)):
+        if isinstance(field.type, (Boolean, Binary, LargeBinary)):
             return None
 
         if field.name in self.name_based_validators:

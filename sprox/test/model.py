@@ -6,6 +6,7 @@ try:
 except ImportError:
     import md5
     import sha
+from datetime import datetime
 
 from datetime import datetime
 from sqlalchemy import *
@@ -239,10 +240,11 @@ class DocumentCategoryTag(DeclarativeBase):
 
 class DocumentCategoryReference(DeclarativeBase):
     __tablename__ = 'document_category_ref'
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ['document_category_id','department_id'], ['document_category.document_category_id', 'document_category.department_id'])
-    )
+    # removed for sa 0.7 support
+    #__table_args__ = (
+    #    ForeignKeyConstraint(
+    #        ['document_category_id','department_id'], ['document_category.document_category_id', 'document_category.department_id'])
+    #)
 
     id = Column(Integer, primary_key=True)
 
@@ -289,4 +291,16 @@ class File(DeclarativeBase):
     def content(self):
         return self.data
 
+#not supporting enums for now.
+#ModelWithEnum=None
+#if sa.__version__ >='0.6':
+#    global ModelWithEnum
+#    
+#    class _ModelWithEnum(DeclarativeBase):
+#        __tablename__ = 'model_with_enum'
+        
+#        model_with_enum_id = Column(Integer, primary_key=True)
 
+        #taken directly from Mike's blog
+#        enum = Enum('part_time', 'full_time', 'contractor', name='employee_types')
+#    ModelWithEnum = _ModelWithEnum

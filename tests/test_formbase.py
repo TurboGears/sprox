@@ -300,6 +300,11 @@ class TestEditableForm(SproxTest):
 
         self.base = UserForm(session)
 
+    def test__fields__(self):
+        form_fields = sorted(self.base.__fields__)
+        expected_form_fields = sorted(['user_name', 'sprox_id', 'user_id', '_method'])
+        eq_(expected_form_fields, form_fields)
+
     def test__widget__(self):
         rendered = self.base.__widget__()
         assert_in_xml("""<tr class="even" id="user_name.container" title="" >

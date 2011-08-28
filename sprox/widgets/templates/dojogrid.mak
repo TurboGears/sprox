@@ -10,6 +10,7 @@ return str.replace(/&lt;/gi, "<");
 % if not(dojoStoreWidget is None):
 <div dojoType="${dojoStoreType}" jsId="${jsId}_store"  id="${jsId}_store" url="${action}"></div>
 % endif
+
 <table  dojoType="${dojoType}"\
  jsId="${jsId}"\
  id="${id}"\
@@ -20,6 +21,7 @@ return str.replace(/&lt;/gi, "<");
  delayScroll="${delayScroll}"\
  autoHeight="${autoHeight}"\
  class="${cssclass}"\
+ escapeHTMLInData="${(attrs and (attrs.get('escapeHTMLInData', False) and 'True')) or 'False'}"\
  ${tw.attrs(attrs=attrs)}\
 >
     <thead>

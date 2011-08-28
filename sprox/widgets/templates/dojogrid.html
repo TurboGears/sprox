@@ -19,6 +19,7 @@ return str.replace(/&lt;/gi, "<");
         model="${model}"
         delayScroll="${delayScroll}"
         class="${cssclass}"
+        escapeHTMLInData="${(attrs and attrs.get('escapeHTMLInData', False) and 'True') or 'False'}"
         py:attrs="attrs"
         >
     <thead>

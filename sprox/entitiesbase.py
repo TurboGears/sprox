@@ -24,7 +24,7 @@ class EntityDefBase(ViewBase):
             password
         </td>
         <td>
-            Unicode(length=40)
+            VARCHAR(40)
         </td>
     </tr>
     <tr class="even">
@@ -32,7 +32,7 @@ class EntityDefBase(ViewBase):
             user_id
         </td>
         <td>
-            Integer()
+            INTEGER
         </td>
     </tr>
     <tr class="odd">
@@ -40,7 +40,7 @@ class EntityDefBase(ViewBase):
             user_name
         </td>
         <td>
-            Unicode(length=16)
+            VARCHAR(16)
         </td>
     </tr>
     <tr class="even">
@@ -48,7 +48,7 @@ class EntityDefBase(ViewBase):
             email_address
         </td>
         <td>
-            Unicode(length=255)
+            VARCHAR(255)
         </td>
     </tr>
     <tr class="odd">
@@ -56,7 +56,7 @@ class EntityDefBase(ViewBase):
             display_name
         </td>
         <td>
-            Unicode(length=255)
+            VARCHAR(255)
         </td>
     </tr>
     <tr class="even">
@@ -64,7 +64,7 @@ class EntityDefBase(ViewBase):
             created
         </td>
         <td>
-            DateTime(timezone=False)
+            DATETIME
         </td>
     </tr>
     <tr class="odd">
@@ -72,7 +72,7 @@ class EntityDefBase(ViewBase):
             town_id
         </td>
         <td>
-            Integer()
+            INTEGER
         </td>
     </tr>
     <tr class="even">

@@ -144,3 +144,12 @@ class TestViewBase:
         user_view = UserView()
         widget = user_view.__widget__
         assert widget.children['password'].css_classes == ['crazy_param'], widget.children['password'].css_classes
+
+    def _test_enum_field(self):
+        class EnumView(ViewBase):
+            __entity__ = ModelWithEnum
+            __metadata_type__ = DummyMetadata
+        
+        enum_view = EnumView()
+        widget = enum_view.__widget__
+        #assert widget.children['password'].css_classes == ['crazy_param'], widget.children['password'].css_classes
