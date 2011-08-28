@@ -6,8 +6,10 @@
 #
 
 from ming import Document, Field, schema as S, Session
-from ming.orm import MappedClass, FieldProperty, ForeignIdProperty, RelationProperty
+from ming.orm import FieldProperty, ForeignIdProperty, RelationProperty
 from ming.orm.ormsession import ThreadLocalORMSession
+from ming.orm.declarative import MappedClass
+from ming.orm.mapper import Mapper
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -309,3 +311,4 @@ class File(SproxTestClass):
     def content(self):
         return self.data
 
+Mapper.compile_all()

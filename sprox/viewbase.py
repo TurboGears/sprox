@@ -140,7 +140,7 @@ class ViewBase(ConfigBase):
         if inspect.isclass(field):
             entity = ClassViewer(field)
 
-        args = {'id':field_name, 'identity':self.__entity__.__name__+'_'+field_name, 'entity':entity}
+        args = {'id':field_name, 'identity':self.__entity__.__name__+'_'+field_name, 'entity':entity, 'provider':self.__provider__}
         if isinstance(entity, Column) and entity.default:
             if isinstance(entity.default.arg, str) or \
                isinstance(entity.default.arg, unicode) or \

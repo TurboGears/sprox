@@ -36,7 +36,7 @@ MingProvider = None
 MappedClass = None
 try:
     from sprox.mg.provider import MingProvider
-    from ming.orm.mapped_class import MappedClass
+    from ming.orm.declarative import MappedClass
 except ImportError:
     pass
 

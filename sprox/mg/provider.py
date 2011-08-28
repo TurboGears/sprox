@@ -11,7 +11,8 @@ from sprox.iprovider import IProvider
 from sprox.util import timestamp
 import datetime, inspect
 
-from ming.orm import mapper, FieldProperty, RelationProperty, MappedClass
+from ming.orm import mapper, FieldProperty, RelationProperty
+from ming.orm.declarative import MappedClass
 from ming.orm.property import OneToManyJoin, ManyToOneJoin
 from ming import schema as S
 from pymongo.objectid import ObjectId
@@ -115,7 +116,14 @@ class MingProvider(IProvider):
             field = entity_or_field
 
         if isinstance(field, FieldProperty):
-            schemaitem = S.SchemaItem.make(field.field_type)
+            field_type = getattr(field, 'field_type', None)
+            if field_type is None:
+                f = getattr(field, 'field', None)
+                if f is not None:
+                    field = field.field
+                    field_type = field.type
+
+            schemaitem = field_type
             if isinstance(schemaitem, S.OneOf):
                 return [ (opt,opt) for opt in schemaitem.options ]
             raise NotImplementedError("get_dropdown_options doesn't know how to get the options for field %r of type %r" % (field, schemaitem))
@@ -141,7 +149,7 @@ class MingProvider(IProvider):
         if isinstance(fld, RelationProperty):
             # check the required attribute on the corresponding foreign key field
             fld = fld._infer_join().prop
-        return not fld.kwargs.get("required", False)
+        return not getattr(fld, 'kwargs', {}).get("required", False)
 
     def get_default_values(self, entity, params):
         return params

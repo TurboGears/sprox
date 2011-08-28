@@ -52,8 +52,17 @@ class MingWidgetSelector(WidgetSelector):
             if isinstance(join, OneToManyJoin):
                 return self.default_multiple_select_field_widget_type
             raise NotImplementedError("Unknown join type %r" % join)	# pragma: no cover
+        
+        f = getattr(field, 'field_type', None)
+        if f is not None:
+            schemaitem = S.SchemaItem.make(field.field_type)
+        
+        f = getattr(field, 'field', None)
+        if f is not None:
+            field = field.field
+            schemaitem = field.type
+            
 
-        schemaitem = S.SchemaItem.make(field.field_type)
         if isinstance(schemaitem, S.OneOf):
             return self.default_single_select_field_widget_type
 

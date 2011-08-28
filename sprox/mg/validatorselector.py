@@ -46,7 +46,13 @@ class MingValidatorSelector(ValidatorSelector):
         if isinstance(field, o.RelationProperty):
             return UnicodeString
 
-        field_type = field.field_type
+        field_type = getattr(field, 'field_type', None)
+        if field_type is None:
+            f = getattr(field, 'field', None)
+            if f is not None:
+                field = field.field
+                field_type = field.type
+
         type_ = s.String
         for t in self.default_validators.keys():
             if isinstance(field_type, s.OneOf):

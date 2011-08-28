@@ -2,7 +2,7 @@ import os, re
 from copy import copy
 from difflib import unified_diff
 from ming import datastore as DS
-from ming.orm import ORMSession, MappedClass
+from ming.orm import ORMSession
 from sprox.test.mg import model_relational
 from sprox.test.mg.model_relational import *
 from cStringIO import StringIO
@@ -77,25 +77,26 @@ def setup_database():
 
     #singletonizes things
     if not database_setup:
-        datastore = DS.DataStore(master=os.environ.get('MONGOURL', 'mongo://127.0.0.1:27017/test_db'))
+        datastore = DS.DataStore(master=os.environ.get('MONGOURL', 'mongodb://127.0.0.1:27017/'), database='test_db')
         session = model_relational.SproxTestClass.__mongometa__.session
         session.impl.bind = datastore
 
     #    print 'testing on', datastore
-        MappedClass.compile_all()
+#        MappedClass.compile_all()
         database_setup = True
     return session, datastore, None
 
 records_setup = None
 def setup_records(session):
 
+#    import ipdb; ipdb.set_trace()
     # clear test database before repopulating with data
     db = session.impl.db
     for coll in db.collection_names():
         if not coll.startswith("system."):
             db.drop_collection(coll)
 
-    session.ensure_indexes(User)
+    #session.ensure_indexes(User)
         
     user = User()
     user.user_name = u'asdf'
