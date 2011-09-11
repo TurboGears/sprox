@@ -155,6 +155,11 @@ class MingProvider(IProvider):
         return params
 
     def _cast_value(self, entity, key, value):
+        field = getattr(entity, key)
+        field = getattr(field, 'field', None)
+        if field is not None:
+            if field.type is datetime.datetime:
+                return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
         return value
 
     def create(self, entity, params):
