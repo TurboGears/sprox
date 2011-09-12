@@ -27,6 +27,7 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.schema import Column
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
 from datetime import datetime, timedelta
@@ -361,6 +362,22 @@ class SAORMProvider(IProvider):
                         value = getattr(value, pk_name)
             r[prop.key] = value
         return r
+
+    def get_field_default(self, field):
+        if isinstance(field, Column) and field.default:
+            if isinstance(field.default.arg, str) or \
+               isinstance(field.default.arg, unicode) or \
+               isinstance(field.default.arg, int) or \
+               isinstance(field.default.arg, float):
+                    return (True, field.default.arg)
+        return (False, None)
+
+    def get_field_provider_specific_widget_args(self, entity, field, field_name):
+        args = {}
+        if isinstance(field, PropertyLoader):
+            args['provider'] = self
+            args['nullable'] = self.is_nullable(entity, field_name)
+        return args
 
     def get_default_values(self, entity, params):
         return params

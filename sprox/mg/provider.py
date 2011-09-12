@@ -167,6 +167,12 @@ class MingProvider(IProvider):
             fld = fld.join.prop
         return not getattr(fld, 'kwargs', {}).get("required", False)
 
+    def get_field_default(self, field):
+        return (False, None)
+
+    def get_field_provider_specific_widget_args(self, entity, field, field_name):
+        return {}
+
     def get_default_values(self, entity, params):
         return params
 
@@ -194,7 +200,7 @@ class MingProvider(IProvider):
         self.session.close_all()
         return obj
 
-    def get_obj(self, entity, params):
+    def get_obj(self, entity, params, fields=None, omit_fields=None):
         if '_id' in params:
             return entity.query.find_by(_id=ObjectId(params['_id'])).first()
         return entity.query.find_by(**params).first()

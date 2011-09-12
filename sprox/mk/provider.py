@@ -114,6 +114,12 @@ class MongoKitProvider(IProvider):
         """Determine if a field is nullable."""
         return field_name in entity.required_fields
 
+    def get_field_default(self, field):
+        return (False, None)
+
+    def get_field_provider_specific_widget_args(self, field_name, field):
+        return {}
+
     def get_default_values(self, entity, params):
         """Get the default values for form filling based on the database schema."""
         return entity.default_values

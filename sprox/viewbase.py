@@ -2,8 +2,7 @@ import inspect
 from tw.api import Widget
 from tw.forms import HiddenField
 from configbase import ConfigBase, ConfigBaseError
-from sqlalchemy.orm import PropertyLoader
-from sqlalchemy.schema import Column
+
 from widgetselector import WidgetSelector
 
 #sa 0.5 support
@@ -141,12 +140,9 @@ class ViewBase(ConfigBase):
             entity = ClassViewer(field)
 
         args = {'id':field_name, 'identity':self.__entity__.__name__+'_'+field_name, 'entity':entity, 'provider':self.__provider__}
-        if isinstance(entity, Column) and entity.default:
-            if isinstance(entity.default.arg, str) or \
-               isinstance(entity.default.arg, unicode) or \
-               isinstance(entity.default.arg, int) or \
-               isinstance(entity.default.arg, float):
-                    args['default'] = entity.default.arg
+        field_default_value = self.__provider__.get_field_default(entity)
+        if field_default_value[0]:
+            args['default'] = field_default_value[1]
 
         #enum support works completely differently.
         #if isinstance(entity, Column) and isinstance(entity.type, Enum):
@@ -155,9 +151,9 @@ class ViewBase(ConfigBase):
         if field_name in self.__field_attrs__:
             args['attrs'] = self.__field_attrs__[field_name]
 
-        if isinstance(field, PropertyLoader):
-            args['provider'] = self.__provider__
-            args['nullable'] = self.__provider__.is_nullable(self.__entity__, field_name)
+        provider_widget_args = self.__provider__.get_field_provider_specific_widget_args(self.__entity__, field, field_name)
+        if provider_widget_args:
+            args.update(provider_widget_args)
 
         if field_name in self.__field_widget_args__:
             args.update(self.__field_widget_args__[field_name])

@@ -22,12 +22,14 @@ Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
 from sprox._validatorselector import ValidatorSelector
-from sa.validatorselector import SAValidatorSelector as _SAValidatorSelector
-
 import warnings
 
-class SAValidatorSelector(_SAValidatorSelector):
-    def __init__(self, *args, **kw):
-        warnings.warn('This class has moved to the sprox.sa.validatorselector module.')
-        _SAValidatorSelector.__init__(self, *args, **kw)
+try:
+    from sa.validatorselector import SAValidatorSelector as _SAValidatorSelector
 
+    class SAValidatorSelector(_SAValidatorSelector):
+        def __init__(self, *args, **kw):
+            warnings.warn('This class has moved to the sprox.sa.validatorselector module.')
+            _SAValidatorSelector.__init__(self, *args, **kw)
+except ImportError:
+    pass

@@ -24,11 +24,15 @@ Released under MIT license.
 import warnings
 
 from sprox._widgetselector import *
-from sprox.sa.widgetselector import SAWidgetSelector as _SAWidgetSelector
+
+try:
+    from sprox.sa.widgetselector import SAWidgetSelector as _SAWidgetSelector
+
+    class SAWidgetSelector(_SAWidgetSelector):
+        def __init__(self, *args, **kw):
+            warnings.warn('This class has moved to the sprox.sa.widgetselector module.')
+            _SAWidgetSelector.__init__(self, *args, **kw)
+except ImportError:
+    pass
 
 
-class SAWidgetSelector(_SAWidgetSelector):
-
-    def __init__(self, *args, **kw):
-        warnings.warn('This class has moved to the sprox.sa.widgetselector module.')
-        _SAWidgetSelector.__init__(self, *args, **kw)
