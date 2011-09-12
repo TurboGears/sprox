@@ -68,6 +68,9 @@ class MingWidgetSelector(WidgetSelector):
             return TextArea
         if field.name == "password":
             return PasswordField
-
+        sprox_meta = getattr(field, 'sprox_meta', None)
+        if sprox_meta and 'password' in sprox_meta:
+            return PasswordField
+        
         return self.default_widgets.get(schemaitem.__class__, TextField)
 

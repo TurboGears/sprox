@@ -444,8 +444,6 @@ class TestMGORMProvider(SproxTest):
     def test_isbinary_related(self):
         assert not self.provider.is_binary(User, 'groups')
 
-    # expected failure; ming should automatically wrap binary types
-    @raises(Invalid)
     def test_binary_create(self):
         fs = "fake_content"
 
@@ -453,8 +451,6 @@ class TestMGORMProvider(SproxTest):
         self.provider.create(File, values)
         session.flush()
 
-    # expected failure; ming should automatically wrap binary types
-    @raises(Invalid)
     def test_binary_update(self):
         fs = "fake_content"
 
@@ -602,7 +598,7 @@ class TestMGORMProvider(SproxTest):
         eq_(len(r), 2)
 
     def test_query_limit(self):
-        r = self.provider.query(User, limit=1)
+        count, r = self.provider.query(User, limit=1)
         eq_(len(r), 1)
 
     def test_query_sort_asc(self):
