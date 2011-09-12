@@ -139,9 +139,16 @@ class MingProvider(IProvider):
 
         if not isinstance(field, RelationProperty):
             raise NotImplementedError("get_dropdown_options expected a FieldProperty or RelationProperty field, but got %r" % field)
-        join = field.join
-        iter = join.rel_cls.query.find()
-        view_field = self.get_view_field_name(join.rel_cls, view_names)
+        try:
+            join = field.join
+            iter = join.rel_cls.query.find()
+            rel_cls = join.rel_cls
+        #this seems like a work around for a bug in ming.
+        except KeyError:
+            join = field.related
+            iter = join.query.find()
+            rel_cls = join
+        view_field = self.get_view_field_name(rel_cls, view_names)
         return [ (obj._id, getattr(obj, view_field)) for obj in iter ]
 
     def get_relations(self, entity):
