@@ -50,7 +50,7 @@ class MingProvider(IProvider):
     
     def get_entity(self, name):
         """Get an entity with the given name."""
-        return self._entities[name]
+        return self._entities[name].mapped_class
 
     def get_entities(self):
         """Get all entities available for this provider."""

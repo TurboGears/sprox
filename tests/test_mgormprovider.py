@@ -140,7 +140,7 @@ class TestFormBase(SproxTest):
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert_in_xml("""<tr class="even" id="submit.container" title="" >
+        assert_in_xml("""<tr class="odd" id="submit.container" title="" >
             <td class="labelcol">
                 <label id="submit.label" for="submit" class="fieldlabel"></label>
             </td>
@@ -407,18 +407,19 @@ class TestTableBase:
     def test__widget__(self):
         rendered = self.base.__widget__()
         assert_in_xhtml("""<thead>
-        <tr>
-                <th  class="col_0">actions</th>
-                <th  class="col_1">town</th>
-                <th  class="col_2">display_name</th>
-                <th  class="col_3">created</th>
-                <th  class="col_4">user_name</th>
-                <th  class="col_5">groups</th>
-                <th  class="col_6">_password</th>
-                <th  class="col_7">_id</th>
-                <th  class="col_8">email_address</th>
-        </tr>
-    </thead>""", rendered)
+           <tr>
+                   <th  class="col_0">actions</th>
+                   <th  class="col_1">town</th>
+                   <th  class="col_2">display_name</th>
+                   <th  class="col_3">created</th>
+                   <th  class="col_4">user_name</th>
+                   <th  class="col_5">town_id</th>
+                   <th  class="col_6">groups</th>
+                   <th  class="col_7">_password</th>
+                   <th  class="col_8">_id</th>
+                   <th  class="col_9">email_address</th>
+           </tr>
+       </thead>""", rendered)
 
 # provider tests
 
@@ -466,7 +467,7 @@ class TestMGORMProvider(SproxTest):
 
     def test_get_entity(self):
         entity = self.provider.get_entity('User')
-        assert entity == User
+        assert entity == User, entity
 
     def test_get_entities(self):
         entities = self.provider.get_entities()
@@ -601,7 +602,7 @@ class TestMGORMProvider(SproxTest):
         eq_(len(r), 2)
 
     def test_query_limit(self):
-        r = self.provider.query(User, limit=0)
+        r = self.provider.query(User, limit=1)
         eq_(len(r), 1)
 
     def test_query_sort_asc(self):
