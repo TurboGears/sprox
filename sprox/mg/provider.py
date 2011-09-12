@@ -16,6 +16,7 @@ from ming.orm.declarative import MappedClass
 from ming.orm.property import OneToManyJoin, ManyToOneJoin
 from ming import schema as S
 from pymongo.objectid import ObjectId
+import bson
 
 from widgetselector import MingWidgetSelector
 from validatorselector import MingValidatorSelector
@@ -39,13 +40,21 @@ class MingProvider(IProvider):
             entity = entity()
         return [prop.name for prop in mapper(entity).properties if isinstance(prop, FieldProperty) or isinstance(prop, RelationProperty)]
 
+    @property
+    def _entities(self):
+        entities = getattr(self, '__entities', None)
+        if entities is None:
+            entities = dict(((m.mapped_class.__name__, m) for m in MappedClass._registry.itervalues()))
+            self.__entities = entities
+        return entities
+    
     def get_entity(self, name):
         """Get an entity with the given name."""
-        return MappedClass._registry[name]
+        return self._entities[name]
 
     def get_entities(self):
         """Get all entities available for this provider."""
-        return MappedClass._registry.iterkeys()
+        return self._entities.iterkeys()
 
     def get_primary_fields(self, entity):
         """Get the fields in the entity which uniquely identifies a record."""
@@ -130,7 +139,7 @@ class MingProvider(IProvider):
 
         if not isinstance(field, RelationProperty):
             raise NotImplementedError("get_dropdown_options expected a FieldProperty or RelationProperty field, but got %r" % field)
-        join = field._infer_join()
+        join = field.join
         iter = join.rel_cls.query.find()
         view_field = self.get_view_field_name(join.rel_cls, view_names)
         return [ (obj._id, getattr(obj, view_field)) for obj in iter ]
@@ -148,7 +157,7 @@ class MingProvider(IProvider):
         fld = self.get_field(entity, field_name)
         if isinstance(fld, RelationProperty):
             # check the required attribute on the corresponding foreign key field
-            fld = fld._infer_join().prop
+            fld = fld.join.prop
         return not getattr(fld, 'kwargs', {}).get("required", False)
 
     def get_default_values(self, entity, params):
@@ -160,6 +169,8 @@ class MingProvider(IProvider):
         if field is not None:
             if field.type is datetime.datetime:
                 return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+            if field.type is S.Binary:
+                return bson.Binary(value)
         return value
 
     def create(self, entity, params):
@@ -233,7 +244,7 @@ class MingProvider(IProvider):
         field = self.get_field(entity, field_name)
         if not isinstance(field, RelationProperty):
             raise TypeError("The field %r is not a relation field" % field)
-        return [field.name]#[field._infer_join().prop.name]
+        return [field.name]
 
     def relation_entity(self, entity, field_name):
         """If the field in the entity is a relation field, then returns the
