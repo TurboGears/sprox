@@ -11,9 +11,9 @@ from sprox.iprovider import IProvider
 from sprox.util import timestamp
 import datetime, inspect
 
-from ming.orm import mapper, FieldProperty, RelationProperty
+from ming.orm import mapper, ForeignIdProperty, FieldProperty, RelationProperty
 from ming.orm.declarative import MappedClass
-from ming.orm.property import OneToManyJoin, ManyToOneJoin
+from ming.orm.property import OneToManyJoin, ManyToOneJoin, ORMProperty
 from ming import schema as S
 from pymongo.objectid import ObjectId
 import bson
@@ -38,7 +38,8 @@ class MingProvider(IProvider):
         """Get all of the fields for a given entity."""
         if inspect.isfunction(entity):
             entity = entity()
-        return [prop.name for prop in mapper(entity).properties if isinstance(prop, FieldProperty) or isinstance(prop, RelationProperty)]
+        return [prop.name for prop in mapper(entity).properties if isinstance(prop, ORMProperty) and \
+                                                                   not isinstance(prop, ForeignIdProperty)]
 
     @property
     def _entities(self):
