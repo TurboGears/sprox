@@ -113,6 +113,7 @@ class ViewBase(ConfigBase):
 
         field_widgets = []
         for key in self.__fields__:
+            
             if key not in widget_dict:
                 continue
             value = widget_dict[key]
