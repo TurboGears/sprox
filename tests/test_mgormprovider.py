@@ -140,7 +140,7 @@ class TestFormBase(SproxTest):
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert_in_xml("""<tr class="even" id="submit.container" title="" >
+        assert_in_xml("""<tr class="odd" id="submit.container" title="" >
             <td class="labelcol">
                 <label id="submit.label" for="submit" class="fieldlabel"></label>
             </td>

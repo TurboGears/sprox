@@ -38,8 +38,7 @@ class MingProvider(IProvider):
         """Get all of the fields for a given entity."""
         if inspect.isfunction(entity):
             entity = entity()
-        return [prop.name for prop in mapper(entity).properties if isinstance(prop, ORMProperty) and \
-                                                                   not isinstance(prop, ForeignIdProperty)]
+        return [prop.name for prop in mapper(entity).properties if isinstance(prop, ORMProperty)]
 
     @property
     def _entities(self):
