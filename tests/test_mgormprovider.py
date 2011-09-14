@@ -520,17 +520,17 @@ class TestMGORMProvider(SproxTest):
 
     def test_get_dropdown_options_fk(self):
         options = self.provider.get_dropdown_options(User, 'town')
-        eq_(set(options), set(((1, u'Arvada'), (2, u'Denver'), (3, u'Golden'), (4, u'Boulder'))))
+        eq_(set(options), set((('1', u'Arvada'), ('2', u'Denver'), ('3', u'Golden'), ('4', u'Boulder'))))
 
     def test_get_dropdown_options_fk_multi(self):
         options = self.provider.get_dropdown_options(Document, 'category')
-        eq_(set(options), set(((1, u'Brochure'), (2, u'Flyer'), (3, u'Balance Sheet'))))
+        eq_(set(options), set((('1', u'Brochure'), ('2', u'Flyer'), ('3', u'Balance Sheet'))))
 
     # expected failure; need many-to-many support
     @raises(AssertionError)
     def test_get_dropdown_options_join(self):
         options = self.provider.get_dropdown_options(User, 'groups')
-        eq_(options, [(1, u'0'), (2, u'1'), (3, u'2'), (4, u'3'), (5, u'4')])
+        eq_(options, [('1', u'0'), ('2', u'1'), ('3', u'2'), ('4', u'3'), ('5', u'4')])
 
     # expected failure; need many-to-many support
     @raises(AssertionError)

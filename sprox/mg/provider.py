@@ -150,7 +150,7 @@ class MingProvider(IProvider):
             iter = join.query.find()
             rel_cls = join
         view_field = self.get_view_field_name(rel_cls, view_names)
-        return [ (obj._id, getattr(obj, view_field)) for obj in iter ]
+        return [ (str(obj._id), getattr(obj, view_field)) for obj in iter ]
 
     def get_relations(self, entity):
         """Get all of the field names in an enity which are related to other entities."""
