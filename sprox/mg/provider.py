@@ -179,6 +179,15 @@ class MingProvider(IProvider):
 
     def _cast_value(self, entity, key, value):
         field = getattr(entity, key)
+        
+        relations = self.get_relations(entity)
+        if key in relations:
+            related = field.related
+            if isinstance(value, list):
+                return related.query.find({'_id':{'$in':[ObjectId(i) for i in value]}}).all()
+            else:
+                return self.get_obj(related, {'_id':value})
+
         field = getattr(field, 'field', None)
         if field is not None:
             if field.type is datetime.datetime:
@@ -221,6 +230,7 @@ class MingProvider(IProvider):
             params.pop('_method')
         except KeyError:
             pass
+
         fields = self.get_fields(entity)
         for key, value in params.iteritems():
             if key not in fields:
