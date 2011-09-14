@@ -46,7 +46,7 @@ class MingWidgetSelector(WidgetSelector):
     def select(self,field):
 
         if isinstance(field, RelationProperty):
-            join = field._infer_join()
+            join = field.join
             if isinstance(join, ManyToOneJoin):
                 return self.default_single_select_field_widget_type
             if isinstance(join, OneToManyJoin):

@@ -224,7 +224,7 @@ class MingProvider(IProvider):
         fields = self.get_fields(entity)
         for key, value in params.iteritems():
             if key not in fields:
-                continue;
+                continue
             value = self._cast_value(entity, key, value)
             if value is not None:
                 setattr(obj,key,value)
