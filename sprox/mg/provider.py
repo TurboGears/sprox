@@ -199,7 +199,7 @@ class MingProvider(IProvider):
         """Create an entry of type entity with the given params."""
         obj = entity()
         fields = self.get_fields(entity)
-        for key,value in params.iteritems():
+        for key, value in params.iteritems():
             if key not in fields:
                 continue;
             value = self._cast_value(entity, key, value)

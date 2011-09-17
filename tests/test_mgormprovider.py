@@ -18,6 +18,8 @@ from sprox.test.mg.model import Permission
 from cgi import FieldStorage
 from StringIO import StringIO
 
+from bson.objectid import InvalidId
+
 from ming import schema as S
 from ming.orm import FieldProperty
 
@@ -570,7 +572,7 @@ class TestMGORMProvider(SproxTest):
         assert q_user == new_user
 
     # expected failure; needs many-to-many support
-    @raises(TypeError)
+    @raises(InvalidId)
     def test_create_many_to_one_multi(self):
         params = {'category': '1/1'}
         new_ref = self.provider.create(DocumentCategoryReference, params)
@@ -578,7 +580,7 @@ class TestMGORMProvider(SproxTest):
         assert new_ref == q_ref
 
     # expected failure; needs many-to-many support
-    @raises(TypeError)
+    @raises(InvalidId)
     def test_create_many_to_many_multi(self):
         params = {'categories': ['1/1', '1/2']}
         new_ratingref = self.provider.create(DocumentCategoryTag, params)
