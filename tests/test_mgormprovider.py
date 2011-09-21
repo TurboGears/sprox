@@ -706,6 +706,9 @@ class TestMGORMProvider(SproxTest):
     def test_create_with_unicode_cast_to_int(self):
         self.provider.create(User, dict(user_id=u'34', user_name=u'something'))
 
+    def test_create_with_DateTime(self):
+        self.provider.create(Document, dict(edited='2011-03-30 12:21:21'))
+
     # expected failure; need many-to-many support and writing into RelationProperty
     @raises(TypeError)
     def test_create_relationships_with_wacky_relation(self):

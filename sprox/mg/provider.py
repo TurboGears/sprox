@@ -189,7 +189,7 @@ class MingProvider(IProvider):
 
         field = getattr(field, 'field', None)
         if field is not None:
-            if field.type is datetime.datetime:
+            if field.type is S.DateTime or field.type is datetime.datetime:
                 return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
             if field.type is S.Binary:
                 return bson.Binary(value)
