@@ -258,7 +258,7 @@ class MingProvider(IProvider):
                 dir = ASCENDING
             iter.sort(order_by, dir)
         count = iter.count()
-        return count, iter
+        return count, iter.all()
 
     def is_binary(self, entity, name):
         field = self.get_field(entity, name)
