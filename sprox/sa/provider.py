@@ -317,6 +317,7 @@ class SAORMProvider(IProvider):
         params = self._modify_params_for_dates(entity, params)
         params = self._modify_params_for_relationships(entity, params)
         obj = entity()
+        
 
         relations = self.get_relations(entity)
         mapper = class_mapper(entity)

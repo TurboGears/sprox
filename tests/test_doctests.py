@@ -12,7 +12,7 @@ import unittest
 
 from nose.plugins import doctests as nose_doctest
 
-from sprox import configbase, fillerbase, formbase, sprockets, tablebase, metadata, validators, validatorselector, widgets, widgetselector
+from sprox import configbase, fillerbase, formbase, sprockets, tablebase, metadata, validators, validatorselector, widgets, widgetselector, recordviewbase
 from sprox.dojo import formbase as dojo_formbase
 
 from sprox.sa import provider as saormprovider
