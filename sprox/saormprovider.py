@@ -28,7 +28,7 @@ from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registr
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 from warnings import warn
 
 class SAORMProviderError(Exception):pass
@@ -205,7 +205,7 @@ class SAORMProvider(IProvider):
             def build_pk(row):
                 return "/".join([str(getattr(row, pk)) for pk in pk_fields])
 
-        return [ (build_pk(row), getattr(row, view_name)) for row in rows ] 
+        return [ (build_pk(row), getattr(row, view_name)) for row in rows ]
 
     def get_relations(self, entity):
         mapper = class_mapper(entity)
@@ -259,7 +259,7 @@ class SAORMProvider(IProvider):
                                 target_obj.append(v)
                             except UnmappedInstanceError:
                                 if hasattr(target, 'primary_key'):
-                                    pk = target.primary_key 
+                                    pk = target.primary_key
                                 else:
                                     pk = class_mapper(target).primary_key
                                 if isinstance(v, basestring) and "/" in v:
@@ -397,20 +397,24 @@ class SAORMProvider(IProvider):
         for key, value in params.iteritems():
             if key in mapper.c and value is not None:
                 field = mapper.c[key]
-                if hasattr(field, 'type') and isinstance(field.type, DateTime) and not isinstance(value, datetime):
-                    dt = datetime.strptime(value[:19], '%Y-%m-%d %H:%M:%S')
-                    params[key] = dt
-                if hasattr(field, 'type') and isinstance(field.type, Date) and not isinstance(value, datetime):
-                    dt = datetime.strptime(value, '%Y-%m-%d')
-                    params[key] = dt
-                if hasattr(field, 'type') and isinstance(field.type, Interval) and not isinstance(value, timedelta):
-                    d = re.match(
-                        r'((?P<days>\d+) days, )?(?P<hours>\d+):'
-                        r'(?P<minutes>\d+):(?P<seconds>\d+)',
-                        str(value)).groupdict(0)
-                    dt = timedelta(**dict(( (key, int(value))
-                                            for key, value in d.items() )))
-                    params[key] = dt
+                if hasattr(field, 'type'):
+                    if isinstance(field.type, DateTime):
+                        if not isinstance(value, datetime):
+                            dt = datetime.strptime(value[:19], '%Y-%m-%d %H:%M:%S')
+                            params[key] = dt
+                    elif isinstance(field.type, Date):
+                        if not isinstance(value, date):
+                            dt = datetime.strptime(value, '%Y-%m-%d').date()
+                            params[key] = dt
+                    elif isinstance(field.type, Interval):
+                        if not isinstance(value, timedelta):
+                            d = re.match(
+                                r'((?P<days>\d+) days, )?(?P<hours>\d+):'
+                                r'(?P<minutes>\d+):(?P<seconds>\d+)',
+                                str(value)).groupdict(0)
+                            dt = timedelta(**dict(( (key, int(value))
+                                                    for key, value in d.items() )))
+                            params[key] = dt
         return params
 
     def _remove_related_empty_params(self, obj, params, omit_fields=None):
@@ -447,7 +451,7 @@ class SAORMProvider(IProvider):
 
             if isinstance(value, FieldStorage):
                 value = value.file.read()
-            # this is done to cast any integer columns into ints before they are 
+            # this is done to cast any integer columns into ints before they are
             # sent off to the interpreter.  Oracle really needs this.
             try:
                 if key not in relations and value and isinstance(mapper.columns[key].type, Integer):

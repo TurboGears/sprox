@@ -47,7 +47,7 @@ class TestSAORMProvider(SproxTest):
         session.add(DocumentCategory(document_category_id=3, department_id=2, name=u'Balance Sheet'))
         #session.add(DocumentRating(user_id=1, document_id=1, rating=5))
         session.flush()
-        
+
 
     def test_get_fields_with_func(self):
         eq_(self.provider.get_fields(lambda: Town), ['town_id', 'name', 'town_id', 'name'])
@@ -114,8 +114,8 @@ class TestSAORMProvider(SproxTest):
         eq_(field, 'group_name')
 
     def test_get_view_field_name_with_title(self):
-        """ 
-        if it exists, saormprovider should use the 'title' info attribute to 
+        """
+        if it exists, saormprovider should use the 'title' info attribute to
         determine the title column
         """
         field = self.provider.get_view_field_name(User, ['name'])
@@ -233,18 +233,21 @@ class TestSAORMProvider(SproxTest):
 
     def test_delete(self):
         #causes some kind of persistence error in SA 0.7 (rollback not working)
-        
+
         if sqlalchemy.__version__ > '0.6.6':
             raise SkipTest
- 
+
         user = self.provider.delete(User, params={'user_id':1})
         users = self.session.query(User).all()
         assert len(users) == 0
-    
+
+    def test_modify_params_for_datetimes(self):
+        params = self.provider._modify_params_for_dates(Example, {'datetime_': '1978-8-29 12:34:56'})
+        eq_(params,  {'datetime_': datetime.datetime(1978, 8, 29, 12, 34, 56)})
 
     def test_modify_params_for_dates(self):
         params = self.provider._modify_params_for_dates(Example, {'date_': '1978-8-29'})
-        eq_(params,  {'date_': datetime.datetime(1978, 8, 29, 0, 0)})
+        eq_(params,  {'date_': datetime.date(1978, 8, 29)})
 
     def test_modify_params_for_intervals(self):
         params = self.provider._modify_params_for_dates(Example, {'interval': '1 days, 3:20:01'})
