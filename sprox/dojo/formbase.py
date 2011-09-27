@@ -16,7 +16,7 @@ SAORMProvider = None
 try:
     from sprox.sa.widgetselector import SAWidgetSelector
     from sprox.sa.provider import SAORMProvider
-except ImportError:
+except ImportError: # pragma: no cover
     pass
 
 class DojoSAWidgetSelector(SAWidgetSelector):

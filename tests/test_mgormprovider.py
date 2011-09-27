@@ -737,3 +737,58 @@ class TestMGORMProvider(SproxTest):
 
         self.provider.update(User, {'user_id':self.user.user_id, 'town':None})
         assert self.user.town is None
+
+#dojo tests
+from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm, DojoFormBase
+
+# tablebase tests
+
+class DojoUserForm(DojoFormBase):
+    __entity__ = User
+
+class DojoUserEditableForm(DojoEditableForm):
+    __entity__ = User
+
+class DojoUserAddRecordForm(DojoAddRecordForm):
+    __entity__ = User
+
+class TestDojoForms:
+    def setup(self):
+        pass 
+
+    def test_formbase(self):
+        base = DojoUserForm(session)
+        rendered = base.__widget__()
+        assert_in_xhtml("""<tr class="even" id="email_address.container" title="" >
+               <td class="labelcol">
+                   <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
+               </td>
+               <td class="fieldcol" >
+                   <input type="text" id="email_address" class="textfield" name="email_address" value="" />
+               </td>
+           </tr>""", rendered)
+
+    def test_addrecord(self):
+        base = DojoUserAddRecordForm(session)
+        rendered = base.__widget__()
+        assert_in_xhtml("""<tr class="even" id="email_address.container" title="" >
+               <td class="labelcol">
+                   <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
+               </td>
+               <td class="fieldcol" >
+                   <input type="text" id="email_address" class="textfield" name="email_address" value="" />
+               </td>
+           </tr>""", rendered)
+
+    def test_editableform(self):
+        base = DojoUserEditableForm(session)
+        rendered = base.__widget__()
+        assert_in_xhtml("""<tr class="even" id="email_address.container" title="" >
+               <td class="labelcol">
+                   <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
+               </td>
+               <td class="fieldcol" >
+                   <input type="text" id="email_address" class="textfield" name="email_address" value="" />
+               </td>
+           </tr>""", rendered)
+
