@@ -196,6 +196,10 @@ class TestSAORMProvider(SproxTest):
         r = self.provider.query(User, limit=20, offset=0)
         eq_(len(r), 2)
 
+    def test_query_order_by(self):
+        r = self.provider.query(Document, limit=20, offset=0, order_by='category')
+        eq_(len(r), 2)
+
     def test_update(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
