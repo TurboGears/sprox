@@ -30,7 +30,7 @@ from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.schema import Column
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 from warnings import warn
 
 from sprox.sa.widgetselector import SAWidgetSelector
@@ -429,20 +429,24 @@ class SAORMProvider(IProvider):
         for key, value in params.iteritems():
             if key in mapper.c and value is not None:
                 field = mapper.c[key]
-                if hasattr(field, 'type') and isinstance(field.type, DateTime) and not isinstance(value, datetime):
-                    dt = datetime.strptime(value[:19], '%Y-%m-%d %H:%M:%S')
-                    params[key] = dt
-                if hasattr(field, 'type') and isinstance(field.type, Date) and not isinstance(value, datetime):
-                    dt = datetime.strptime(value, '%Y-%m-%d')
-                    params[key] = dt
-                if hasattr(field, 'type') and isinstance(field.type, Interval) and not isinstance(value, timedelta):
-                    d = re.match(
-                        r'((?P<days>\d+) days, )?(?P<hours>\d+):'
-                        r'(?P<minutes>\d+):(?P<seconds>\d+)',
-                        str(value)).groupdict(0)
-                    dt = timedelta(**dict(( (key, int(value))
-                                            for key, value in d.items() )))
-                    params[key] = dt
+                if hasattr(field, 'type'):
+                    if isinstance(field.type, DateTime):
+                        if not isinstance(value, datetime):
+                            dt = datetime.strptime(value[:19], '%Y-%m-%d %H:%M:%S')
+                            params[key] = dt
+                    elif isinstance(field.type, Date):
+                        if not isinstance(value, date):
+                            dt = datetime.strptime(value, '%Y-%m-%d').date()
+                            params[key] = dt
+                    elif isinstance(field.type, Interval):
+                        if not isinstance(value, timedelta):
+                            d = re.match(
+                                r'((?P<days>\d+) days, )?(?P<hours>\d+):'
+                                r'(?P<minutes>\d+):(?P<seconds>\d+)',
+                                str(value)).groupdict(0)
+                            dt = timedelta(**dict(( (key, int(value))
+                                                    for key, value in d.items() )))
+                            params[key] = dt
         return params
 
     def _remove_related_empty_params(self, obj, params, omit_fields=None):

@@ -237,9 +237,13 @@ class TestSAORMProvider(SproxTest):
         users = self.session.query(User).all()
         assert len(users) == 0
 
+    def test_modify_params_for_datetimes(self):
+        params = self.provider._modify_params_for_dates(Example, {'datetime_': '1978-8-29 12:34:56'})
+        eq_(params,  {'datetime_': datetime.datetime(1978, 8, 29, 12, 34, 56)})
+
     def test_modify_params_for_dates(self):
         params = self.provider._modify_params_for_dates(Example, {'date_': '1978-8-29'})
-        eq_(params,  {'date_': datetime.datetime(1978, 8, 29, 0, 0)})
+        eq_(params,  {'date_': datetime.date(1978, 8, 29)})
 
     def test_modify_params_for_intervals(self):
         params = self.provider._modify_params_for_dates(Example, {'interval': '1 days, 3:20:01'})
