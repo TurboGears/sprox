@@ -258,6 +258,10 @@ class TestSAORMProvider(SproxTest):
         params = {'groups':group}
         params = self.provider._modify_params_for_relationships(User, params)
         assert params['groups'] == [group], params
+        
+    def test_get_field_widget_args(self):
+        a = self.provider.get_field_widget_args(User, 'groups', User.groups)
+        eq_(a, {'nullable': False, 'provider': self.provider})
 
     def test_create_with_unicode_cast_to_int(self):
         self.provider.create(User, dict(user_id=u'34', user_name=u'something'))

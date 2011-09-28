@@ -56,8 +56,6 @@ class MingWidgetSelector(WidgetSelector):
         f = getattr(field, 'field', None)
         if f is not None:
             schemaitem = S.SchemaItem.make(field.field.type)
-        else:
-            return TextField
 
         if isinstance(schemaitem, S.OneOf):
             return self.default_single_select_field_widget_type

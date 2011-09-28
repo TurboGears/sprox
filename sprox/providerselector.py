@@ -15,13 +15,13 @@ try:
     from sqlalchemy.orm import _mapper_registry, class_mapper
     from sqlalchemy.orm.session import Session
     from sqlalchemy.orm.scoping import ScopedSession
-except ImportError:
+except ImportError: # pragma: no cover
     pass
 
 try: #pragma:no cover
     from sqlalchemy.orm.instrumentation import ClassManager
 except ImportError: #pragma:no cover
-    try:
+    try: # pragma: no cover
         #sa 0.6- support
         from sqlalchemy.orm.attributes import ClassManager
     except ImportError:
@@ -30,19 +30,19 @@ except ImportError: #pragma:no cover
 SAORMProvider = None
 try:
     from sprox.sa.provider import SAORMProvider
-except ImportError:
+except ImportError: # pragma: no cover
     pass
 MongoKitProvider = None
 try:
     from sprox.mk.provider import MongoKitProvider
-except ImportError:
+except ImportError: # pragma: no cover
     pass
 MingProvider = None
 MappedClass = None
 try:
     from sprox.mg.provider import MingProvider
     from ming.orm.declarative import MappedClass
-except ImportError:
+except ImportError: 
     pass
 
 from sprox.dummyentity import DummyEntity

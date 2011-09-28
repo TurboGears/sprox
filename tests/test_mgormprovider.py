@@ -439,6 +439,8 @@ class TestMGORMProvider(SproxTest):
         #session.close_all()
         self.asdf_user_id = self.provider.get_obj(User, {'user_name': 'asdf'})._id
 
+    def test_get_field_widget_args(self):
+        eq_(self.provider.get_field_widget_args(User, 'groups', User.groups), {'nullable': True, 'provider':self.provider})
 
     def test_get_fields_with_func(self):
         eq_(self.provider.get_fields(lambda: Town), ['_id', 'name'])

@@ -503,7 +503,8 @@ class SAORMProvider(IProvider):
 
     def get_field_widget_args(self, entity, field_name, field):
         args = {}
-        if isinstance(field, PropertyLoader):
+        prop = getattr(field, 'property', None)
+        if prop and isinstance(prop, PropertyLoader):
             args['provider'] = self
             args['nullable'] = self.is_nullable(entity, field_name)
         return args
