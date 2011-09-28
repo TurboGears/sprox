@@ -597,6 +597,10 @@ class TestMGORMProvider(SproxTest):
         r = self.provider.query(User, limit=20, offset=None)
         eq_(len(r), 2)
 
+    def _test_query_with_offset(self):
+        r = self.provider.query(User, offset=10)
+        eq_(len(r), 2)
+
     def test_query_limit_None(self):
         r = self.provider.query(User, limit=None, offset=None)
         eq_(len(r), 2)
