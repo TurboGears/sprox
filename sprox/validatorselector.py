@@ -29,7 +29,7 @@ try:
 
     class SAValidatorSelector(_SAValidatorSelector):
         def __init__(self, *args, **kw):
-            warnings.warn('This class has moved to the sprox.sa.validatorselector module.')
-            _SAValidatorSelector.__init__(self, *args, **kw)
-except ImportError:
-    pass
+            warnings.warn('This class has moved to the sprox.sa.validatorselector module.') # pragma: no cover
+            _SAValidatorSelector.__init__(self, *args, **kw) # pragma: no cover
+except ImportError: # pragma: no cover
+    pass # pragma: no cover

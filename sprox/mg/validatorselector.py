@@ -18,7 +18,6 @@ Copyright (c) 2009 Christopher Perkins
 Original Version by Christopher Perkins 2009
 Released under MIT license.
 
-Mongo Contributions by Jorge Vargas
 """
 
 from sprox.validatorselector import ValidatorSelector

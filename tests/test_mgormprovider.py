@@ -9,11 +9,13 @@ from tw.forms import PasswordField, TextField
 from sprox.widgetselector import WidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
 from sprox.mg.provider import MingProvider
 from sprox.mg.widgetselector import MingWidgetSelector
+from sprox.mg.validatorselector import MingValidatorSelector
 from sprox.tablebase import TableBase
 from strainer.operators import assert_in_xhtml
 
 from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town
 from sprox.test.mg.model import Permission
+import formencode.validators as v
 
 from cgi import FieldStorage
 from StringIO import StringIO
@@ -324,6 +326,7 @@ class TestWidgetSelector:
 
     def testSelect(self):
         assert self.widgetSelector.select('lala') == Widget
+        
 
 class DummyMingWidgetSelector(MingWidgetSelector):
     default_name_based_widgets = {
@@ -374,6 +377,12 @@ class TestMingWidgetSelector:
             c = FieldProperty(type, **args)
             yield self._testSelect, c, expected
 
+    def test_select_with_one_relation(self):
+        eq_(self.widgetSelector.select(User.town), PropertySingleSelectField)
+
+    def test_select_with_many_relation(self):
+        eq_(self.widgetSelector.select(User.groups), PropertyMultipleSelectField)
+        
     @raises(TypeError)
     def _select(self, arg1):
         self.widgetSelector.select(arg1)
@@ -393,6 +402,15 @@ class TestMingWidgetSelector:
         selector = DummyMingWidgetSelector()
         widget = selector.select(c)
         assert widget is TextField
+
+
+class TestMingValidatorSelector:
+
+    def setup(self):
+        self.selector = MingValidatorSelector()
+
+    def test_select_with_one_relation(self):
+        eq_(self.selector.select(User.town), v.Unicode)
 
 # tablebase tests
 

@@ -30,9 +30,9 @@ try:
 
     class SAWidgetSelector(_SAWidgetSelector):
         def __init__(self, *args, **kw):
-            warnings.warn('This class has moved to the sprox.sa.widgetselector module.')
-            _SAWidgetSelector.__init__(self, *args, **kw)
-except ImportError:
-    pass
+            warnings.warn('This class has moved to the sprox.sa.widgetselector module.') # pragma: no cover
+            _SAWidgetSelector.__init__(self, *args, **kw) # pragma: no cover
+except ImportError: # pragma: no cover
+    pass # pragma: no cover
 
 
