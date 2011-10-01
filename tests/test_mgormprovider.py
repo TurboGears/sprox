@@ -515,6 +515,13 @@ class TestMGORMProvider(SproxTest):
         eq_(set(options), set(set([('three', 'three'), ('one', 'one'), ('two', 'two')])))
 
     @raises(NotImplementedError)
+    def test_get_dropdown_options_bad_fieldtype(self):
+        class BadClass(object):
+            pass
+        bc = BadClass()
+        options = self.provider.get_dropdown_options(BadClass, None)
+
+    @raises(NotImplementedError)
     def test_get_dropdown_options_bad_type(self):
         options = self.provider.get_dropdown_options(Example, 'int_')
 
@@ -597,7 +604,7 @@ class TestMGORMProvider(SproxTest):
         r = self.provider.query(User, limit=20, offset=None)
         eq_(len(r), 2)
 
-    def _test_query_with_offset(self):
+    def test_query_with_offset(self):
         r = self.provider.query(User, offset=10)
         eq_(len(r), 2)
 
