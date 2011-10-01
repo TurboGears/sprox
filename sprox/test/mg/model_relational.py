@@ -288,6 +288,7 @@ class Document(SproxTestClass):
     
     _id = FieldProperty(S.ObjectId)
     created = FieldProperty(datetime, if_missing=datetime.now)
+    edited = FieldProperty(S.DateTime, if_missing=datetime.now)
     blob = FieldProperty(S.Binary)
     owner = ForeignIdProperty(User)
     url = FieldProperty(str)
