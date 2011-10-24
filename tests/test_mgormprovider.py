@@ -5,7 +5,7 @@ from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid, Schema
 from formencode.validators import FieldsMatch, NotEmpty, OpenId
-from tw.forms import PasswordField, TextField
+from tw.forms import PasswordField, TextField, validators as twv
 from sprox.widgetselector import WidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
 from sprox.mg.provider import MingProvider
 from sprox.mg.widgetselector import MingWidgetSelector
@@ -410,7 +410,7 @@ class TestMingValidatorSelector:
         self.selector = MingValidatorSelector()
 
     def test_select_with_one_relation(self):
-        eq_(self.selector.select(User.town), v.Unicode)
+        eq_(self.selector.select(User.town), twv.UnicodeString)
 
 # tablebase tests
 
@@ -595,8 +595,13 @@ class TestMGORMProvider(SproxTest):
     def test_create(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
-        q_user = self.session.query(User).get(2)
         assert q_user == new_user
+
+    def test_create_blank__id(self):
+        params = {'user_name':u'asdf3', 'password':u'asdf3', 'email_address':u'email111@addy.com', '_id':''}
+        new_user = self.provider.create(User, params)
+        q_user = self.provider.get(User, {'user_name':u'asdf3'})
+        assert q_user is not None
 
     # expected failure; needs many-to-many support
     @raises(InvalidId)
