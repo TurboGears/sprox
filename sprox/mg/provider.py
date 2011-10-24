@@ -248,6 +248,7 @@ class MingProvider(IProvider):
         """Delete an entry of typeentity which matches the params."""
         obj = self.get_obj(entity, params)
         obj.delete()
+        self.session.flush_all()
         return obj
 
     def query(self, entity, limit=None, offset=0, limit_fields=None, order_by=None, desc=False, **kw):
