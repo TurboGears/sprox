@@ -336,6 +336,9 @@ class SAORMProvider(IProvider):
         self.session.flush()
         return obj
 
+    def flush(self):
+        self.session.flush()
+
     def dictify(self, obj, fields=None, omit_fields=None):
         if obj is None:
             return {}
