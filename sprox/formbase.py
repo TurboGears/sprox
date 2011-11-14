@@ -220,9 +220,9 @@ class FormBase(ViewBase):
                 except TypeError:
                     pass
 
-    def validate(self, params, state=None):
+    def validate(self, params, state=None, use_request_local=True):
         """A pass-thru to the widget's validate function."""
-        return self.__widget__.validate(params, state)
+        return self.__widget__.validate(params, state, use_request_local=use_request_local)
 
     def _do_get_widget_args(self):
         """Override this method to define how the class get's the
@@ -270,7 +270,7 @@ class FormBase(ViewBase):
 
     def _do_get_field_widgets(self, fields):
         widgets = super(FormBase, self)._do_get_field_widgets(fields)
-        widgets['sprox_id'] = HiddenField('sprox_id')
+        widgets['sprox_id'] = HiddenField('sprox_id', validator=String(if_missing=None))
         return widgets
 
     def _do_get_field_validator(self, field_name, field):

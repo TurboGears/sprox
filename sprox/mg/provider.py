@@ -177,6 +177,11 @@ class MingProvider(IProvider):
         return params
 
     def _cast_value(self, entity, key, value):
+        
+        #handles the case where an record with no id is being created
+        if key == '_id' and value == '':
+            value = ObjectId()
+            
         field = getattr(entity, key)
         
         relations = self.get_relations(entity)
@@ -205,9 +210,12 @@ class MingProvider(IProvider):
             value = self._cast_value(entity, key, value)
             if value is not None:
                 setattr(obj,key,value)
+        self.flush()
+        return obj
+
+    def flush(self):
         self.session.flush_all()
         self.session.close_all()
-        return obj
 
     def get_obj(self, entity, params, fields=None, omit_fields=None):
         if '_id' in params:

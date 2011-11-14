@@ -15,13 +15,13 @@ try:
     from sqlalchemy.orm import _mapper_registry, class_mapper
     from sqlalchemy.orm.session import Session
     from sqlalchemy.orm.scoping import ScopedSession
-except ImportError:
+except ImportError: # pragma: no cover
     pass
 
 try: #pragma:no cover
     from sqlalchemy.orm.instrumentation import ClassManager
 except ImportError: #pragma:no cover
-    try:
+    try: # pragma: no cover
         #sa 0.6- support
         from sqlalchemy.orm.attributes import ClassManager
     except ImportError:
@@ -30,19 +30,19 @@ except ImportError: #pragma:no cover
 SAORMProvider = None
 try:
     from sprox.sa.provider import SAORMProvider
-except ImportError:
+except ImportError: # pragma: no cover
     pass
-MongoKitProvider = None
-try:
-    from sprox.mk.provider import MongoKitProvider
-except ImportError:
-    pass
+#MongoKitProvider = None
+#try:
+#    from sprox.mk.provider import MongoKitProvider
+#except ImportError: # pragma: no cover
+#    pass
 MingProvider = None
 MappedClass = None
 try:
     from sprox.mg.provider import MingProvider
     from ming.orm.declarative import MappedClass
-except ImportError:
+except ImportError:   # pragma: no cover
     pass
 
 from sprox.dummyentity import DummyEntity
@@ -61,17 +61,17 @@ class ProviderSelector:
     def get_provider(self, entity, **hints):
         raise NotImplementedError
 
-class _MongoKitSelector(ProviderSelector):
-    def get_identifier(self, entity, **hints):
-        return entity.__name__
+#class _MongoKitSelector(ProviderSelector):
+#    def get_identifier(self, entity, **hints):
+#        return entity.__name__
 
-    def get_provider(self, entity=None, hint=None, **hints):
-        #TODO cache
-        return MongoKitProvider(None)
+#    def get_provider(self, entity=None, hint=None, **hints):
+#        #TODO cache
+#        return MongoKitProvider(None)
 
 class _MingSelector(ProviderSelector):
-    def get_identifier(self, entity, **hints):
-        return entity.__name__
+    #def get_identifier(self, entity, **hints):
+    #    return entity.__name__
 
     def get_provider(self, entity=None, hint=None, **hints):
         #TODO cache
@@ -158,7 +158,7 @@ class _SAORMSelector(ProviderSelector):
         return self._providers[engine]
 
 SAORMSelector = _SAORMSelector()
-MongoKitSelector = _MongoKitSelector()
+#MongoKitSelector = _MongoKitSelector()
 MingSelector = _MingSelector()
 
 #XXX:
@@ -175,9 +175,9 @@ class ProviderTypeSelector(object):
             return SAORMSelector
         elif inspect.isclass(entity) and issubclass(entity, DummyEntity):
             return SAORMSelector
-        elif hasattr(entity, '_use_pylons') or hasattr(entity,'_enable_autoref'):
+        #elif hasattr(entity, '_use_pylons') or hasattr(entity,'_enable_autoref'):
             #xxx: find a better marker
-            return MongoKitSelector
+        #    return MongoKitSelector
         elif inspect.isclass(entity) and MappedClass is not None and issubclass(entity, MappedClass):
             return MingSelector
         #other helper definitions are going in here

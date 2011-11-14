@@ -196,6 +196,10 @@ class TestSAORMProvider(SproxTest):
         r = self.provider.query(User, limit=20, offset=0)
         eq_(len(r), 2)
 
+    def test_query_order_by(self):
+        r = self.provider.query(Document, limit=20, offset=0, order_by='category')
+        eq_(len(r), 2)
+
     def test_update(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
@@ -237,9 +241,13 @@ class TestSAORMProvider(SproxTest):
         users = self.session.query(User).all()
         assert len(users) == 0
 
+    def test_modify_params_for_datetimes(self):
+        params = self.provider._modify_params_for_dates(Example, {'datetime_': '1978-8-29 12:34:56'})
+        eq_(params,  {'datetime_': datetime.datetime(1978, 8, 29, 12, 34, 56)})
+
     def test_modify_params_for_dates(self):
         params = self.provider._modify_params_for_dates(Example, {'date_': '1978-8-29'})
-        eq_(params,  {'date_': datetime.datetime(1978, 8, 29, 0, 0)})
+        eq_(params,  {'date_': datetime.date(1978, 8, 29)})
 
     def test_modify_params_for_intervals(self):
         params = self.provider._modify_params_for_dates(Example, {'interval': '1 days, 3:20:01'})
@@ -250,6 +258,10 @@ class TestSAORMProvider(SproxTest):
         params = {'groups':group}
         params = self.provider._modify_params_for_relationships(User, params)
         assert params['groups'] == [group], params
+        
+    def test_get_field_widget_args(self):
+        a = self.provider.get_field_widget_args(User, 'groups', User.groups)
+        eq_(a, {'nullable': False, 'provider': self.provider})
 
     def test_create_with_unicode_cast_to_int(self):
         self.provider.create(User, dict(user_id=u'34', user_name=u'something'))

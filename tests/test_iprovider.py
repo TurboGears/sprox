@@ -62,6 +62,38 @@ class TestSAORMProvider:
     def test_get_relations(self):
         relations = self.provider.get_relations(User)
 
+    @raises(NotImplementedError)
+    def test_get_obj(self):
+        self.provider.get_obj(User, {})
+
+    @raises(NotImplementedError)
+    def test_query(self):
+        self.provider.query(User)
+
+    @raises(NotImplementedError)
+    def test_is_binary(self):
+        self.provider.is_binary(User, 'field')
+
+    def test_get_field_widget_args(self):
+        r= self.provider.get_field_widget_args(User, 'field', None)
+        assert r == {}
+
+    def test_is_unique(self):
+        r= self.provider.is_unique(User, 'field', None)
+        assert r == True
+
+    def test_is_unique_field(self):
+        r= self.provider.is_unique_field(User, 'field')
+        assert r == False
+
+    @raises(NotImplementedError)
+    def test_relation_fields(self):
+        self.provider.relation_fields(User, 'field')
+
+    @raises(NotImplementedError)
+    def test_dictify(self):
+        self.provider.dictify(User)
+
 #    @raises(NotImplementedError)
 #    def test_get_synonyms(self):
 #        synonyms = self.provider.get_synonyms(User)

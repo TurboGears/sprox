@@ -29,10 +29,7 @@ class Metadata(dict):
         self.entity = entity
 
     def __setitem__(self, key, value):
-        try:
-            self._do_check_set_item(key, value)
-        except NotFoundError:
-            pass
+        self._do_check_set_item(key, value)
         dict.__setitem__(self, key, value)
 
     def _do_get_item(self, item):

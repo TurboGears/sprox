@@ -5,15 +5,17 @@ from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid, Schema
 from formencode.validators import FieldsMatch, NotEmpty, OpenId
-from tw.forms import PasswordField, TextField
+from tw.forms import PasswordField, TextField, validators as twv
 from sprox.widgetselector import WidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
 from sprox.mg.provider import MingProvider
 from sprox.mg.widgetselector import MingWidgetSelector
+from sprox.mg.validatorselector import MingValidatorSelector
 from sprox.tablebase import TableBase
 from strainer.operators import assert_in_xhtml
 
 from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town
 from sprox.test.mg.model import Permission
+import formencode.validators as v
 
 from cgi import FieldStorage
 from StringIO import StringIO
@@ -324,6 +326,7 @@ class TestWidgetSelector:
 
     def testSelect(self):
         assert self.widgetSelector.select('lala') == Widget
+        
 
 class DummyMingWidgetSelector(MingWidgetSelector):
     default_name_based_widgets = {
@@ -374,6 +377,12 @@ class TestMingWidgetSelector:
             c = FieldProperty(type, **args)
             yield self._testSelect, c, expected
 
+    def test_select_with_one_relation(self):
+        eq_(self.widgetSelector.select(User.town), PropertySingleSelectField)
+
+    def test_select_with_many_relation(self):
+        eq_(self.widgetSelector.select(User.groups), PropertyMultipleSelectField)
+        
     @raises(TypeError)
     def _select(self, arg1):
         self.widgetSelector.select(arg1)
@@ -393,6 +402,15 @@ class TestMingWidgetSelector:
         selector = DummyMingWidgetSelector()
         widget = selector.select(c)
         assert widget is TextField
+
+
+class TestMingValidatorSelector:
+
+    def setup(self):
+        self.selector = MingValidatorSelector()
+
+    def test_select_with_one_relation(self):
+        eq_(self.selector.select(User.town), twv.UnicodeString)
 
 # tablebase tests
 
@@ -439,6 +457,8 @@ class TestMGORMProvider(SproxTest):
         #session.close_all()
         self.asdf_user_id = self.provider.get_obj(User, {'user_name': 'asdf'})._id
 
+    def test_get_field_widget_args(self):
+        eq_(self.provider.get_field_widget_args(User, 'groups', User.groups), {'nullable': True, 'provider':self.provider})
 
     def test_get_fields_with_func(self):
         eq_(self.provider.get_fields(lambda: Town), ['_id', 'name'])
@@ -513,6 +533,13 @@ class TestMGORMProvider(SproxTest):
         eq_(set(options), set(set([('three', 'three'), ('one', 'one'), ('two', 'two')])))
 
     @raises(NotImplementedError)
+    def test_get_dropdown_options_bad_fieldtype(self):
+        class BadClass(object):
+            pass
+        bc = BadClass()
+        options = self.provider.get_dropdown_options(BadClass, None)
+
+    @raises(NotImplementedError)
     def test_get_dropdown_options_bad_type(self):
         options = self.provider.get_dropdown_options(Example, 'int_')
 
@@ -568,8 +595,13 @@ class TestMGORMProvider(SproxTest):
     def test_create(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
-        q_user = self.session.query(User).get(2)
         assert q_user == new_user
+
+    def test_create_blank__id(self):
+        params = {'user_name':u'asdf3', 'password':u'asdf3', 'email_address':u'email111@addy.com', '_id':''}
+        new_user = self.provider.create(User, params)
+        q_user = self.provider.get(User, {'user_name':u'asdf3'})
+        assert q_user is not None
 
     # expected failure; needs many-to-many support
     @raises(InvalidId)
@@ -593,6 +625,10 @@ class TestMGORMProvider(SproxTest):
 
     def test_query_offset_None(self):
         r = self.provider.query(User, limit=20, offset=None)
+        eq_(len(r), 2)
+
+    def test_query_with_offset(self):
+        r = self.provider.query(User, offset=10)
         eq_(len(r), 2)
 
     def test_query_limit_None(self):
@@ -740,3 +776,58 @@ class TestMGORMProvider(SproxTest):
 
         self.provider.update(User, {'user_id':self.user.user_id, 'town':None})
         assert self.user.town is None
+
+#dojo tests
+from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm, DojoFormBase
+
+# tablebase tests
+
+class DojoUserForm(DojoFormBase):
+    __entity__ = User
+
+class DojoUserEditableForm(DojoEditableForm):
+    __entity__ = User
+
+class DojoUserAddRecordForm(DojoAddRecordForm):
+    __entity__ = User
+
+class TestDojoForms:
+    def setup(self):
+        pass 
+
+    def test_formbase(self):
+        base = DojoUserForm(session)
+        rendered = base.__widget__()
+        assert_in_xhtml("""<tr class="even" id="email_address.container" title="" >
+               <td class="labelcol">
+                   <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
+               </td>
+               <td class="fieldcol" >
+                   <input type="text" id="email_address" class="textfield" name="email_address" value="" />
+               </td>
+           </tr>""", rendered)
+
+    def test_addrecord(self):
+        base = DojoUserAddRecordForm(session)
+        rendered = base.__widget__()
+        assert_in_xhtml("""<tr class="even" id="email_address.container" title="" >
+               <td class="labelcol">
+                   <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
+               </td>
+               <td class="fieldcol" >
+                   <input type="text" id="email_address" class="textfield" name="email_address" value="" />
+               </td>
+           </tr>""", rendered)
+
+    def test_editableform(self):
+        base = DojoUserEditableForm(session)
+        rendered = base.__widget__()
+        assert_in_xhtml("""<tr class="even" id="email_address.container" title="" >
+               <td class="labelcol">
+                   <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
+               </td>
+               <td class="fieldcol" >
+                   <input type="text" id="email_address" class="textfield" name="email_address" value="" />
+               </td>
+           </tr>""", rendered)
+
