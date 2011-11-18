@@ -209,7 +209,10 @@ class MingProvider(IProvider):
                 continue;
             value = self._cast_value(entity, key, value)
             if value is not None:
-                setattr(obj,key,value)
+                try:
+                    setattr(obj,key,value)
+                except TypeError:
+                    pass
         self.flush()
         return obj
 
@@ -244,7 +247,10 @@ class MingProvider(IProvider):
                 continue
             value = self._cast_value(entity, key, value)
             if value is not None:
-                setattr(obj,key,value)
+                try:
+                    setattr(obj,key,value)
+                except:
+                    pass
         return obj
 
     def delete(self, entity, params):
