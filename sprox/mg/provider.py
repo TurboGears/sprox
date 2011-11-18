@@ -198,6 +198,11 @@ class MingProvider(IProvider):
                 return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
             if field.type is S.Binary:
                 return bson.Binary(value)
+            elif field.type is S.Bool:
+                if value in ('true', 'false'):
+                    return value == 'true' and True or False
+                else:
+                    return bool(value)
         return value
 
     def create(self, entity, params):
