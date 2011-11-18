@@ -276,7 +276,11 @@ class MingProvider(IProvider):
         field = self.get_field(entity, field_name)
         if not isinstance(field, RelationProperty):
             raise TypeError("The field %r is not a relation field" % field)
-        return [field.name]
+
+        if not field.join.prop:
+            return []
+
+        return [field.join.prop.name]
 
     def relation_entity(self, entity, field_name):
         """If the field in the entity is a relation field, then returns the
