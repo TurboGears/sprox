@@ -148,6 +148,7 @@ class MingProvider(IProvider):
             join = field.related
             iter = join.query.find()
             rel_cls = join
+
         view_field = self.get_view_field_name(rel_cls, view_names)
         return [ (str(obj._id), getattr(obj, view_field)) for obj in iter ]
 
@@ -176,6 +177,11 @@ class MingProvider(IProvider):
     def get_default_values(self, entity, params):
         return params
 
+    def _related_object_id(self, value):
+        if isinstance(value, MappedClass):
+            return value._id
+        return ObjectId(value)
+
     def _cast_value(self, entity, key, value):
         
         #handles the case where an record with no id is being created
@@ -188,16 +194,18 @@ class MingProvider(IProvider):
         if key in relations:
             related = field.related
             if isinstance(value, list):
-                return related.query.find({'_id':{'$in':[ObjectId(i) for i in value]}}).all()
+                return related.query.find({'_id':{'$in':[self._related_object_id(i) for i in value]}}).all()
             else:
-                return self.get_obj(related, {'_id':value})
+                return self.get_obj(related, {'_id':self._related_object_id(value)})
 
         field = getattr(field, 'field', None)
         if field is not None:
             if field.type is S.DateTime or field.type is datetime.datetime:
                 return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
-            if field.type is S.Binary:
+            elif field.type is S.Binary:
                 return bson.Binary(value)
+            elif field.type in (S.Int, int):
+                return int(value)
             elif field.type is S.Bool:
                 if value in ('true', 'false'):
                     return value == 'true' and True or False
@@ -211,7 +219,7 @@ class MingProvider(IProvider):
         fields = self.get_fields(entity)
         for key, value in params.iteritems():
             if key not in fields:
-                continue;
+                continue
             value = self._cast_value(entity, key, value)
             if value is not None:
                 try:
@@ -254,7 +262,7 @@ class MingProvider(IProvider):
             if value is not None:
                 try:
                     setattr(obj,key,value)
-                except:
+                except TypeError:
                     pass
         return obj
 

@@ -103,13 +103,13 @@ def setup_records(session):
     user.email_address = u"asdf@asdf.com"
     user.password = u"asdf"
 
-    arvada = Town(_id=1,name=u'Arvada')
+    arvada = Town(name=u'Arvada')
     session.flush()
     user.town_id = arvada._id
 
-    Town(_id=2,name=u'Denver')
-    Town(_id=3,name=u'Golden')
-    Town(_id=4,name=u'Boulder')
+    Town(name=u'Denver')
+    Town(name=u'Golden')
+    Town(name=u'Boulder')
 
     #test_table.insert(values=dict(BLOB=FieldStorage('asdf', StringIO()).value)).execute()
     #user_reference_table.insert(values=dict(user_id=user.user_id)).execute()

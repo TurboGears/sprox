@@ -144,7 +144,7 @@ class TestFormBase(SproxTest):
 
     def test__widget__(self):
         rendered = self.base.__widget__()
-        assert_in_xml("""<tr class="odd" id="submit.container" title="" >
+        assert_in_xml("""<tr class="even" id="submit.container" title="" >
             <td class="labelcol">
                 <label id="submit.label" for="submit" class="fieldlabel"></label>
             </td>
@@ -549,7 +549,9 @@ class TestMGORMProvider(SproxTest):
 
     def test_get_dropdown_options_fk(self):
         options = self.provider.get_dropdown_options(User, 'town')
-        eq_(set(options), set((('1', u'Arvada'), ('2', u'Denver'), ('3', u'Golden'), ('4', u'Boulder'))))
+        for _id, name in options:
+            town = Town.query.find({'name':name}).first()
+            assert str(town._id) == str(_id)
 
     def test_get_dropdown_options_fk_multi(self):
         options = self.provider.get_dropdown_options(Document, 'category')
@@ -721,7 +723,7 @@ class TestMGORMProvider(SproxTest):
         params = {}
         params['email_address'] = u'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
-        params['user_id'] = 2
+        params['_id'] = 2
         new_user = self.provider.update(User, params, omit_fields=['email_address', 'groups'])
         q_user = self.session.query(User).get(2)
 
@@ -741,41 +743,28 @@ class TestMGORMProvider(SproxTest):
         users = User.query.find().all()
         assert len(users) == 0
 
-    def test_create_with_unicode_cast_to_int(self):
-        self.provider.create(User, dict(user_id=u'34', user_name=u'something'))
-
     def test_create_with_DateTime(self):
         self.provider.create(Document, dict(edited='2011-03-30 12:21:21'))
 
-    # expected failure; need many-to-many support and writing into RelationProperty
-    @raises(TypeError)
     def test_create_relationships_with_wacky_relation(self):
         obj = Group.query.find().first()
         user = User.query.find().first()
-        params = {'_id':obj._id, 'users':user}
-        self.provider.update(Group, params)
-        assert user in obj.users
+        self.provider.update(Group, {'_id':obj._id, 'users':[user._id]})
+        assert user._id == obj.users[0].user_id
 
-    # expected failure; ming does not yet support writing into RelationProperties
-    @raises(TypeError)
     def test_create_relationships_remove_groups(self):
         obj = Group.query.find().first()
-        obj.users.append(self.user)
-        self.provider.update(User, {'user_id':self.user.user_id, 'groups':[]})
-        session.flush()
-        user = User.query.find().get(1)
+        self.provider.update(User, {'_id':self.user._id, 'groups':[]})
         assert user not in obj.users
 
-    # expected failure; ming does not yet support writing into RelationProperties
-    @raises(TypeError)
-    def test_create_relationships_remove_town(self):
-        town = Town.query.find().first()
+    def test_create_relationships_change_town(self):
+        town = Town.query.find({'name':'Arvada'}).first()
 
         self.user.town = town
         self.session.flush()
 
-        self.provider.update(User, {'user_id':self.user.user_id, 'town':None})
-        assert self.user.town is None
+        self.provider.update(User, {'_id':self.user._id, 'town':Town.query.find({'name':'Denver'}).first()})
+        assert self.user.town.name == 'Denver'
 
 #dojo tests
 from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm, DojoFormBase
@@ -798,7 +787,7 @@ class TestDojoForms:
     def test_formbase(self):
         base = DojoUserForm(session)
         rendered = base.__widget__()
-        assert_in_xhtml("""<tr class="even" id="email_address.container" title="" >
+        assert_in_xhtml("""<tr class="odd" id="email_address.container" title="" >
                <td class="labelcol">
                    <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
                </td>
@@ -810,7 +799,7 @@ class TestDojoForms:
     def test_addrecord(self):
         base = DojoUserAddRecordForm(session)
         rendered = base.__widget__()
-        assert_in_xhtml("""<tr class="even" id="email_address.container" title="" >
+        assert_in_xhtml("""<tr class="odd" id="email_address.container" title="" >
                <td class="labelcol">
                    <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
                </td>
@@ -822,7 +811,7 @@ class TestDojoForms:
     def test_editableform(self):
         base = DojoUserEditableForm(session)
         rendered = base.__widget__()
-        assert_in_xhtml("""<tr class="even" id="email_address.container" title="" >
+        assert_in_xhtml("""<tr class="odd" id="email_address.container" title="" >
                <td class="labelcol">
                    <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
                </td>

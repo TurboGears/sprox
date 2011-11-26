@@ -74,7 +74,7 @@ class Town(SproxTestClass):
     class __mongometa__:
         name = 'town_rs'
     
-    _id = FieldProperty(int)
+    _id = FieldProperty(S.ObjectId)
     name = FieldProperty(str)
     
 
