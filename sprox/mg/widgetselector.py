@@ -32,6 +32,7 @@ class MingWidgetSelector(WidgetSelector):
 
     default_multiple_select_field_widget_type = PropertyMultipleSelectField
     default_single_select_field_widget_type = PropertySingleSelectField
+    default_name_based_widgets = {}
 
     default_widgets = {
     S.Bool: SproxCheckBox,
@@ -44,6 +45,12 @@ class MingWidgetSelector(WidgetSelector):
     S.ObjectId: TextField
     }
     def select(self,field):
+        if hasattr(field, 'name') and field.name:
+            if field.name in self.default_name_based_widgets:
+                return self.default_name_based_widgets[field.name]
+
+            if field.name.lower() == 'password':
+                return PasswordField
 
         if isinstance(field, RelationProperty):
             join = field.join
@@ -56,16 +63,15 @@ class MingWidgetSelector(WidgetSelector):
         f = getattr(field, 'field', None)
         if f is not None:
             schemaitem = S.SchemaItem.make(field.field.type)
-
             if isinstance(schemaitem, S.OneOf):
                 return self.default_single_select_field_widget_type
+        else:
+            return TextField 
 
         #i don't think this works in the latest ming
         sprox_meta = getattr(field, "sprox_meta", {})
         if sprox_meta.get("narrative"):
             return TextArea
-        if field.name == "password":
-            return PasswordField
         sprox_meta = getattr(field, 'sprox_meta', None)
         if sprox_meta and 'password' in sprox_meta:
             return PasswordField
