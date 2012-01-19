@@ -395,9 +395,18 @@ class SAORMProvider(IProvider):
         return self.dictify(obj, fields, omit_fields)
 
     def query(self, entity, limit=None, offset=None, limit_fields=None,
-            order_by=None, desc=False, field_names=[], **kw):
+            order_by=None, desc=False, field_names=[], filters={}, **kw):
         query = self.session.query(entity)
+
+        for field_name, value in filters.iteritems():
+            if self.is_relation(entity, field_name):
+                field = self.get_field(entity, field_name)
+                value = self.session.query(field.argument).get(value)
+            field = getattr(entity, field_name)
+            query = query.filter(field==value) 
+
         count = query.count()
+
         if order_by is not None:
             if self.is_relation(entity, order_by):
                 mapper = class_mapper(entity)

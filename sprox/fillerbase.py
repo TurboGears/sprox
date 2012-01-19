@@ -166,11 +166,11 @@ class TableFiller(FillerBase):
         return value
 
     def _do_get_provider_count_and_objs(self, **kw):
-        limit = kw.get('limit', None)
-        offset = kw.get('offset', None)
-        order_by = kw.get('order_by', None)
-        desc = kw.get('desc', False)
-        count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__, order_by, desc)
+        limit = kw.pop('limit', None)
+        offset = kw.pop('offset', None)
+        order_by = kw.pop('order_by', None)
+        desc = kw.pop('desc', False)
+        count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__, order_by, desc, filters=kw)
         self.__count__ = count
         return count, objs
 
@@ -187,6 +187,8 @@ class TableFiller(FillerBase):
           name of the column to the return values ordered by
          desc
           order the columns in descending order
+
+        All the other arguments will be used to filter the result
         """
         count, objs = self._do_get_provider_count_and_objs(**kw)
         self.__count__ = count

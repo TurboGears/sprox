@@ -649,6 +649,10 @@ class TestMGORMProvider(SproxTest):
         cnt, r = self.provider.query(Town, order_by="name", desc=True)
         eq_([t.name for t in r], [u'Golden', u'Denver', u'Boulder', u'Arvada'])
 
+    def test_query_filters(self):
+        cnt, r = self.provider.query(Town, filters={'name':'Golden'})
+        eq_([t.name for t in r], [u'Golden']), r
+
     # expected failure; needs updatable RelationProperty
     @raises(TypeError)
     def test_update(self):

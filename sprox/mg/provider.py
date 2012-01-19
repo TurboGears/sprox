@@ -272,8 +272,8 @@ class MingProvider(IProvider):
         obj.delete()
         return obj
 
-    def query(self, entity, limit=None, offset=0, limit_fields=None, order_by=None, desc=False, **kw):
-        iter = entity.query.find()
+    def query(self, entity, limit=None, offset=0, limit_fields=None, order_by=None, desc=False, filters={}, **kw):
+        iter = entity.query.find(filters)
         if offset:
             iter = iter.skip(int(offset))
         if limit is not None:
