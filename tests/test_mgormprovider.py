@@ -13,7 +13,7 @@ from sprox.mg.validatorselector import MingValidatorSelector
 from sprox.tablebase import TableBase
 from strainer.operators import assert_in_xhtml
 
-from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town
+from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town, UnrelatedDocument
 from sprox.test.mg.model import Permission
 import formencode.validators as v
 
@@ -382,7 +382,19 @@ class TestMingWidgetSelector:
 
     def test_select_with_many_relation(self):
         eq_(self.widgetSelector.select(User.groups), PropertyMultipleSelectField)
-        
+    
+    def test_select_with_password(self):
+        eq_(self.widgetSelector.select(UnrelatedDocument.password), PasswordField)
+
+    def test_name_based_selector(self):
+        class NamedSelector(MingWidgetSelector):
+            default_name_based_widgets = {'number':SingleSelectField}
+        sel = NamedSelector()
+        eq_(sel.select(UnrelatedDocument.number), SingleSelectField)
+
+    def test_unknown_field_type(self):
+        eq_(self.widgetSelector.select(UnrelatedDocument.something), TextField)
+
     @raises(TypeError)
     def _select(self, arg1):
         self.widgetSelector.select(arg1)
@@ -491,7 +503,7 @@ class TestMGORMProvider(SproxTest):
         entities = self.provider.get_entities()
         assert set(entities) == set(['Town', 'GroupPermission', 'Group', 'Permission', 'DocumentCategoryReference',
                 'SproxTestClass', 'DocumentCategoryTag', 'DocumentCategoryTagAssignment', 'User', 'File',
-                'DocumentCategory', 'Department', 'Document', 'MappedClass', 'Example', 'UserGroup'])
+                'DocumentCategory', 'Department', 'Document', 'MappedClass', 'Example', 'UserGroup', 'UnrelatedDocument'])
 
     @raises(KeyError)
     def test_get_entity_non_matching_engine(self):
@@ -749,6 +761,15 @@ class TestMGORMProvider(SproxTest):
 
     def test_create_with_DateTime(self):
         self.provider.create(Document, dict(edited='2011-03-30 12:21:21'))
+
+    def test_create_with_int(self):
+        self.provider.create(UnrelatedDocument, dict(number=5))
+
+    def test_create_with_bool(self):
+        self.provider.create(UnrelatedDocument, dict(enabled=True))
+
+    def test_create_with_str_bool(self):
+        self.provider.create(UnrelatedDocument, dict(enabled='true'))
 
     def test_create_relationships_with_wacky_relation(self):
         obj = Group.query.find().first()

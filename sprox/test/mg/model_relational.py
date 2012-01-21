@@ -314,4 +314,19 @@ class File(SproxTestClass):
     def content(self):
         return self.data
 
+class UnrelatedDocument(SproxTestClass):
+    class __mongometa__:
+        name = 'document_unrelated'
+    
+    _id = FieldProperty(S.ObjectId)
+    number = FieldProperty(S.Int)
+    enabled = FieldProperty(S.Bool)
+    password = FieldProperty(str)
+
+    @property
+    def something(self):
+        return self.enabled    
+
 Mapper.compile_all()
+
+
