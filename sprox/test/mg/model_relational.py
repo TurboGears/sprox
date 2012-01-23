@@ -76,7 +76,8 @@ class Town(SproxTestClass):
     
     _id = FieldProperty(S.ObjectId)
     name = FieldProperty(str)
-    
+
+    users = RelationProperty('User')
 
 class User(SproxTestClass):
     """Reasonably basic User definition. Probably would want additional

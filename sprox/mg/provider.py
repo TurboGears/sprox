@@ -144,7 +144,7 @@ class MingProvider(IProvider):
             iter = join.rel_cls.query.find()
             rel_cls = join.rel_cls
         #this seems like a work around for a bug in ming.
-        except KeyError:
+        except KeyError: # pragma: no cover
             join = field.related
             iter = join.query.find()
             rel_cls = join
@@ -296,7 +296,8 @@ class MingProvider(IProvider):
         if not isinstance(field, RelationProperty):
             raise TypeError("The field %r is not a relation field" % field)
 
-        if not field.join.prop:
+        #This is here for many-to-many turbogears-ming relations
+        if not field.join.prop: #pragma: no cover
             return []
 
         return [field.join.prop.name]

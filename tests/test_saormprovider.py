@@ -46,7 +46,7 @@ class TestSAORMProvider(SproxTest):
         session.add(DocumentCategory(document_category_id=2, department_id=1, name=u'Flyer'))
         session.add(DocumentCategory(document_category_id=3, department_id=2, name=u'Balance Sheet'))
         #session.add(DocumentRating(user_id=1, document_id=1, rating=5))
-        session.flush()
+        self.provider.flush()
 
 
     def test_get_fields_with_func(self):
@@ -203,6 +203,10 @@ class TestSAORMProvider(SproxTest):
     def test_query_filters(self):
         cnt, r = self.provider.query(Town, filters={'name':'Golden'})
         eq_([t.name for t in r], [u'Golden'])
+
+    def test_query_filters_relations(self):
+        cnt, r = self.provider.query(User, filters={'town':1})
+        assert r[0].town.town_id == 1, r
 
     def test_update(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}

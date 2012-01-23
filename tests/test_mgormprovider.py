@@ -473,7 +473,7 @@ class TestMGORMProvider(SproxTest):
         eq_(self.provider.get_field_widget_args(User, 'groups', User.groups), {'nullable': True, 'provider':self.provider})
 
     def test_get_fields_with_func(self):
-        eq_(self.provider.get_fields(lambda: Town), ['_id', 'name'])
+        eq_(self.provider.get_fields(lambda: Town), ['_id', 'users', 'name'])
 
     def test_isbinary_related(self):
         assert not self.provider.is_binary(User, 'groups')
@@ -725,6 +725,15 @@ class TestMGORMProvider(SproxTest):
         q_user = User.query.find({ "_id": new_user._id }).first()
         eq_(new_user.email_address, u'asdf@asdf.commy')
         eq_(q_user.email_address, u'asdf@asdf.commy')
+
+    def test_create_one_to_many_relation(self):
+        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'extraneous': 'xyz'}
+        new_user = self.provider.create(User, params)
+        session.flush()
+
+        #One-To-Many relations are not writable in Ming, we ensure that we do not have a crash when one is set
+        new_town = self.provider.create(Town, {'users':[new_user._id]})
+        assert new_town.users == []
 
     @raises(TypeError)
     def test_relation_fields_invalid(self):
