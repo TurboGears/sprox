@@ -12,7 +12,8 @@ class RecordViewBase(ViewBase):
 
     Here is an example listing of the first user in the test database.
 
-    from sprox.test.base import User
+    >>> from sprox.test.base import User
+    >>> from sprox.recordviewbase import RecordViewBase
 
     >>> class UserRecordView(RecordViewBase):
     ...     __model__ = User

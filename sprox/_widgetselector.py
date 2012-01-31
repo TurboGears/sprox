@@ -17,22 +17,29 @@ Functions:
 None
 
 
-Copyright (c) 2007-10 Christopher Perkins
+Copyright (c) 2007 Christopher Perkins
 Original Version by Christopher Perkins 2007Database
 Released under MIT license.
 """
-import warnings
 
-from sprox._widgetselector import *
+from tw.api import Widget
+from tw.forms.fields import *
 
-try:
-    from sprox.sa.widgetselector import SAWidgetSelector as _SAWidgetSelector
+from sprox.widgets import *
 
-    class SAWidgetSelector(_SAWidgetSelector):
-        def __init__(self, *args, **kw):
-            warnings.warn('This class has moved to the sprox.sa.widgetselector module.') # pragma: no cover
-            _SAWidgetSelector.__init__(self, *args, **kw) # pragma: no cover
-except ImportError: # pragma: no cover
-    pass # pragma: no cover
+class WidgetSelector(object):
+    def select(self, field):
+        return Widget
 
+class EntitiesViewWidgetSelector(WidgetSelector):
+    def select(self, field):
+        return EntityLabelWidget
+
+class EntityDefWidgetSelector(WidgetSelector):
+    def select(self, field):
+        return EntityDefWidget
+
+class RecordViewWidgetSelector(WidgetSelector):
+    def select(self, field):
+        return RecordFieldWidget
 

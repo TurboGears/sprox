@@ -80,9 +80,11 @@ class FieldsMetadata(Metadata):
     def _do_get_item(self, item):
         try:
             return self.provider.get_field(self.entity, item)
-        except:
-            pass
-        raise NotFoundError
+        except AttributeError:
+            #XXX I'm not sure  if we should change the type,but we shouldn't swallow with except:
+            if dict.__contains__(self, item):
+                return dict.get(self, item)
+            raise NotFoundError(self.entity,item)
 
     def _do_keys(self):
         return self.provider.get_fields(self.entity)

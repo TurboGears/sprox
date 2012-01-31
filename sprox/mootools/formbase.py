@@ -9,7 +9,7 @@ Released under MIT license.
 """
 
 from sprox.formbase import FormBase, EditableForm, AddRecordForm
-from sprox.widgetselector import SAWidgetSelector
+from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.widgets import TableForm
 from tw.mootools.forms import CustomisedForm
 
@@ -23,11 +23,11 @@ class MootoolsFormBase(FormBase):
     """FormBase for Mootools
 
     see :class:`sprox.formbase.FormBase`
-    
+
     """
     __base_widget_type__ = MootoolsTableForm
 #    __widget_selector_type__ = MootoolsSAWidgetSelector
-    
+
 class MootoolsEditableForm(EditableForm):
 #    __widget_selector_type__ = MootoolsSAWidgetSelector
     __base_widget_type__ = MootoolsTableForm

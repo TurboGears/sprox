@@ -5,9 +5,10 @@ from sqlalchemy import Column, Integer
 from sqlalchemy.types import *
 from sqlalchemy.orm import class_mapper
 
-from sprox.widgetselector import WidgetSelector, SAWidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
+from sprox.widgetselector import WidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
+from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.widgets.widgets import *
-from sprox.saormprovider import SAORMProvider
+from sprox.sa.provider import SAORMProvider
 from sprox.test.model import Document
 
 class TestWidgetSelector:

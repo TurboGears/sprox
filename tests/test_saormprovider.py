@@ -1,13 +1,13 @@
-from sprox.saormprovider import SAORMProvider
+from nose import SkipTest
+from sprox.sa.provider import SAORMProvider
 from sprox.test.base import setup_database, setup_records, SproxTest
 from sprox.test.model import *
-from sprox.widgetselector import SAWidgetSelector
+from sprox.sa.widgetselector import SAWidgetSelector
 import sqlalchemy
 from sqlalchemy.orm import mapper
 from sqlalchemy import MetaData, Table, Column, Integer
 from sqlalchemy.engine import Engine
 from nose.tools import raises, eq_
-from nose import SkipTest
 import datetime
 
 from cgi import FieldStorage
@@ -46,7 +46,7 @@ class TestSAORMProvider(SproxTest):
         session.add(DocumentCategory(document_category_id=2, department_id=1, name=u'Flyer'))
         session.add(DocumentCategory(document_category_id=3, department_id=2, name=u'Balance Sheet'))
         #session.add(DocumentRating(user_id=1, document_id=1, rating=5))
-        session.flush()
+        self.provider.flush()
 
 
     def test_get_fields_with_func(self):
@@ -200,6 +200,14 @@ class TestSAORMProvider(SproxTest):
         r = self.provider.query(Document, limit=20, offset=0, order_by='category')
         eq_(len(r), 2)
 
+    def test_query_filters(self):
+        cnt, r = self.provider.query(Town, filters={'name':'Golden'})
+        eq_([t.name for t in r], [u'Golden'])
+
+    def test_query_filters_relations(self):
+        cnt, r = self.provider.query(User, filters={'town':1})
+        assert r[0].town.town_id == 1, r
+
     def test_update(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
@@ -233,10 +241,10 @@ class TestSAORMProvider(SproxTest):
 
     def test_delete(self):
         #causes some kind of persistence error in SA 0.7 (rollback not working)
-
+        
         if sqlalchemy.__version__ > '0.6.6':
             raise SkipTest
-
+ 
         user = self.provider.delete(User, params={'user_id':1})
         users = self.session.query(User).all()
         assert len(users) == 0
@@ -258,6 +266,10 @@ class TestSAORMProvider(SproxTest):
         params = {'groups':group}
         params = self.provider._modify_params_for_relationships(User, params)
         assert params['groups'] == [group], params
+        
+    def test_get_field_widget_args(self):
+        a = self.provider.get_field_widget_args(User, 'groups', User.groups)
+        eq_(a, {'nullable': False, 'provider': self.provider})
 
     def test_create_with_unicode_cast_to_int(self):
         self.provider.create(User, dict(user_id=u'34', user_name=u'something'))

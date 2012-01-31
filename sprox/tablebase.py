@@ -1,8 +1,19 @@
-from sprox.widgets import SproxDataGrid
-from viewbase import ViewBase
-from metadata import FieldsMetadata
-from tw.api import Widget
+"""
+fillerbase Module
+
+Classes to help fill widgets with data
+
+Copyright (c) 2008-10 Christopher Perkins
+Original Version by Christopher Perkins 2008
+Released under MIT license.
+"""
 from operator import itemgetter
+
+from tw.api import Widget
+
+from sprox.viewbase import ViewBase
+from sprox.widgets import SproxDataGrid
+from sprox.metadata import FieldsMetadata
 
 class TableBase(ViewBase):
     """This class allows you to create a table widget.
@@ -41,9 +52,9 @@ class TableBase(ViewBase):
            id="None" class="grid">
         <thead>
             <tr>
-                    <th class="col_0">actions</th>
-                    <th class="col_1">town_id</th>
-                    <th class="col_2">name</th>
+                    <th  class="col_0">actions</th>
+                    <th  class="col_1">town_id</th>
+                    <th  class="col_2">name</th>
             </tr>
         </thead>
         <tbody>
@@ -121,8 +132,8 @@ class TableBase(ViewBase):
            id="None" class="grid">
         <thead>
             <tr>
-                    <th class="col_0">town_id</th>
-                    <th class="col_1">name</th>
+                    <th  class="col_0">town_id</th>
+                    <th  class="col_1">name</th>
             </tr>
         </thead>
         <tbody>

@@ -3,14 +3,13 @@ fillerbase Module
 
 Classes to help fill widgets with data
 
-Copyright (c) 2008 Christopher Perkins
+Copyright (c) 2008-10 Christopher Perkins
 Original Version by Christopher Perkins 2008
 Released under MIT license.
 """
 
 from configbase import ConfigBase, ConfigBaseError
 from metadata import FieldsMetadata
-from genshi import XML
 import inspect
 from datetime import datetime
 
@@ -156,7 +155,7 @@ class TableFiller(FillerBase):
         """Override this function to define how action links should be displayed for the given record."""
         primary_fields = self.__provider__.get_primary_fields(self.__entity__)
         pklist = '/'.join(map(lambda x: str(getattr(obj, x)), primary_fields))
-        value = '<div><div><a class="edit_link" href="'+pklist+'/edit" style="text-decoration:none">edit</a>'\
+        value = '<div><div>&nbsp;<a href="'+pklist+'/edit" style="text-decoration:none">edit</a>'\
               '</div><div>'\
               '<form method="POST" action="'+pklist+'" class="button-to">'\
             '<input type="hidden" name="_method" value="DELETE" />'\
@@ -167,11 +166,11 @@ class TableFiller(FillerBase):
         return value
 
     def _do_get_provider_count_and_objs(self, **kw):
-        limit = kw.get('limit', None)
-        offset = kw.get('offset', None)
-        order_by = kw.get('order_by', None)
-        desc = kw.get('desc', False)
-        count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__, order_by, desc)
+        limit = kw.pop('limit', None)
+        offset = kw.pop('offset', None)
+        order_by = kw.pop('order_by', None)
+        desc = kw.pop('desc', False)
+        count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__, order_by, desc, filters=kw)
         self.__count__ = count
         return count, objs
 
@@ -188,6 +187,8 @@ class TableFiller(FillerBase):
           name of the column to the return values ordered by
          desc
           order the columns in descending order
+
+        All the other arguments will be used to filter the result
         """
         count, objs = self._do_get_provider_count_and_objs(**kw)
         self.__count__ = count
@@ -244,13 +245,11 @@ class EditFormFiller(FormFiller):
 
     """
     def get_value(self, values=None, **kw):
-        values = super(EditFormFiller, self).get_value(values, **kw)
-#        values = self.__provider__.get(self.__entity__, params=values, fields=self.__fields__, omit_fields=self.__omit_fields__)
         obj = self.__provider__.get_obj(self.__entity__, params=values, fields=self.__fields__)
         values = self.__provider__.dictify(obj, self.__fields__, self.__omit_fields__)
         for key in self.__fields__:
-            if hasattr(self, key):
-                method = getattr(self, key)
+            method = getattr(self, key, None)
+            if method:
                 if inspect.ismethod(method):
                     values[key] = method(obj, **kw)
         return values

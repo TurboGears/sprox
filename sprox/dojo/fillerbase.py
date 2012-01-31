@@ -13,9 +13,9 @@ from sprox.fillerbase import TableFiller
 class DojoTableFiller(TableFiller):
 
     def get_value(self, value=None, **kw):
-        offset = kw.get('start', None)
-        limit  = kw.get('count', None)
-        order_by = kw.get('sort', None)
+        offset = kw.pop('start', None)
+        limit  = kw.pop('count', None)
+        order_by = kw.pop('sort', None)
         desc = False
         if order_by is not None and order_by.startswith('-'):
             order_by = order_by[1:]
