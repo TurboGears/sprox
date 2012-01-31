@@ -1,3 +1,20 @@
+0.7.1 (1/31/12)
+* [MING] Now writing a read-only attribue on ming won't cause a crash
+anymore, it will be silently ignored
+* [MING] Bool values are now supported in ming, can be any of "true",
+"false", 1, 0, True, False
+* [MING] like for SQLA now every field named password will be
+displayed as a PasswordField
+* [MING] Relationships support for setting related objects passing
+both ObjectId or MappedClass instance
+* Provider.query now supports filtering by using the filters argument.
+This is a dictionary of the fields for which to filter the results,
+the key is the name of the field and the value is the value for which
+to filter for. Only equality filtering is supported.
+
+0.7 (unreleased)
+Added support for Ming (Mongo)
+
 0.6.11
 Support for sqlalchemy 0.7.x
 Removal of Enum Column support (didn't work before anyway)
