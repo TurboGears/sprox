@@ -12,6 +12,33 @@ from ming.orm.declarative import MappedClass
 from ming.orm.mapper import Mapper
 from datetime import datetime, timedelta
 from decimal import Decimal
+from ming.orm.property import ORMProperty, LazyProperty, OneToManyJoin
+
+#Took from turbogears-ming package to test many-to-many relationships
+#on turbogears2 with ming backend.
+class ProgrammaticRelationProperty(RelationProperty):
+    include_in_repr = False
+
+    def __init__(self, related, getter, setter=None, relation_field=None):
+        super(ProgrammaticRelationProperty, self).__init__(related)
+        self.relation_field = relation_field
+        self.getter = getter
+        self.setter = setter
+
+    def __get__(self, instance, cls=None):
+        if not instance:
+            return self
+        return self.getter(instance)
+
+    def __set__(self, instance, value):
+        if not self.setter:
+            raise TypeError, 'read-only property'
+        else:
+            self.setter(instance, value)
+
+    @LazyProperty
+    def join(self):
+        return OneToManyJoin(self.mapper.mapped_class, self.related, self.relation_field)
 
 class SproxTestClass(MappedClass):
     class __mongometa__:
@@ -326,7 +353,21 @@ class UnrelatedDocument(SproxTestClass):
 
     @property
     def something(self):
-        return self.enabled    
+        return self.enabled
+
+class TGMMUser(SproxTestClass):
+    class __mongometa__:
+        name = 'tg_mm_users'
+
+    _id = FieldProperty(S.ObjectId)
+    user_name = FieldProperty(S.String)
+    _groups = FieldProperty(S.Array(str))
+
+    def _get_groups(self):
+        return Group.query.find(dict(group_name={'$in':self._groups})).all()
+    def _set_groups(self, groups):
+        self._groups = [group.group_name for group in groups]
+    groups = ProgrammaticRelationProperty(Group, _get_groups, _set_groups)
 
 Mapper.compile_all()
 

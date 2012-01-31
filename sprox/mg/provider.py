@@ -297,7 +297,7 @@ class MingProvider(IProvider):
             raise TypeError("The field %r is not a relation field" % field)
 
         #This is here for many-to-many turbogears-ming relations
-        if not field.join.prop: #pragma: no cover
+        if not field.join.prop:
             return []
 
         return [field.join.prop.name]

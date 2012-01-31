@@ -14,7 +14,7 @@ from sprox.tablebase import TableBase
 from strainer.operators import assert_in_xhtml
 
 from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town, UnrelatedDocument
-from sprox.test.mg.model import Permission
+from sprox.test.mg.model import Permission, TGMMUser
 import formencode.validators as v
 
 from cgi import FieldStorage
@@ -502,7 +502,7 @@ class TestMGORMProvider(SproxTest):
     def test_get_entities(self):
         entities = self.provider.get_entities()
         assert set(entities) == set(['Town', 'GroupPermission', 'Group', 'Permission', 'DocumentCategoryReference',
-                'SproxTestClass', 'DocumentCategoryTag', 'DocumentCategoryTagAssignment', 'User', 'File',
+                'SproxTestClass', 'DocumentCategoryTag', 'DocumentCategoryTagAssignment', 'User', 'File', 'TGMMUser',
                 'DocumentCategory', 'Department', 'Document', 'MappedClass', 'Example', 'UserGroup', 'UnrelatedDocument'])
 
     @raises(KeyError)
@@ -739,6 +739,10 @@ class TestMGORMProvider(SproxTest):
     def test_relation_fields_invalid(self):
         self.provider.relation_fields(User, "_id")
 
+    def test_relation_fields_tgmm(self):
+        relation_fields = self.provider.relation_fields(TGMMUser, 'groups')
+        assert relation_fields == []
+
     # expected failure; needs updatable RelationProperty
     @raises(TypeError)
     def test_update_omit(self):
@@ -799,6 +803,28 @@ class TestMGORMProvider(SproxTest):
 
         self.provider.update(User, {'_id':self.user._id, 'town':Town.query.find({'name':'Denver'}).first()})
         assert self.user.town.name == 'Denver'
+
+    def test_tgmanymany_create(self):
+        count, groups = self.provider.query(Group, limit=1)
+        params = {'user_name':u'mmuser', 'groups':[groups[0]]}
+        new_user = self.provider.create(TGMMUser, params)
+
+        assert new_user.groups[0].group_name == groups[0].group_name
+        assert new_user._groups[0] == groups[0].group_name
+
+    def test_tgmanymany_update(self):
+        params = {'user_name':u'mmuser', 'groups':[]}
+        new_user = self.provider.create(TGMMUser, params)
+
+        assert len(new_user.groups) == 0
+        count, groups = self.provider.query(Group, limit=1)
+        self.provider.update(TGMMUser, {'_id':new_user._id, 'groups':[groups[0]]})
+
+        new_user = self.provider.get_obj(TGMMUser, {'_id':new_user._id})
+        assert len(new_user.groups) == 1
+        assert new_user.groups[0].group_name == groups[0].group_name
+        assert new_user._groups[0] == groups[0].group_name
+
 
 #dojo tests
 from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm, DojoFormBase
