@@ -1,6 +1,8 @@
 #setup.py
 from setuptools import setup, find_packages
-from sprox.release import __version__
+
+here = os.path.abspath(os.path.dirname(__file__))
+execfile(os.path.join(here, 'sprox', 'release.py'))
 
 setup(
   name="sprox",
