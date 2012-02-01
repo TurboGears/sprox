@@ -54,7 +54,8 @@ class IProvider:
             An entity or entity thunk.
 
         :Returns:
-        A list of names of the fields that are not foreign keys in the entity."""
+          A list of names of the fields that are not foreign keys in the entity.
+        """
         raise NotImplementedError
 
     def get_entity(self, name):
@@ -69,7 +70,8 @@ class IProvider:
         """Get the fields in the entity which uniquely identifies a record.
 
         :Returns:
-        A sequence of fields which when taken together uniquely identify a record."""
+          A sequence of fields which when taken together uniquely identify a record.
+        """
         raise NotImplementedError
 
     def get_primary_field(self, entity):
@@ -77,8 +79,9 @@ class IProvider:
         required for EditableForm and AddRecordForm-based forms.
 
         :Returns:
-        A field which unique identifies a record. Raises an exception if there is no
-        such field."""
+          A field which unique identifies a record. Raises an exception if there is no
+          such field.
+        """
         raise NotImplementedError
 
     def get_view_field_name(self, entity, possible_names):
@@ -106,7 +109,7 @@ class IProvider:
             field that has a name in the list of names will be returned as the view field.
 
         :Returns:
-        A list of tuples with (id, view_value) as items.
+          A list of tuples with (id, view_value) as items.
 
         """
         raise NotImplementedError
@@ -115,7 +118,9 @@ class IProvider:
         """Get all of the field names in an enity which are relation fields.
 
         :Returns:
-        A list of names of relation fields in the entity."""
+          A list of names of relation fields in the entity.
+          
+        """
         raise NotImplementedError
 
     def is_relation(self, entity, field_name):
@@ -171,7 +176,7 @@ class IProvider:
             if true, the sort order is descending. Otherwise, it is ascending.
 
         :Returns:
-        A tuple (count, iter) where iter is an iterator of mapped objects.
+          A tuple (count, iter) where iter is an iterator of mapped objects.
         """
         raise NotImplementedError
 
@@ -183,7 +188,7 @@ class IProvider:
         """For the relation field with the given name, return the corresponding foreign key field(s) in the entity.
 
         :Returns:
-        A list of the names of the foreign key fields.
+          A list of the names of the foreign key fields.
         """
         raise NotImplementedError
 
@@ -191,7 +196,7 @@ class IProvider:
         """Return a dict with any additional arguments that should be passed for the widget for the field in the entity.
 
         :Returns:
-        A dict of additional widget arguments."""
+          A dict of additional widget arguments."""
         return {}
 
     def is_unique(self, entity, field_name, value):
@@ -220,9 +225,9 @@ class IProvider:
             a container of field names or None. If None, no fields are omitted.
 
         :Returns:
-        A dictionary of {field_name: value} where field_name is the name of a
-        property field or relation field, and value is the value of the property
-        field or the related primary key value.
+          A dictionary of {field_name: value} where field_name is the name of a
+          property field or relation field, and value is the value of the property
+          field or the related primary key value.
         """
         # XXX this api is going to have trouble with subdocuments, because
         # we may not necessary be able to derive a primary key reference to

@@ -116,7 +116,7 @@ class MingProvider(IProvider):
             field that has a name in the list of names will be returned as the view field.
 
         :Returns:
-        A list of tuples with (id, view_value) as items.
+          A list of tuples with (id, view_value) as items.
 
         """
         if field_name is not None:
