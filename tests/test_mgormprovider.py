@@ -726,6 +726,18 @@ class TestMGORMProvider(SproxTest):
         eq_(new_user.email_address, u'asdf@asdf.commy')
         eq_(q_user.email_address, u'asdf@asdf.commy')
 
+    def test_update_omit_fieds(self):
+        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com'}
+        new_user = self.provider.create(User, params)
+        params['email_address'] = u'asdf@asdf.commy'
+        params['created'] = '2008-3-30 12:21:21'
+        params['_id'] = new_user._id
+        session.flush()
+        new_user = self.provider.update(User, params, omit_fields=['email_address'])
+        q_user = User.query.find({ "_id": new_user._id }).first()
+        eq_(new_user.email_address, u'email@addy.com')
+        eq_(q_user.email_address, u'email@addy.com')
+
     def test_create_one_to_many_relation(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'extraneous': 'xyz'}
         new_user = self.provider.create(User, params)

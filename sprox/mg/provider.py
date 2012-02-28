@@ -241,7 +241,7 @@ class MingProvider(IProvider):
     def get(self, entity, params, fields=None, omit_fields=None):
         return self.dictify(self.get_obj(entity, params), fields, omit_fields)
 
-    def update(self, entity, params):
+    def update(self, entity, params, omit_fields=None):
         """Update an entry of type entity which matches the params."""
         obj = self.get_obj(entity, params)
         params.pop('_id')
@@ -258,6 +258,10 @@ class MingProvider(IProvider):
         for key, value in params.iteritems():
             if key not in fields:
                 continue
+
+            if omit_fields and key in omit_fields:
+                continue
+
             value = self._cast_value(entity, key, value)
             if value is not None:
                 try:
