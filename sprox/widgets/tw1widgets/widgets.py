@@ -1,14 +1,14 @@
 from tw.api import Widget
 from tw.forms import CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid
 from tw.forms.fields import (SingleSelectField, MultipleSelectField, InputField, HiddenField,
-                             TextField, FileField, PasswordField)
+                             TextField, FileField, PasswordField, TextArea)
 
 from formencode.schema import Schema
 from formencode.validators import StringBool
 from formencode import Invalid
 
 class SproxMethodPutHiddenField(HiddenField):
-    template="genshi:sprox.widgets.templates.hidden_put"
+    template="genshi:sprox.widgets.tw1widgets.templates.hidden_put"
 
 class SproxCalendarDatePicker(CalendarDatePicker):
     date_format = '%Y-%m-%d'
@@ -21,57 +21,57 @@ class SproxCalendarDateTimePicker(CalendarDateTimePicker):
 
 class SproxDataGrid(DataGrid):
     available_engines = ['mako', 'genshi']
-    template = "sprox.widgets.templates.datagrid"
+    template = "sprox.widgets.tw1widgets.templates.datagrid"
     params = ['pks', 'controller', 'xml_fields']
     xml_fields = ['actions']
 
 class ContainerWidget(Widget):
-    template = "genshi:sprox.widgets.templates.container"
+    template = "genshi:sprox.widgets.tw1widgets.templates.container"
     params = ["controller",]
 
 class TableLabelWidget(Widget):
-    template = "genshi:sprox.widgets.templates.tableLabel"
+    template = "genshi:sprox.widgets.tw1widgets.templates.tableLabel"
     params = ["identifier", "controller"]
 
 class ModelLabelWidget(Widget):
     available_engines = ['mako', 'genshi']
-    template = "sprox.widgets.templates.modelLabel"
+    template = "sprox.widgets.tw1widgets.templates.modelLabel"
     params = ["identifier", "controller"]
 
 class EntityLabelWidget(Widget):
-    template = "genshi:sprox.widgets.templates.entityLabel"
+    template = "genshi:sprox.widgets.tw1widgets.templates.entityLabel"
     params = ["entity", "controller"]
 
 class RecordViewWidget(Widget):
-    template = "genshi:sprox.widgets.templates.recordViewTable"
+    template = "genshi:sprox.widgets.tw1widgets.templates.recordViewTable"
     params = ["entity"]
 
 class RecordFieldWidget(Widget):
-    template = "genshi:sprox.widgets.templates.recordField"
+    template = "genshi:sprox.widgets.tw1widgets.templates.recordField"
     params = ['field_name']
 
 class TableDefWidget(Widget):
-    template = "genshi:sprox.widgets.templates.tableDef"
+    template = "genshi:sprox.widgets.tw1widgets.templates.tableDef"
     params = ["identifier"]
 
 class EntityDefWidget(Widget):
     available_engines = ['genshi']
-    template = "sprox.widgets.templates.entityDef"
+    template = "sprox.widgets.tw1widgets.templates.entityDef"
     params = ["entity"]
 
 class TableWidget(Widget):
     available_engines = ['genshi']
-    template = "genshi:sprox.widgets.templates.table"
+    template = "genshi:sprox.widgets.tw1widgets.templates.table"
 
 class SproxTableForm(TableForm):
     available_engines = ['mako', 'genshi']
     validator = Schema(ignore_missing_keys=True, allow_extra_fields=True)
-    template = "sprox.widgets.templates.tableForm"
+    template = "sprox.widgets.tw1widgets.templates.tableForm"
 
 #custom checkbox widget since I am not happy with the behavior of the TW one
 class SproxCheckBox(InputField):
     available_engines = ['mako', 'genshi']
-    template = "sprox.widgets.templates.checkbox"
+    template = "sprox.widgets.tw1widgets.templates.checkbox"
     validator = StringBool
     def update_params(self, d):
         InputField.update_params(self, d)

@@ -149,7 +149,9 @@ class ViewBase(ConfigBase):
         if inspect.isclass(field):
             entity = ClassViewer(field)
 
-        args = {'id':'sprox_'+field_name, 'identity':self.__entity__.__name__+'_'+field_name, 'entity':entity, 'provider':self.__provider__}
+        args = {'id':'sprox_'+field_name, 'identity':self.__entity__.__name__+'_'+field_name,
+                'entity':entity, 'provider':self.__provider__,
+                'label':field_name, 'label_text':field_name}
         field_default_value = self.__provider__.get_field_default(entity)
         if field_default_value[0]:
             args['default'] = field_default_value[1]
