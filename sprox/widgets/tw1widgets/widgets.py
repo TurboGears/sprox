@@ -1,11 +1,11 @@
 from tw.api import Widget
 from tw.forms import CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid
-from tw.forms.fields import SingleSelectField, MultipleSelectField, InputField, HiddenField
+from tw.forms.fields import (SingleSelectField, MultipleSelectField, InputField, HiddenField,
+                             TextField, FileField, PasswordField)
+
 from formencode.schema import Schema
 from formencode.validators import StringBool
 from formencode import Invalid
-import inspect
-
 
 class SproxMethodPutHiddenField(HiddenField):
     template="genshi:sprox.widgets.templates.hidden_put"

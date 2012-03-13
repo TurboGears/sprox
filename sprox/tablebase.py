@@ -9,10 +9,16 @@ Released under MIT license.
 """
 from operator import itemgetter
 
-from tw.api import Widget
+try:
+    from tw2.core import Widget
+    from tw2.core.widgets import WidgetMeta
+except ImportError:
+    from tw.api import Widget
+    class WidgetMeta(object):
+        pass
 
-from sprox.viewbase import ViewBase
 from sprox.widgets import SproxDataGrid
+from sprox.viewbase import ViewBase
 from sprox.metadata import FieldsMetadata
 
 class TableBase(ViewBase):
@@ -249,7 +255,7 @@ class TableBase(ViewBase):
         field_widgets = []
         for field in self.__fields__:
             widget = field_widget_dict.get(field, None)
-            if widget is None or widget.__class__ is Widget: # yuck
+            if widget is None or widget.__class__ in (Widget, WidgetMeta): # yuck
                 widget = itemgetter(field)
             field_widgets.append(widget)
         args['fields'] = zip(field_headers, field_widgets)
@@ -260,4 +266,5 @@ class TableBase(ViewBase):
             args['pks'] = self.__provider__.get_primary_fields(self.__entity__)
 
         args['xml_fields'] = self.__xml_fields__
+        args.pop('children', None)
         return args

@@ -1,6 +1,12 @@
 import inspect
-from tw.api import Widget
-from tw.forms import HiddenField
+
+try:
+    from tw2.core import Widget
+    from tw2.forms import HiddenField
+except ImportError:
+    from tw.api import Widget
+    from tw.forms import HiddenField
+
 from configbase import ConfigBase, ConfigBaseError
 
 from widgetselector import WidgetSelector
@@ -101,7 +107,10 @@ class ViewBase(ConfigBase):
 
     #try to act like a widget as much as possible
     def __call__(self, *args, **kw):
-        return self.__widget__.__call__(*args, **kw)
+        return self.display(*args, **kw)
+
+    def display(self, *args, **kw):
+        return self.__widget__.display(*args, **kw)
 
     @property
     def __widget_args__(self):
@@ -140,7 +149,7 @@ class ViewBase(ConfigBase):
         if inspect.isclass(field):
             entity = ClassViewer(field)
 
-        args = {'id':field_name, 'identity':self.__entity__.__name__+'_'+field_name, 'entity':entity, 'provider':self.__provider__}
+        args = {'id':'sprox_'+field_name, 'identity':self.__entity__.__name__+'_'+field_name, 'entity':entity, 'provider':self.__provider__}
         field_default_value = self.__provider__.get_field_default(entity)
         if field_default_value[0]:
             args['default'] = field_default_value[1]

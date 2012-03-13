@@ -7,9 +7,15 @@ Copyright (c) 2008 Christopher Perkins
 Original Version by Christopher Perkins 2008
 Released under MIT license.
 """
-import inspect
-from tw.api import Widget
-from tw.forms import HiddenField, TableForm
+
+try:
+    from tw2.core import Widget
+    from tw2.forms import HiddenField, TableForm
+except ImportError:
+    from tw.api import Widget
+    from tw.forms import HiddenField, TableForm
+
+from sprox.widgets import SproxMethodPutHiddenField
 from viewbase import ViewBase, ViewBaseError
 from formencode import Schema, All
 from formencode import Validator
@@ -17,7 +23,6 @@ from formencode.validators import UnicodeString, String
 
 from sprox.validators import UniqueValue
 from sprox.metadata import FieldsMetadata
-from sprox.widgets.widgets import SproxMethodPutHiddenField
 from sprox.viewbase import ViewBase, ViewBaseError
 
 class FilteringSchema(Schema):
@@ -328,7 +333,7 @@ class EditableForm(FormBase):
 
     def _do_get_field_widgets(self, fields):
         widgets = super(EditableForm, self)._do_get_field_widgets(fields)
-        widgets['_method'] = SproxMethodPutHiddenField(id='_method', validator=String(if_missing=None))
+        widgets['_method'] = SproxMethodPutHiddenField(id='sprox_method', validator=String(if_missing=None))
         return widgets
 
     __check_if_unique__ = False

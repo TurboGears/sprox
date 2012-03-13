@@ -21,7 +21,12 @@ Copyright (c) 2007-10 Christopher Perkins
 Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
-from tw.forms.validators import *
+
+try:
+    from tw2.core.validation import *
+except ImportError:
+    from tw.forms.validators import *
+
 from formencode import Invalid
 from formencode.validators import StringBool
 

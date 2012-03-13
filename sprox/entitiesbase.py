@@ -1,4 +1,3 @@
-import inspect
 from sprox.widgets import ContainerWidget, TableWidget
 from viewbase import ViewBase
 from widgetselector import EntitiesViewWidgetSelector, EntityDefWidgetSelector

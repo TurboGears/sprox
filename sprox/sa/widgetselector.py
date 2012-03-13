@@ -22,14 +22,12 @@ Original Version by Christopher Perkins 2007Database
 Released under MIT license.
 """
 from sqlalchemy.types import *
-from tw.forms.fields import *
 from sprox.widgets import *
 
 from sqlalchemy.schema import Column
 from sqlalchemy.orm import PropertyLoader, SynonymProperty
 
 from sprox._widgetselector import WidgetSelector
-from tw.api import Widget
 
 text_field_limit=100
 
