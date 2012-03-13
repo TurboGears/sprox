@@ -150,10 +150,15 @@ class ViewBase(ConfigBase):
         if inspect.isclass(field):
             entity = ClassViewer(field)
 
-        args = {'id':field_name, 'name':field_name,
+        if hasattr(Widget, 'req'):
+            args.update({'id':'sx_'+field_name, 'key':field_name})
+        else:
+            args.update({'id':field_name})
+
+        args.update({'name':field_name,
                 'identity':self.__entity__.__name__+'_'+field_name,
                 'entity':entity, 'provider':self.__provider__,
-                'label':name2label(field_name), 'label_text':name2label(field_name)}
+                'label':name2label(field_name), 'label_text':name2label(field_name)})
         field_default_value = self.__provider__.get_field_default(entity)
         if field_default_value[0]:
             args['default'] = field_default_value[1]
