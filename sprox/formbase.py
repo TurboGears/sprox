@@ -234,7 +234,8 @@ class FormBase(ViewBase):
            arguments for the main widget
         """
         d = super(FormBase, self)._do_get_widget_args()
-        if self.__base_validator__ is not None:
+        #TW2 widgets cannot have a FormEncode schema as validator
+        if self.__base_validator__ is not None and not hasattr(Widget, 'req'):
             d['validator'] = self.__base_validator__
         return d
 

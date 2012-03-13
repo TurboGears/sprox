@@ -28,7 +28,7 @@ except ImportError:
     from tw.forms.validators import *
 
 from formencode import Invalid
-from formencode.validators import StringBool
+from formencode.validators import StringBool, UnicodeString
 
 class ValidatorSelector(object):
     _name_based_validators = {}

@@ -150,7 +150,7 @@ class ViewBase(ConfigBase):
         if inspect.isclass(field):
             entity = ClassViewer(field)
 
-        args = {'id':'sx_'+field_name, 'name':field_name,
+        args = {'id':field_name, 'name':field_name,
                 'identity':self.__entity__.__name__+'_'+field_name,
                 'entity':entity, 'provider':self.__provider__,
                 'label':name2label(field_name), 'label_text':name2label(field_name)}
@@ -219,7 +219,8 @@ class ViewBase(ConfigBase):
                 # in this case, we display the current field, disabling it, and also add
                 # a hidden field into th emix
                 field_widget_args['disabled'] = True
-                widgets[field_name] = (HiddenField(id=field_name.replace('.','_'), identifier=field_name), field_widget_type(**field_widget_args))
+                widgets[field_name] = (HiddenField(id='disabled_' + field_name.replace('.','_'), identifier=field_name),
+                                       field_widget_type(**field_widget_args))
             else:
                 widgets[field_name] = field_widget_type(**field_widget_args)
 
