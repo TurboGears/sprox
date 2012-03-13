@@ -102,3 +102,18 @@ def timestamp(value):
     if delta:
         data -= delta
     return data
+
+def name2label(name):
+    """
+    Took from ToscaWidgets2.
+
+    Convert a column name to a Human Readable name.
+       1) Strip _id from the end
+       2) Convert _ to spaces
+       3) Convert CamelCase to Camel Case
+       4) Upcase first character of Each Word
+    """
+    if name.endswith('_id'):
+        name = name[:-3]
+    return ' '.join([s.capitalize() for s in
+                     re.findall(r'([A-Z][a-z0-9]+|[a-z0-9]+|[A-Z0-9]+)', name)])
