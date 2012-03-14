@@ -224,7 +224,9 @@ class ViewBase(ConfigBase):
                 # in this case, we display the current field, disabling it, and also add
                 # a hidden field into th emix
                 field_widget_args['disabled'] = True
-                widgets[field_name] = (HiddenField(id='disabled_' + field_name.replace('.','_'), identifier=field_name),
+                widgets[field_name] = (HiddenField(id='disabled_' + field_name.replace('.','_'),
+                                                   name=field_name, key=field_name,
+                                                   identifier=field_name),
                                        field_widget_type(**field_widget_args))
             else:
                 widgets[field_name] = field_widget_type(**field_widget_args)

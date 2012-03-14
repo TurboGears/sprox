@@ -26,7 +26,7 @@ from ming import schema as S
 from ming.orm import FieldProperty
 
 from tw.forms.fields import *
-from sprox.widgets.widgets import *
+from sprox.widgets import *
 
 class MyTextField(TextField):pass
 

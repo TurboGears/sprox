@@ -6,4 +6,4 @@ class TestSproxCheckbox:
         self.widget = SproxCheckBox()
 
     def test_checkbox_invalid_data(self):
-        self.widget(value = 'asdf')
+        self.widget.display(value = 'asdf')

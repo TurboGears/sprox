@@ -1,5 +1,5 @@
 from tw.dojo import DojoJsonRestStore
-from sprox.widgets.dojo import SproxEditableDojoGrid, SproxDojoGrid
+from sprox.widgets.tw1widgets.dojo import SproxEditableDojoGrid, SproxDojoGrid
 from sprox.tablebase import TableBase
 from sprox.metadata import FieldsMetadata
 

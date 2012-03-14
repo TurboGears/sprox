@@ -14,5 +14,5 @@ class TestContainerWidget:
         pass
 
     def test_display(self):
-        s = self.widget.render()
+        s = self.widget.display()
         assert 'class="containerwidget"' in s

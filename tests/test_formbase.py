@@ -7,7 +7,11 @@ from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid, Schema
 from formencode.validators import FieldsMatch, NotEmpty, OpenId
-from tw.forms import PasswordField, TextField
+
+try:
+    from tw2.forms import PasswordField, TextField
+except:
+    from tw.forms import PasswordField, TextField
 
 class MyTextField(TextField):pass
 

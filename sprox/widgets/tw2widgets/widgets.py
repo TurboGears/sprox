@@ -1,10 +1,51 @@
-from tw2.core import Widget, Param
+from tw2.core import Widget, Param, DisplayOnlyWidget
 from tw2.forms import (CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid,
                        SingleSelectField, MultipleSelectField, InputField, HiddenField,
                        TextField, FileField, CheckBox, PasswordField, TextArea)
 
 class SproxMethodPutHiddenField(HiddenField):
     template = "genshi:sprox.widgets.tw2widgets.templates.hidden_put"
+
+class ContainerWidget(DisplayOnlyWidget):
+    template = "genshi:sprox.widgets.tw2widgets.templates.container"
+    controller = Param('controller', attribute=False)
+    css_class = "containerwidget"
+
+class TableLabelWidget(Widget):
+    template = "genshi:sprox.widgets.tw2widgets.templates.tableLabel"
+    controller = Param('controller', attribute=False)
+    identifier = Param('identifier', attribute=False)
+
+class ModelLabelWidget(Widget):
+    template = "genshi:sprox.widgets.tw2widgets.templates.modelLabel"
+    controller = Param('controller', attribute=False)
+    identifier = Param('identifier', attribute=False)
+
+class EntityLabelWidget(Widget):
+    template = "genshi:sprox.widgets.tw2widgets.templates.entityLabel"
+    controller = Param('controller', attribute=False)
+    entity = Param('entity', attribute=False)
+
+class RecordViewWidget(Widget):
+    template = "genshi:sprox.widgets.tw2widgets.templates.recordViewTable"
+    entity = Param('entity', attribute=False)
+
+class RecordFieldWidget(Widget):
+    template = "genshi:sprox.widgets.tw2widgets.templates.recordField"
+    field_name = Param('field_name', attribute=False)
+
+class TableDefWidget(Widget):
+    template = "genshi:sprox.widgets.tw2widgets.templates.tableDef"
+    identifier = Param('identifier', attribute=False)
+
+class EntityDefWidget(Widget):
+    available_engines = ['genshi']
+    template = "genshi:sprox.widgets.tw2widgets.templates.entityDef"
+    entity = Param('entity', attribute=False)
+
+class TableWidget(Widget):
+    available_engines = ['genshi']
+    template = "genshi:sprox.widgets.tw2widgets.templates.table"
 
 class SproxCalendarDatePicker(CalendarDatePicker):
     date_format = '%Y-%m-%d'

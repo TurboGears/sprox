@@ -1,5 +1,5 @@
 from sprox.dojo.formbase import DojoFormBase
-from sprox.widgets.dojo import SproxDojoSortedSelectShuttleField
+from sprox.widgets.tw1widgets.dojo import SproxDojoSortedSelectShuttleField
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, User, Example
 from nose.tools import raises, eq_
 

@@ -9,7 +9,7 @@ Released under MIT license.
 """
 
 from sprox.formbase import FormBase, EditableForm, AddRecordForm
-from sprox.widgets.dojo import SproxDojoSelectShuttleField, SproxDojoSortedSelectShuttleField
+from sprox.widgets.tw1widgets.dojo import SproxDojoSelectShuttleField, SproxDojoSortedSelectShuttleField
 
 SAWidgetSelector = None
 SAORMProvider = None
