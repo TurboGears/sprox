@@ -13,7 +13,11 @@ import unittest
 from nose.plugins import doctests as nose_doctest
 
 from sprox import configbase, fillerbase, formbase, sprockets, tablebase, metadata, validators, validatorselector, widgets, widgetselector, recordviewbase
-from sprox.dojo import formbase as dojo_formbase
+
+try:
+    from sprox.dojo import formbase as dojo_formbase
+except ImportError:
+    dojo_formbase = None
 
 from sprox.sa import provider as saormprovider
 
@@ -72,7 +76,9 @@ def test_doctests():
                 suite.addTest(doctest.DocTestSuite(mod, globs={'session':session, 'User': User, 'Town':Town, 'metadata':metadata}, setUp=setUp, tearDown=tearDown))
             except ValueError:
                 pass
-    suite.addTest(doctest.DocTestSuite(dojo_formbase, globs={'session':session, 'User': User, 'Town':Town, 'metadata':metadata}, setUp=setUp, tearDown=tearDown))
+
+    if dojo_formbase:
+        suite.addTest(doctest.DocTestSuite(dojo_formbase, globs={'session':session, 'User': User, 'Town':Town, 'metadata':metadata}, setUp=setUp, tearDown=tearDown))
 
     runner = unittest.TextTestRunner(verbosity=10)
     runner.run(suite)

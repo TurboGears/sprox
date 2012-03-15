@@ -97,6 +97,18 @@ def assert_in_xml(needle, haystack):
 def assert_eq_xml(needle, haystack):
     assert eq_xml(needle, haystack), "%s does not equal %s"%(needle, haystack)
 
+def widget_is_type(widget, wtype):
+    if hasattr(widget, 'req'):
+        return issubclass(widget, wtype)
+    else:
+        return isinstance(widget, wtype)
+
+def widget_children(w):
+    if hasattr(w, 'req'):
+        return dict(((c.key, c) for c in w.children))
+    else:
+        return w.children
+
 database_setup=False
 def setup_database():
     global session, engine, database_setup, connect, metadata

@@ -8,23 +8,24 @@ class SproxMethodPutHiddenField(HiddenField):
 
 class ContainerWidget(DisplayOnlyWidget):
     template = "genshi:sprox.widgets.tw2widgets.templates.container"
-    controller = Param('controller', attribute=False)
+    controller = Param('controller', attribute=False, default=None)
     css_class = "containerwidget"
 
 class TableLabelWidget(Widget):
     template = "genshi:sprox.widgets.tw2widgets.templates.tableLabel"
-    controller = Param('controller', attribute=False)
+    controller = Param('controller', attribute=False, default=None)
     identifier = Param('identifier', attribute=False)
 
 class ModelLabelWidget(Widget):
     template = "genshi:sprox.widgets.tw2widgets.templates.modelLabel"
-    controller = Param('controller', attribute=False)
+    controller = Param('controller', attribute=False, default=None)
     identifier = Param('identifier', attribute=False)
 
 class EntityLabelWidget(Widget):
     template = "genshi:sprox.widgets.tw2widgets.templates.entityLabel"
-    controller = Param('controller', attribute=False)
+    controller = Param('controller', attribute=False, default=None)
     entity = Param('entity', attribute=False)
+    css_class = "entitylabelwidget"
 
 class RecordViewWidget(Widget):
     template = "genshi:sprox.widgets.tw2widgets.templates.recordViewTable"
