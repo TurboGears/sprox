@@ -1,31 +1,26 @@
 from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm, Field
 from sprox.viewbase import ViewBaseError
+from sprox.test.base import widget_children, widget_is_type, form_error_message
 from sprox.test.mg.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document, assert_in_xml
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid, Schema
 from formencode.validators import FieldsMatch, NotEmpty, OpenId
-from tw.forms import PasswordField, TextField, validators as twv
 from sprox.widgetselector import WidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
 from sprox.mg.provider import MingProvider
 from sprox.mg.widgetselector import MingWidgetSelector
-from sprox.mg.validatorselector import MingValidatorSelector
+from sprox.mg.validatorselector import *
 from sprox.tablebase import TableBase
 from strainer.operators import assert_in_xhtml
 
 from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town, UnrelatedDocument
 from sprox.test.mg.model import Permission, TGMMUser
-import formencode.validators as v
-
-from cgi import FieldStorage
-from StringIO import StringIO
 
 from bson.objectid import InvalidId
 
 from ming import schema as S
 from ming.orm import FieldProperty
 
-from tw.forms.fields import *
 from sprox.widgets import *
 
 class MyTextField(TextField):pass
@@ -69,7 +64,8 @@ class TestFormBase(SproxTest):
         try:
             widget.validate({'user_name':'something'})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_validator_instance(self):
         class UserForm(FormBase):
@@ -80,7 +76,8 @@ class TestFormBase(SproxTest):
         try:
             widget.validate({'user_name':'something'})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_instance(self):
         class UserForm(FormBase):
@@ -91,7 +88,8 @@ class TestFormBase(SproxTest):
         try:
             widget.validate({'user_name':'something'})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_class(self):
         class UserForm(FormBase):
@@ -102,7 +100,8 @@ class TestFormBase(SproxTest):
         try:
             widget.validate({'user_name':'something'})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_widget_class(self):
         class UserForm(FormBase):
@@ -110,7 +109,7 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField)
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     def test_formbase_with_field_widget_instance(self):
         class UserForm(FormBase):
@@ -118,7 +117,7 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField('user_name'))
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     @raises(ViewBaseError)
     def test_formbase_with_field_widget_instance_no_id(self):
@@ -127,7 +126,7 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField())
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
 
     def test_formbase_with_field_widget_and_validator_instance(self):
@@ -136,11 +135,12 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField, OpenId)
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
         try:
             widget.validate({'user_name':'something'})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test__widget__(self):
         rendered = self.base.__widget__()
@@ -422,7 +422,7 @@ class TestMingValidatorSelector:
         self.selector = MingValidatorSelector()
 
     def test_select_with_one_relation(self):
-        eq_(self.selector.select(User.town), twv.UnicodeString)
+        eq_(self.selector.select(User.town), UnicodeString)
 
 # tablebase tests
 

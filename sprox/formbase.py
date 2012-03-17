@@ -228,9 +228,9 @@ class FormBase(ViewBase):
                 except TypeError:
                     pass
 
-    def validate(self, params, state=None, use_request_local=True):
+    def validate(self, params, state=None):
         """A pass-thru to the widget's validate function."""
-        return self.__widget__.validate(params, state, use_request_local=use_request_local)
+        return self.__widget__.validate(params, state)
 
     def _do_get_widget_args(self):
         """Override this method to define how the class get's the

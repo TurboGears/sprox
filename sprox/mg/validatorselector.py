@@ -21,10 +21,15 @@ Released under MIT license.
 """
 
 from sprox.validatorselector import ValidatorSelector
-from tw.forms.validators import *
 from ming import schema as s
 import ming.orm as o
 import inspect
+
+from formencode.validators import StringBool, Number, UnicodeString, Email, Int
+try:
+    from tw2.core.validation import *
+except ImportError:
+    from tw.forms.validators import *
 
 class MingValidatorSelector(ValidatorSelector):
 

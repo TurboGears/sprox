@@ -1,7 +1,7 @@
 from tw.api import Widget
 from tw.forms import CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid
 from tw.forms.fields import (SingleSelectField, MultipleSelectField, InputField, HiddenField,
-                             TextField, FileField, PasswordField, TextArea)
+                             TextField, FileField, PasswordField, TextArea, Label)
 
 from formencode.schema import Schema
 from formencode.validators import StringBool

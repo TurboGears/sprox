@@ -1,7 +1,7 @@
 from tw2.core import Widget, Param, DisplayOnlyWidget
 from tw2.forms import (CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid,
                        SingleSelectField, MultipleSelectField, InputField, HiddenField,
-                       TextField, FileField, CheckBox, PasswordField, TextArea)
+                       TextField, FileField, CheckBox, PasswordField, TextArea, Label)
 
 class SproxMethodPutHiddenField(HiddenField):
     template = "genshi:sprox.widgets.tw2widgets.templates.hidden_put"
@@ -69,17 +69,27 @@ class SproxCheckBox(CheckBox):
     pass
 
 class PropertySingleSelectField(SingleSelectField):
+    entity = Param('entity', attribute=False, default=None)
+    provider = Param('provider', attribute=False, default=None)
+    field_name = Param('field_name', attribute=False, default=None)
+    dropdown_field_names = Param('dropdown_field_names', attribute=False, default=None)
+
     def prepare(self):
         entity = self.entity
         options = self.provider.get_dropdown_options(self.entity, self.field_name, self.dropdown_field_names)
-        self.options = options
+        self.options = [(str(k), str(v)) for k,v in options]
 
         super(PropertySingleSelectField, self).prepare()
 
 class PropertyMultipleSelectField(MultipleSelectField):
+    entity = Param('entity', attribute=False, default=None)
+    provider = Param('provider', attribute=False, default=None)
+    field_name = Param('field_name', attribute=False, default=None)
+    dropdown_field_names = Param('dropdown_field_names', attribute=False, default=None)
+
     def prepare(self):
         entity = self.entity
         options = self.provider.get_dropdown_options(self.entity, self.field_name, self.dropdown_field_names)
-        self.options = options
+        self.options = [(str(k), str(v)) for k,v in options]
 
         super(PropertyMultipleSelectField, self).prepare()

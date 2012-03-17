@@ -8,7 +8,7 @@ from nose.tools import raises, eq_
 
 from strainer.operators import in_xhtml
 
-from tw.forms import TextField, HiddenField, Widget
+from sprox.widgets import TextField, HiddenField, Widget
 
 session = None
 engine  = None
