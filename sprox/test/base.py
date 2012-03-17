@@ -11,28 +11,20 @@ try:
     from tw import framework
     framework.default_view = 'mako'
 except ImportError:
-    pass
+    class DisplayOnlyWidget(object):
+        """ToscaWidgets2 DisplayOnlyWidget"""
 
 try:
-    import tw2.core.middleware as tmw
-    def request_local_tst():
-        global _request_local
-        if _request_local is None:
-            _request_local = {}
-
-        try:
-            return _request_local[_request_id]
-        except KeyError:
-            rl_data = {}
-            _request_local[_request_id] = rl_data
-            return rl_data
-
     import tw2.core.core
+    import tw2.core.middleware as tmw
+    from tw2.core.widgets import DisplayOnlyWidgetMeta
+
+    _request_local = {'middleware':tmw.make_middleware(None)}
+    def request_local_tst():
+        return _request_local
+
     tw2.core.core.request_local = request_local_tst
     from tw2.core.core import request_local
-
-    _request_local = None
-    _request_id = None
 except ImportError:
     tmw = None
     request_local = None
@@ -105,9 +97,18 @@ def widget_is_type(widget, wtype):
 
 def widget_children(w):
     if hasattr(w, 'req'):
-        return dict(((c.key, c) for c in w.children))
+        children = w.children
+        if isinstance(w, DisplayOnlyWidgetMeta):
+            children = w.child.children
+        return dict(((c.key, c) for c in children))
     else:
         return w.children
+
+def form_error_message(e):
+    try:
+        return [c.error_msg for c in e.widget.child.children if c.error_msg is not None][0]
+    except:
+        return e.msg
 
 database_setup=False
 def setup_database():

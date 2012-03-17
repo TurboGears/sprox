@@ -3,10 +3,13 @@ from sprox.util import name2label
 
 try:
     from tw2.core import Widget
+    from tw2.core.widgets import WidgetMeta
     from tw2.forms import HiddenField
 except ImportError:
     from tw.api import Widget
     from tw.forms import HiddenField
+    class WidgetMeta(object):
+        """TW2 WidgetMetaClass"""
 
 from configbase import ConfigBase, ConfigBaseError
 
@@ -93,14 +96,15 @@ class ViewBase(ConfigBase):
                         raise ViewBaseError('Widgets must provide an id argument for use as a field within a ViewBase')
                     self.__add_fields__[attr] = value
                 try:
-                    if issubclass(value, Widget):
+                    if issubclass(value, Widget) or isinstance(value, WidgetMeta):
                         self.__field_widget_types__[attr] = value
                 except TypeError:
                     pass
 
     @property
     def __widget__(self):
-        if not getattr(self, '___widget__', None):
+        widget = getattr(self, '___widget__', None)
+        if not widget:
             self.___widget__ = self.__base_widget_type__(**self.__widget_args__)
         return self.___widget__
 
@@ -120,7 +124,6 @@ class ViewBase(ConfigBase):
 
         field_widgets = []
         for key in self.__fields__:
-            
             if key not in widget_dict:
                 continue
             value = widget_dict[key]

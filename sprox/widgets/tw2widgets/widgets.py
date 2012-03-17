@@ -63,6 +63,7 @@ class SproxDataGrid(DataGrid):
     pks = Param('pks', attribute=False),
     controller = Param('controller', attribute=False)
     xml_fields = Param('xml_fields', attribute=False, default=['actions'])
+    value = []
 
 class SproxCheckBox(CheckBox):
     pass

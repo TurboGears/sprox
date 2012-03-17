@@ -21,27 +21,20 @@ def teardown():
 class UserTable(TableBase):
     __entity__ = User
 
-class TestTableBase:
+class TestTableBase(SproxTest):
     def setup(self):
+        super(TestTableBase, self).setup()
         self.base = UserTable(session)
 
     def test_create(self):
         pass
 
     def test__widget__(self):
-        rendered = self.base.__widget__()
-        assert_in_xhtml("""<thead>
-        <tr>
-                <th  class="col_0">actions</th>
-                <th  class="col_1">_password</th>
-                <th  class="col_2">user_id</th>
-                <th  class="col_3">user_name</th>
-                <th  class="col_4">email_address</th>
-                <th  class="col_5">display_name</th>
-                <th  class="col_6">created</th>
-                <th  class="col_7">town_id</th>
-                <th  class="col_8">town</th>
-                <th  class="col_9">password</th>
-                <th  class="col_10">groups</th>
-        </tr>
-    </thead>""", rendered)
+        rendered = self.base.__widget__.display()
+
+        fields = ["actions", "_password", "user_id", "user_name",
+                  "email_address", "display_name", "created",
+                  "town_id", "town", "password", "groups"]
+
+        for f in fields:
+            assert f in rendered
