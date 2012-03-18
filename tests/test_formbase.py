@@ -42,12 +42,8 @@ class TestsEmptyDropdownWorks:
         self.base = UserForm(session)
 
     def test__widget__(self):
-        rendered = self.base.__widget__()
-        assert_in_xml("""<td class="fieldcol" >
-                <select name="town" class="propertysingleselectfield" id="town">
-        <option value="" selected="selected">-----------</option>
-</select>
-            </td>""", rendered)
+        rendered = self.base()
+        assert """selected="selected">-----------</option>""" in rendered
 
 class TestFormBase(SproxTest):
     def setup(self):
@@ -111,6 +107,8 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField)
         user_form = UserForm(session)
         widget = user_form.__widget__
+
+        print widget_children(widget)['user_name']
         assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     def test_formbase_with_field_widget_instance(self):
@@ -129,7 +127,6 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
         assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
-
 
     def test_formbase_with_field_widget_and_validator_instance(self):
         class UserForm(FormBase):
@@ -208,7 +205,7 @@ class TestFormBase(SproxTest):
         rendered = form()
 
         assert '<option value="1">asdf</option>' in rendered
-        
+
     def test_entity_with_dropdown_field_names_dict(self):
         class UserFormFieldNames(FormBase):
             __entity__ = User

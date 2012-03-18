@@ -117,3 +117,25 @@ def name2label(name):
         name = name[:-3]
     return ' '.join([s.capitalize() for s in
                      re.findall(r'([A-Z][a-z0-9]+|[a-z0-9]+|[A-Z0-9]+)', name)])
+
+try:
+    from tw2.core import Widget
+    from tw2.core.widgets import WidgetMeta
+    from tw2.forms import HiddenField
+except ImportError:
+    from tw.api import Widget
+    from tw.forms import HiddenField
+    class WidgetMeta(object):
+        """TW2 WidgetMetaClass"""
+
+def is_widget(w):
+    if hasattr(w, 'req'):
+        return isinstance(w, Widget) or isinstance(w, WidgetMeta) and w.__name__.endswith('_s')
+    else:
+        isinstance(w, Widget)
+
+def is_widget_class(w):
+    if hasattr(w, 'req'):
+        return isinstance(w, WidgetMeta) and not w.__name__.endswith('_s')
+    else:
+        return issubclass(w, Widget)

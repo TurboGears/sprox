@@ -18,6 +18,8 @@ except ImportError:
     class WidgetMeta(object):
         """TW2 WidgetMetaClass"""
 
+from sprox.util import name2label, is_widget, is_widget_class
+
 from sprox.widgets import SproxMethodPutHiddenField
 from viewbase import ViewBase, ViewBaseError
 from formencode import Schema, All
@@ -202,12 +204,12 @@ class FormBase(ViewBase):
                 value = getattr(self, attr)
                 if isinstance(value, Field):
                     widget = value.widget
-                    if isinstance(widget, Widget):
+                    if is_widget(widget):
                         if not getattr(widget, 'id', None):
                             raise ViewBaseError('Widgets must provide an id argument for use as a field within a ViewBase')
                         self.__add_fields__[attr] = widget
                     try:
-                        if issubclass(widget, Widget) or isinstance(value, WidgetMeta):
+                        if is_widget_class(widget):
                             self.__field_widget_types__[attr] = widget
                     except TypeError:
                         pass

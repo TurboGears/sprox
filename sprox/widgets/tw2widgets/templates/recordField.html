@@ -2,9 +2,8 @@
     class="${w.css_class}"
     py:attrs='w.attrs'>
     <td>
-        $w.identifier.name
+        <b>$w.field_name</b>
     </td>
-    <td>
-    $w.identifier.type
+    <td> ${w.value[w.field_name]}
     </td>
 </tr>

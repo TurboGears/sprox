@@ -57,14 +57,14 @@ class TestRecordViewBase:
 
     def test__widget__(self):
         value = self.filler.get_value(values={'user_id':1})
-        expected = """<tr class="recordfieldwidget">
-    <td>
-        <b>groups</b>
-    </td>
-    <td> 5
-    </td>
-</tr>"""
-        assert in_xhtml(expected, self.base.__widget__(value))
+        rendered = self.base(value=value)
+
+        assert in_xhtml("""
+<td>
+    <b>groups</b>
+</td>""", rendered)
+        assert in_xhtml("""<td> 5
+    </td>""", rendered)
 
 
     def test_add_fields(self):
@@ -85,5 +85,5 @@ class TestRecordViewBase:
         base = RecordWithAddFields(session)
         value = filler.get_value(values={'user_id':1})
 
-        r = base.__widget__(value)
+        r = base(value=value)
         assert 'extra data' in r, r

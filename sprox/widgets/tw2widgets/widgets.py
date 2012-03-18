@@ -34,6 +34,7 @@ class RecordViewWidget(Widget):
 class RecordFieldWidget(Widget):
     template = "genshi:sprox.widgets.tw2widgets.templates.recordField"
     field_name = Param('field_name', attribute=False)
+    css_class = "recordfieldwidget"
 
 class TableDefWidget(Widget):
     template = "genshi:sprox.widgets.tw2widgets.templates.tableDef"
@@ -73,11 +74,15 @@ class PropertySingleSelectField(SingleSelectField):
     provider = Param('provider', attribute=False, default=None)
     field_name = Param('field_name', attribute=False, default=None)
     dropdown_field_names = Param('dropdown_field_names', attribute=False, default=None)
+    nullable = Param('nullable', attribute=False, default=False)
+    disabled = Param('disabled', attribute=False, default=False)
 
     def prepare(self):
         entity = self.entity
         options = self.provider.get_dropdown_options(self.entity, self.field_name, self.dropdown_field_names)
         self.options = [(str(k), str(v)) for k,v in options]
+        if self.nullable:
+            self.options.append([None, "-----------"])
 
         super(PropertySingleSelectField, self).prepare()
 
@@ -86,10 +91,14 @@ class PropertyMultipleSelectField(MultipleSelectField):
     provider = Param('provider', attribute=False, default=None)
     field_name = Param('field_name', attribute=False, default=None)
     dropdown_field_names = Param('dropdown_field_names', attribute=False, default=None)
+    nullable = Param('nullable', attribute=False, default=False)
+    disabled = Param('disabled', attribute=False, default=False)
 
     def prepare(self):
         entity = self.entity
         options = self.provider.get_dropdown_options(self.entity, self.field_name, self.dropdown_field_names)
         self.options = [(str(k), str(v)) for k,v in options]
+        if self.nullable:
+            self.options.append([None, "-----------"])
 
         super(PropertyMultipleSelectField, self).prepare()

@@ -1,5 +1,5 @@
 import inspect
-from sprox.util import name2label
+from sprox.util import name2label, is_widget, is_widget_class
 
 try:
     from tw2.core import Widget
@@ -91,12 +91,12 @@ class ViewBase(ConfigBase):
         for attr in dir(self):
             if not attr.startswith('__'):
                 value = getattr(self, attr)
-                if isinstance(value, Widget):
+                if is_widget(value):
                     if not getattr(value, 'id', None):
                         raise ViewBaseError('Widgets must provide an id argument for use as a field within a ViewBase')
                     self.__add_fields__[attr] = value
                 try:
-                    if issubclass(value, Widget) or isinstance(value, WidgetMeta):
+                    if is_widget_class(value):
                         self.__field_widget_types__[attr] = value
                 except TypeError:
                     pass
