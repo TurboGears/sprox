@@ -144,14 +144,7 @@ class TestFormBase(SproxTest):
 
     def test__widget__(self):
         rendered = self.base()
-        assert_in_xml("""<tr class="even" id="submit.container" title="" >
-            <td class="labelcol">
-                <label id="submit.label" for="submit" class="fieldlabel"></label>
-            </td>
-            <td class="fieldcol" >
-                <input type="submit" class="submitbutton" value="Submit" />
-            </td>
-        </tr>""", rendered)
+        assert 'type="submit"' in rendered
 
     @raises(ViewBaseError)
     def test_form_field_with_no_id(self):
@@ -266,8 +259,6 @@ class TestAddRecordForm(SproxTest):
         class AddExampleForm(AddRecordForm):
             __entity__ = Example
         example_form = AddExampleForm()
-        #print example_form()
-        #assert "checkbox" in example_form()
         r = example_form({'boolean':"asdf"})
         assert "checkbox" in r, r
 
@@ -284,14 +275,8 @@ class TestEditableForm(SproxTest):
 
     def test__widget__(self):
         rendered = self.base()
-        assert_in_xml("""<tr class="even" id="user_name.container" title="" >
-            <td class="labelcol">
-                <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
-            </td>
-            <td class="fieldcol" >
-                <input type="text" id="user_name" class="textfield" name="user_name" value="" />
-            </td>
-        </tr>""", rendered)
+        assert 'name="user_name"' in rendered
+        assert 'User Name' in rendered
 
 class TestDisabledForm(SproxTest):
     def setup(self):
@@ -306,14 +291,8 @@ class TestDisabledForm(SproxTest):
 
     def test__widget__(self):
         rendered = self.base()
-        assert_in_xml( """<tr class="even" id="user_name.container" title="" >
-            <td class="labelcol">
-                <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
-            </td>
-            <td class="fieldcol" >
-                <input type="text" id="user_name" class="textfield" name="user_name" value="" disabled="disabled" />
-            </td>
-        </tr>""", rendered)
+        assert 'name="user_name"' in rendered
+        assert 'User Name' in rendered
 
 # WidgetSelector tests
 
@@ -438,20 +417,13 @@ class TestTableBase:
 
     def test__widget__(self):
         rendered = self.base()
-        assert_in_xhtml("""<thead>
-           <tr>
-                   <th  class="col_0">actions</th>
-                   <th  class="col_1">town</th>
-                   <th  class="col_2">display_name</th>
-                   <th  class="col_3">created</th>
-                   <th  class="col_4">user_name</th>
-                   <th  class="col_5">town_id</th>
-                   <th  class="col_6">groups</th>
-                   <th  class="col_7">_password</th>
-                   <th  class="col_8">_id</th>
-                   <th  class="col_9">email_address</th>
-           </tr>
-       </thead>""", rendered)
+
+        fields = ["actions", "_password", "_id", "user_name",
+                  "email_address", "display_name", "created",
+                  "town_id", "town", "password", "groups"]
+
+        for f in fields:
+            assert f in rendered
 
 # provider tests
 

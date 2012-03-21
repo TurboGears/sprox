@@ -113,6 +113,9 @@ class ViewBase(ConfigBase):
         return self.display(*args, **kw)
 
     def display(self, *args, **kw):
+        if 'value' not in kw and args:
+            args = list(args)
+            kw['value'] = args.pop(0)
         return self.__widget__.display(*args, **kw)
 
     @property
@@ -212,11 +215,8 @@ class ViewBase(ConfigBase):
                 continue
             if field_name not in metadata_keys:
                 continue
+
             field = self.__metadata__[field_name]
-
-            if inspect.isclass(field):
-                identifier = ClassViewer(field)
-
             field_widget_type = self.__field_widget_types__.get(field_name,
                                                                 self.__widget_selector__.select(field))
             field_widget_args = self._do_get_field_widget_args(field_name, field)
@@ -225,6 +225,8 @@ class ViewBase(ConfigBase):
                 # in this case, we display the current field, disabling it, and also add
                 # a hidden field into th emix
                 field_widget_args['disabled'] = True
+                field_widget_args['attrs'] = {'disabled':True}
+
                 widgets[field_name] = (HiddenField(id='disabled_' + field_name.replace('.','_'),
                                                    name=field_name, key=field_name,
                                                    identifier=field_name),

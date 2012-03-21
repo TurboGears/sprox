@@ -1,4 +1,4 @@
 try:
-    from tw2widgets import *
+    from tw2widgets.widgets import *
 except ImportError:
-    from tw1widgets import *
+    from tw1widgets.widgets import *

@@ -30,7 +30,7 @@ class TestTableBase(SproxTest):
         pass
 
     def test__widget__(self):
-        rendered = self.base.__widget__.display()
+        rendered = self.base()
 
         fields = ["actions", "_password", "user_id", "user_name",
                   "email_address", "display_name", "created",

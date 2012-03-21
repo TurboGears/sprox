@@ -1,10 +1,17 @@
 from tw2.core import Widget, Param, DisplayOnlyWidget
 from tw2.forms import (CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid,
                        SingleSelectField, MultipleSelectField, InputField, HiddenField,
-                       TextField, FileField, CheckBox, PasswordField, TextArea, Label)
+                       TextField, FileField, CheckBox, PasswordField, TextArea)
+from tw2.forms import Label as tw2Label
+
+class Label(tw2Label):
+    def prepare(self):
+        self.text = unicode(self.value)
+        super(Label, self).prepare()
 
 class SproxMethodPutHiddenField(HiddenField):
-    template = "genshi:sprox.widgets.tw2widgets.templates.hidden_put"
+    value = 'PUT'
+    name = '_method'
 
 class ContainerWidget(DisplayOnlyWidget):
     template = "genshi:sprox.widgets.tw2widgets.templates.container"
@@ -78,8 +85,10 @@ class PropertySingleSelectField(SingleSelectField):
     disabled = Param('disabled', attribute=False, default=False)
 
     def prepare(self):
-        entity = self.entity
-        options = self.provider.get_dropdown_options(self.entity, self.field_name, self.dropdown_field_names)
+        #This is required for ming
+        entity = self.__class__.entity
+
+        options = self.provider.get_dropdown_options(entity, self.field_name, self.dropdown_field_names)
         self.options = [(str(k), str(v)) for k,v in options]
         if self.nullable:
             self.options.append([None, "-----------"])
@@ -95,8 +104,10 @@ class PropertyMultipleSelectField(MultipleSelectField):
     disabled = Param('disabled', attribute=False, default=False)
 
     def prepare(self):
-        entity = self.entity
-        options = self.provider.get_dropdown_options(self.entity, self.field_name, self.dropdown_field_names)
+        #This is required for ming
+        entity = self.__class__.entity
+
+        options = self.provider.get_dropdown_options(entity, self.field_name, self.dropdown_field_names)
         self.options = [(str(k), str(v)) for k,v in options]
         if self.nullable:
             self.options.append([None, "-----------"])
