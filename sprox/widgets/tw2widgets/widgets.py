@@ -1,4 +1,4 @@
-from tw2.core import Widget, Param, DisplayOnlyWidget
+from tw2.core import Widget, Param, DisplayOnlyWidget, safe_validate, Invalid
 from tw2.forms import (CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid,
                        SingleSelectField, MultipleSelectField, InputField, HiddenField,
                        TextField, FileField, CheckBox, PasswordField, TextArea)
@@ -10,8 +10,11 @@ class Label(tw2Label):
         super(Label, self).prepare()
 
 class SproxMethodPutHiddenField(HiddenField):
-    value = 'PUT'
     name = '_method'
+
+    def prepare(self):
+        self.value = 'PUT'
+        super(SproxMethodPutHiddenField, self).prepare()
 
 class ContainerWidget(DisplayOnlyWidget):
     template = "genshi:sprox.widgets.tw2widgets.templates.container"
@@ -91,12 +94,12 @@ class PropertySingleSelectField(SingleSelectField):
         options = self.provider.get_dropdown_options(entity, self.field_name, self.dropdown_field_names)
         self.options = [(str(k), str(v)) for k,v in options]
         if self.nullable:
-            self.options.append([None, "-----------"])
+            self.options.append(['', "-----------"])
 
         if not self.value:
-            self.value = []
+            self.value = ''
 
-        self.value = [str(v) for v in self.value]
+        self.value = str(self.value)
         super(PropertySingleSelectField, self).prepare()
 
 class PropertyMultipleSelectField(MultipleSelectField):
@@ -107,14 +110,21 @@ class PropertyMultipleSelectField(MultipleSelectField):
     nullable = Param('nullable', attribute=False, default=False)
     disabled = Param('disabled', attribute=False, default=False)
 
+    def _validate(self, value, state=None):
+        value = value or []
+        if not isinstance(value, (list, tuple)):
+            value = [value]
+        if self.validator:
+            value = [safe_validate(self.validator, v) for v in value]
+        self.value = [v for v in value if v is not Invalid]
+        return self.value
+
     def prepare(self):
         #This is required for ming
         entity = self.__class__.entity
 
         options = self.provider.get_dropdown_options(entity, self.field_name, self.dropdown_field_names)
         self.options = [(str(k), str(v)) for k,v in options]
-        if self.nullable:
-            self.options.append([None, "-----------"])
 
         if not self.value:
             self.value = []

@@ -18,6 +18,7 @@ except ImportError:
     class WidgetMeta(object):
         """TW2 WidgetMetaClass"""
 
+import inspect
 from sprox.util import name2label, is_widget, is_widget_class
 
 from sprox.widgets import SproxMethodPutHiddenField
@@ -239,9 +240,15 @@ class FormBase(ViewBase):
            arguments for the main widget
         """
         d = super(FormBase, self)._do_get_widget_args()
-        #TW2 widgets cannot have a FormEncode schema as validator
-        if self.__base_validator__ is not None and not hasattr(Widget, 'req'):
+        if self.__base_validator__ is not None:
             d['validator'] = self.__base_validator__
+
+        #TW2 widgets cannot have a FormEncode Schema as validator, only plain validators instances
+        if hasattr(Widget, 'req'):
+            current_validator = d.get('validator')
+            if current_validator is FilteringSchema:
+                d.pop('validator', None)
+
         return d
 
     def _do_get_field_widget_args(self, field_name, field):

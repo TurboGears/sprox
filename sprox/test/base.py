@@ -106,6 +106,8 @@ def widget_children(w):
 
 def form_error_message(e):
     try:
+        if e.widget.child.error_msg:
+            return e.widget.child.error_msg
         return [c.error_msg for c in e.widget.child.children if c.error_msg is not None][0]
     except:
         return e.msg

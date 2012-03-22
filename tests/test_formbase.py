@@ -43,7 +43,8 @@ class TestsEmptyDropdownWorks:
 
     def test__widget__(self):
         rendered = self.base()
-        assert """selected="selected">-----------</option>""" in rendered
+        assert 'selected="selected"' in rendered
+        assert '-----------</option>' in rendered
 
 class TestFormBase(SproxTest):
     def setup(self):
@@ -253,7 +254,11 @@ class TestAddRecordForm(SproxTest):
         assert "checkbox" in example_form({'boolean':"asdf"})
 
     def test_form_with_base_validator(self):
-        form_validator =  Schema(chained_validators=(FieldsMatch('password',
+        if hasattr(TextField, 'req'):
+            form_validator = FieldsMatch('password', 'verify_password',
+                messages={'invalidNoMatch': 'Passwords do not match'})
+        else:
+            form_validator =  Schema(chained_validators=(FieldsMatch('password',
                                                                 'verify_password',
                                                                 messages={'invalidNoMatch':
                                                                 'Passwords do not match'}),))
@@ -269,8 +274,9 @@ class TestAddRecordForm(SproxTest):
         registration_form = RegistrationForm()
         try:
             registration_form.validate(params={'password':'blah', 'verify_password':'not_blah'})
-        except Invalid, exc:
-            assert 'Passwords do not match' in exc.msg
+        except Invalid, e:
+            msg = form_error_message(e)
+            assert 'Passwords do not match' in msg
 
 class TestEditableForm(SproxTest):
     def setup(self):

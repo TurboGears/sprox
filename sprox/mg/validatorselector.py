@@ -60,7 +60,7 @@ class MingValidatorSelector(ValidatorSelector):
         type_ = s.String
         for t in self.default_validators.keys():
             if isinstance(field_type, s.OneOf):
-                break;
+                break
             if inspect.isclass(field_type) and issubclass(field_type, t):
                 type_ = t
                 break
