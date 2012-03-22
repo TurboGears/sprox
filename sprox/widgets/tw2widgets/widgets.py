@@ -93,6 +93,7 @@ class PropertySingleSelectField(SingleSelectField):
         if self.nullable:
             self.options.append([None, "-----------"])
 
+        self.value = [str(v) for v in self.value]
         super(PropertySingleSelectField, self).prepare()
 
 class PropertyMultipleSelectField(MultipleSelectField):
@@ -112,4 +113,5 @@ class PropertyMultipleSelectField(MultipleSelectField):
         if self.nullable:
             self.options.append([None, "-----------"])
 
+        self.value = [str(v) for v in self.value]
         super(PropertyMultipleSelectField, self).prepare()
