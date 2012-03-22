@@ -261,7 +261,6 @@ class TableBase(ViewBase):
         args['fields'] = zip(field_headers, field_widgets)
 
         # And, now back to our regularly-scheduled trunk-derived Sprox.
-
         if '__actions__' not in self.__omit_fields__:
             args['pks'] = self.__provider__.get_primary_fields(self.__entity__)
 

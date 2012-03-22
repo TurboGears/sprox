@@ -9,10 +9,14 @@ from ming import Document, Field, schema as S, Session
 from ming.orm import FieldProperty, ForeignIdProperty, RelationProperty
 from ming.orm.ormsession import ThreadLocalORMSession
 from ming.orm.declarative import MappedClass
-from ming.orm.mapper import Mapper
 from datetime import datetime, timedelta
 from decimal import Decimal
 from ming.orm.property import ORMProperty, LazyProperty, OneToManyJoin
+
+try:
+    from ming.orm.mapper import Mapper
+except:
+    from ming.odm.mapper import Mapper
 
 #Took from turbogears-ming package to test many-to-many relationships
 #on turbogears2 with ming backend.
@@ -53,7 +57,7 @@ class GroupPermission(SproxTestClass):
     class __mongometa__:
         name = 'tg_group_permission_rs'
         unique_indexes = (
-          ('group_id', 'permission_id')
+          ('group_id', 'permission_id'),
         )
     
     _id = FieldProperty(S.ObjectId)
@@ -70,7 +74,7 @@ class UserGroup(SproxTestClass):
     class __mongometa__:
         name = 'tg_user_group_rs'
         unique_indexes = (
-          ('user_id', 'group_id')
+          ('user_id', 'group_id'),
         )
     
     _id = FieldProperty(S.ObjectId)
@@ -212,7 +216,7 @@ class Permission(SproxTestClass):
     class __mongometa__:
         name = 'tg_permission_rs'
         unique_indexes = (
-            ('permission_name',)
+            ('permission_name',),
         )
         
     _id = FieldProperty(S.ObjectId)
@@ -267,9 +271,6 @@ class Department(SproxTestClass):
 class DocumentCategory(SproxTestClass):
     class __mongometa__:
         name = 'document_category_rs'
-        unique_indexes = (
-          ('document_category_id', 'department_id')
-        )
 
     _id = FieldProperty(int)
     document_category_id = FieldProperty(int)
@@ -281,9 +282,6 @@ class DocumentCategory(SproxTestClass):
 class DocumentCategoryTagAssignment(SproxTestClass):
     class __mongometa__:
         name = 'document_category_tag_assignment_rs'
-        unique_indexes = (
-          ('document_category_id', 'department_id', 'document_category_tag_id')
-        )
     
     _id = FieldProperty(S.ObjectId)
     document_category_id = ForeignIdProperty(DocumentCategory)

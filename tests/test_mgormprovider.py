@@ -128,7 +128,6 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
-
     def test_formbase_with_field_widget_and_validator_instance(self):
         class UserForm(FormBase):
             __entity__ = User

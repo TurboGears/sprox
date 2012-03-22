@@ -132,7 +132,7 @@ def is_widget(w):
     if hasattr(w, 'req'):
         return isinstance(w, Widget) or isinstance(w, WidgetMeta) and w.__name__.endswith('_s')
     else:
-        isinstance(w, Widget)
+        return isinstance(w, Widget)
 
 def is_widget_class(w):
     if hasattr(w, 'req'):
