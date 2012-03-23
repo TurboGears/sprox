@@ -368,7 +368,7 @@ class SAORMProvider(IProvider):
         return r
 
     def get_field_default(self, field):
-        if isinstance(field, Column) and field.default:
+        if isinstance(field, Column) and field.default and getattr(field.default, 'arg', None):
             if isinstance(field.default.arg, str) or \
                isinstance(field.default.arg, unicode) or \
                isinstance(field.default.arg, int) or \
