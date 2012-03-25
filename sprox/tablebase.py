@@ -10,6 +10,7 @@ Released under MIT license.
 from operator import itemgetter
 
 try:
+    import tw2.forms
     from tw2.core import Widget
     from tw2.core.widgets import WidgetMeta
 except ImportError:
@@ -41,7 +42,7 @@ class TableBase(ViewBase):
       +-----------------------------------+--------------------------------------------+------------------------------+
       | __xml_fields__                    | fields whos values should show as html     |                              |
       +-----------------------------------+--------------------------------------------+------------------------------+
-  
+
 
     see modifiers in :mod:`sprox.viewbase`
 

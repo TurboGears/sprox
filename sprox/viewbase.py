@@ -227,8 +227,13 @@ class ViewBase(ConfigBase):
                 field_widget_args['disabled'] = True
                 field_widget_args['attrs'] = {'disabled':True}
 
-                widgets[field_name] = (HiddenField(id='disabled_' + field_name.replace('.','_'),
-                                                   name=field_name, key=field_name,
+                if hasattr(Widget, 'req'):
+                    hidden_id='disabled_' + field_name.replace('.','_')
+                else:
+                    hidden_id=field_name.replace('.','_')
+
+                widgets[field_name] = (HiddenField(id=hidden_id, key=field_name,
+                                                   name=field_name,
                                                    identifier=field_name),
                                        field_widget_type(**field_widget_args))
             else:
