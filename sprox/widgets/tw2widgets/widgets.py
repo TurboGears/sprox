@@ -69,7 +69,7 @@ class SproxCalendarDateTimePicker(CalendarDateTimePicker):
     date_format = '%Y-%m-%d %H:%M:%S'
 
 class SproxDataGrid(DataGrid):
-    template = "genshi:sprox.widgets.tw2widgets.templates.datagrid"
+    template = "sprox.widgets.tw2widgets.templates.datagrid"
 
     pks = Param('pks', attribute=False),
     controller = Param('controller', attribute=False)
