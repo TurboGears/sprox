@@ -27,6 +27,7 @@ import inspect
 
 from formencode.validators import StringBool, Number, UnicodeString, Email, Int
 try:
+    import tw2.forms
     from tw2.core.validation import *
 except ImportError:
     from tw.forms.validators import *

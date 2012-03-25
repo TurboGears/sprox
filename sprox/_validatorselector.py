@@ -23,6 +23,7 @@ Released under MIT license.
 """
 
 try:
+    import tw2.forms
     from tw2.core.validation import *
 except ImportError:
     from tw.forms.validators import *
