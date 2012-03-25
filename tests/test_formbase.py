@@ -61,7 +61,7 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
         try:
-            widget.validate({'user_name':'something'})
+            widget.validate({'user_name':'something', 'created':''})
         except Invalid, e:
             msg = form_error_message(e)
             assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
@@ -73,7 +73,7 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
         try:
-            widget.validate({'user_name':'something'})
+            widget.validate({'user_name':'something', 'created':''})
         except Invalid, e:
             msg = form_error_message(e)
             assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
@@ -85,7 +85,7 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
         try:
-            widget.validate({'user_name':'something'})
+            widget.validate({'user_name':'something', 'created':''})
         except Invalid, e:
             msg = form_error_message(e)
             assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
@@ -97,7 +97,7 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
         try:
-            widget.validate({'user_name':'something'})
+            widget.validate({'user_name':'something', 'created':''})
         except Invalid, e:
             msg = form_error_message(e)
             assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
@@ -137,7 +137,7 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
         try:
-            widget.validate({'user_name':'something'})
+            widget.validate({'user_name':'something', 'created':''})
         except Invalid, e:
             msg = form_error_message(e)
             assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
