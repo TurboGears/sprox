@@ -118,46 +118,40 @@ class FormBase(ViewBase):
     >>> town_form = UserOnlyTownForm(session)
     >>>
     >>> print town_form() # doctest: +XML
-    <form action="" method="post" class="required tableform">
-        <div>
-                <input type="hidden" id="sprox_id" class="hiddenfield" name="sprox_id" value="" />
-        </div>
-        <table border="0" cellspacing="0" cellpadding="2" >
-            <tr class="even" id="town.container" title="" >
-                <td class="labelcol">
-                    <label id="town.label" for="town" class="fieldlabel">Town</label>
-                </td>
-                <td class="fieldcol" >
-                    <select name="town" class="propertysingleselectfield" id="town">
-            <option value="1">Arvada</option>
-            <option value="2">Denver</option>
-            <option value="3">Golden</option>
-            <option value="4">Boulder</option>
-            <option value="" selected="selected">-----------</option>
+    <form enctype="multipart/form-data" method="post">
+         <span class="error"></span>
+        <table >
+        <tr class="odd"  id="sx_town:container">
+            <th>Town</th>
+            <td >
+                <select name="town" id="sx_town">
+             <option value="1">Arvada</option>
+             <option value="2">Denver</option>
+             <option value="3">Golden</option>
+             <option value="4">Boulder</option>
+             <option selected="selected" value="">-----------</option>
     </select>
-                </td>
-            </tr>
-            <tr class="odd" id="submit.container" title="" >
-                <td class="labelcol">
-                    <label id="submit.label" for="submit" class="fieldlabel"></label>
-                </td>
-                <td class="fieldcol" >
-                    <input type="submit" class="submitbutton" value="Submit" />
-                </td>
-            </tr>
-        </table>
+                <span id="sx_town:error"></span>
+            </td>
+        </tr>
+        <tr class="error"><td colspan="2">
+            <input type="hidden" name="sprox_id" value="" id="sprox_id"/>
+            <span id=":error"></span>
+        </td></tr>
+    </table>
+    		<input type="submit" value="Save" id="submit"/>
     </form>
 
     Forms created with sprox can be validated as you would any other widget.
     >>> class UserOnlyTownForm(FormBase):
     ...    __model__ = User
     ...    __limit_fields__ = ['town']
-    ...    __required_fields__ = ['town']
+    ...    __require_fields__ = ['town']
     >>> town_form = UserOnlyTownForm(session)
     >>> town_form.validate(params={'sprox_id':1})
     Traceback (most recent call last):
     ...
-    Invalid: town: Missing value
+    ValidationError
 
 
 
@@ -370,13 +364,10 @@ class AddRecordForm(FormBase):
     Here is an example registration form, as generated from the vase User model.
 
     >>> from sprox.formbase import AddRecordForm
-    >>> from formencode import Schema
     >>> from formencode.validators import FieldsMatch
-    >>> from tw.forms import PasswordField, TextField
-    >>> form_validator =  Schema(chained_validators=(FieldsMatch('password',
-    ...                                                         'verify_password',
-    ...                                                         messages={'invalidNoMatch':
-    ...                                                         'Passwords do not match'}),))
+    >>> from tw2.forms import PasswordField, TextField
+    >>> form_validator =  FieldsMatch('password', 'verify_password',
+    ...                                 messages={'invalidNoMatch': 'Passwords do not match'})
     >>> class RegistrationForm(AddRecordForm):
     ...     __model__ = User
     ...     __require_fields__     = ['password', 'user_name', 'email_address']
@@ -388,61 +379,52 @@ class AddRecordForm(FormBase):
     ...     verify_password        = PasswordField('verify_password')
     >>> registration_form = RegistrationForm()
     >>> print registration_form() # doctest: +XML
-    <form action="" method="post" class="required tableform">
-        <div>
-                <input type="hidden" id="sprox_id" class="hiddenfield" name="sprox_id" value="" />
-        </div>
-        <table border="0" cellspacing="0" cellpadding="2" >
-            <tr class="even" id="user_name.container" title="" >
-                <td class="labelcol">
-                    <label id="user_name.label" for="user_name" class="fieldlabel required">User Name</label>
-                </td>
-                <td class="fieldcol" >
-                    <input type="text" id="user_name" class="textfield required" name="user_name" value="" />
-                </td>
-            </tr>
-            <tr class="odd" id="email_address.container" title="" >
-                <td class="labelcol">
-                    <label id="email_address.label" for="email_address" class="fieldlabel required">Email Address</label>
-                </td>
-                <td class="fieldcol" >
-                    <input type="text" id="email_address" class="textfield required" name="email_address" value="" />
-                </td>
-            </tr>
-            <tr class="even" id="display_name.container" title="" >
-                <td class="labelcol">
-                    <label id="display_name.label" for="display_name" class="fieldlabel">Display Name</label>
-                </td>
-                <td class="fieldcol" >
-                    <input type="text" id="display_name" class="textfield" name="display_name" value="" />
-                </td>
-            </tr>
-            <tr class="odd" id="password.container" title="" >
-                <td class="labelcol">
-                    <label id="password.label" for="password" class="fieldlabel required">Password</label>
-                </td>
-                <td class="fieldcol" >
-                    <input type="password" id="password" class="required passwordfield" name="password" value="" />
-                </td>
-            </tr>
-            <tr class="even" id="verify_password.container" title="" >
-                <td class="labelcol">
-                    <label id="verify_password.label" for="verify_password" class="fieldlabel">Verify Password</label>
-                </td>
-                <td class="fieldcol" >
-                    <input type="password" id="verify_password" class="passwordfield" name="verify_password" value="" />
-                </td>
-            </tr>
-            <tr class="odd" id="submit.container" title="" >
-                <td class="labelcol">
-                    <label id="submit.label" for="submit" class="fieldlabel"></label>
-                </td>
-                <td class="fieldcol" >
-                    <input type="submit" class="submitbutton" value="Submit" />
-                </td>
-            </tr>
-        </table>
+    <form enctype="multipart/form-data" method="post">
+         <span class="error"></span>
+        <table >
+        <tr class="odd required"  id="sx_user_name:container">
+            <th>User Name</th>
+            <td >
+                <input name="user_name" type="text" id="sx_user_name" value=""/>
+                <span id="sx_user_name:error"></span>
+            </td>
+        </tr>
+        <tr class="even required"  id="sx_email_address:container">
+            <th>Email Address</th>
+            <td >
+                <input name="email_address" type="text" id="sx_email_address"/>
+                <span id="sx_email_address:error"></span>
+            </td>
+        </tr>
+        <tr class="odd"  id="sx_display_name:container">
+            <th>Display Name</th>
+            <td >
+                <input name="display_name" type="text" id="sx_display_name" value=""/>
+                <span id="sx_display_name:error"></span>
+            </td>
+        </tr>
+        <tr class="even required"  id="sx_password:container">
+            <th>Password</th>
+            <td >
+                <input type="password" name="password" id="sx_password"/>
+                <span id="sx_password:error"></span>
+            </td>
+        </tr>
+        <tr class="odd"  id="verify_password:container">
+            <th>Verify Password</th>
+            <td >
+                <input type="password" name="verify_password" id="verify_password"/>
+                <span id="verify_password:error"></span>
+            </td>
+        </tr>
+        <tr class="error"><td colspan="2">
+            <input type="hidden" name="sprox_id" value="" id="sprox_id"/>
+            <span id=":error"></span>
+        </td></tr>
+    </table>
+        <input type="submit" value="Save" id="submit"/>
     </form>
+
 
     What is unique about the AddRecord form, is that if the fields in the database are labeled unique, it will
     automatically vaidate against uniqueness for that field.  Here is a simple user form definition, where the
@@ -487,39 +469,33 @@ class DisabledForm(FormBase):
     ...     __limit_fields__ = ['user_name', 'email_address']
     >>> disabled_user_form = DisabledUserForm()
     >>> print disabled_user_form(values=dict(user_name='percious', email='chris@percious.com'))  # doctest: +XML
-    <form action="" method="post" class="required tableform">
-        <div>
-                <input type="hidden" id="user_name" class="hiddenfield" name="user_name" value="" />
-                <input type="hidden" id="email_address" class="hiddenfield" name="email_address" value="" />
-                <input type="hidden" id="sprox_id" class="hiddenfield" name="sprox_id" value="" />
-        </div>
-        <table border="0" cellspacing="0" cellpadding="2" >
-            <tr class="even" id="user_name.container" title="" >
-                <td class="labelcol">
-                    <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
-                </td>
-                <td class="fieldcol" >
-                    <input type="text" id="user_name" class="textfield" name="user_name" value="" disabled="disabled" />
-                </td>
-            </tr>
-            <tr class="odd" id="email_address.container" title="" >
-                <td class="labelcol">
-                    <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
-                </td>
-                <td class="fieldcol" >
-                    <textarea id="email_address" name="email_address" class="textarea" disabled="disabled" rows="7" cols="50"></textarea>
-                </td>
-            </tr>
-            <tr class="even" id="submit.container" title="" >
-                <td class="labelcol">
-                    <label id="submit.label" for="submit" class="fieldlabel"></label>
-                </td>
-                <td class="fieldcol" >
-                    <input type="submit" class="submitbutton" value="Submit" />
-                </td>
-            </tr>
-        </table>
+    <form enctype="multipart/form-data" method="post">
+         <span class="error"></span>
+        <table >
+        <tr class="odd"  id="sx_user_name:container">
+            <th>User Name</th>
+            <td >
+                <input name="user_name" value="" disabled="disabled" type="text" id="sx_user_name"/>
+                <span id="sx_user_name:error"></span>
+            </td>
+        </tr>
+        <tr class="even"  id="sx_email_address:container">
+            <th>Email Address</th>
+            <td >
+                <textarea disabled="disabled" name="email_address" id="sx_email_address"></textarea>
+                <span id="sx_email_address:error"></span>
+            </td>
+        </tr>
+        <tr class="error"><td colspan="2">
+            <input type="hidden" name="user_name" id="disabled_user_name"/>
+            <input type="hidden" name="email_address" id="disabled_email_address"/>
+            <input type="hidden" name="sprox_id" value="" id="sprox_id"/>
+            <span id=":error"></span>
+        </td></tr>
+    </table>
+        <input type="submit" value="Save" id="submit"/>
     </form>
+
 
     You may notice in the above example that disabled fields pass in a hidden value for each disabled field.
 

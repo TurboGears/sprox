@@ -51,12 +51,10 @@ class TableDefWidget(Widget):
     identifier = Param('identifier', attribute=False)
 
 class EntityDefWidget(Widget):
-    available_engines = ['genshi']
     template = "genshi:sprox.widgets.tw2widgets.templates.entityDef"
     entity = Param('entity', attribute=False)
 
 class TableWidget(Widget):
-    available_engines = ['genshi']
     template = "genshi:sprox.widgets.tw2widgets.templates.table"
 
 class SproxCalendarDatePicker(CalendarDatePicker):
@@ -86,6 +84,7 @@ class PropertySingleSelectField(SingleSelectField):
     dropdown_field_names = Param('dropdown_field_names', attribute=False, default=None)
     nullable = Param('nullable', attribute=False, default=False)
     disabled = Param('disabled', attribute=False, default=False)
+    prompt_text = None
 
     def prepare(self):
         #This is required for ming
