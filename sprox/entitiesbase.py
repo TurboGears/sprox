@@ -1,4 +1,3 @@
-import inspect
 from sprox.widgets import ContainerWidget, TableWidget
 from viewbase import ViewBase
 from widgetselector import EntitiesViewWidgetSelector, EntityDefWidgetSelector
@@ -17,9 +16,9 @@ class EntityDefBase(ViewBase):
     ...     __entity__ = User
     >>> base = UserEntityDef(session)
     >>> print base()
-    <table xmlns="http://www.w3.org/1999/xhtml" class="tablewidget">
+    <table>
     <tr><th>Name</th><th>Definition</th></tr>
-    <tr class="odd">
+    <tr class="odd" id="sx__password">
         <td>
             password
         </td>
@@ -27,7 +26,7 @@ class EntityDefBase(ViewBase):
             VARCHAR(40)
         </td>
     </tr>
-    <tr class="even">
+    <tr class="even" id="sx_user_id">
         <td>
             user_id
         </td>
@@ -35,7 +34,7 @@ class EntityDefBase(ViewBase):
             INTEGER
         </td>
     </tr>
-    <tr class="odd">
+    <tr class="odd" id="sx_user_name">
         <td>
             user_name
         </td>
@@ -43,7 +42,7 @@ class EntityDefBase(ViewBase):
             VARCHAR(16)
         </td>
     </tr>
-    <tr class="even">
+    <tr class="even" id="sx_email_address">
         <td>
             email_address
         </td>
@@ -51,7 +50,7 @@ class EntityDefBase(ViewBase):
             VARCHAR(255)
         </td>
     </tr>
-    <tr class="odd">
+    <tr class="odd" id="sx_display_name">
         <td>
             display_name
         </td>
@@ -59,7 +58,7 @@ class EntityDefBase(ViewBase):
             VARCHAR(255)
         </td>
     </tr>
-    <tr class="even">
+    <tr class="even" id="sx_created">
         <td>
             created
         </td>
@@ -67,7 +66,7 @@ class EntityDefBase(ViewBase):
             DATETIME
         </td>
     </tr>
-    <tr class="odd">
+    <tr class="odd" id="sx_town_id">
         <td>
             town_id
         </td>
@@ -75,7 +74,7 @@ class EntityDefBase(ViewBase):
             INTEGER
         </td>
     </tr>
-    <tr class="even">
+    <tr class="even" id="sx_town">
         <td>
             town
         </td>
@@ -83,7 +82,7 @@ class EntityDefBase(ViewBase):
             relation
         </td>
     </tr>
-    <tr class="odd">
+    <tr class="odd" id="sx_password">
         <td>
             password
         </td>
@@ -91,7 +90,7 @@ class EntityDefBase(ViewBase):
             relation
         </td>
     </tr>
-    <tr class="even">
+    <tr class="even" id="sx_groups">
         <td>
             groups
         </td>
@@ -122,39 +121,39 @@ class EntitiesBase(ViewBase):
     ...     __entity__ = User
     >>> base = MyEntitiesBase(session, metadata=metadata)
     >>> print base()
-    <div xmlns="http://www.w3.org/1999/xhtml" class="containerwidget">
-    <div class="entitylabelwidget">
-    <a href="Department/">Department</a>
+    <div class="containerwidget">
+        <div class="entitylabelwidget" id="sx_Department">
+        <a href="Department/">Department</a>
     </div>
-    <div class="entitylabelwidget">
-    <a href="Document/">Document</a>
+        <div class="entitylabelwidget" id="sx_Document">
+        <a href="Document/">Document</a>
     </div>
-    <div class="entitylabelwidget">
-    <a href="DocumentCategory/">DocumentCategory</a>
+        <div class="entitylabelwidget" id="sx_DocumentCategory">
+        <a href="DocumentCategory/">DocumentCategory</a>
     </div>
-    <div class="entitylabelwidget">
-    <a href="DocumentCategoryReference/">DocumentCategoryReference</a>
+        <div class="entitylabelwidget" id="sx_DocumentCategoryReference">
+        <a href="DocumentCategoryReference/">DocumentCategoryReference</a>
     </div>
-    <div class="entitylabelwidget">
-    <a href="DocumentCategoryTag/">DocumentCategoryTag</a>
+        <div class="entitylabelwidget" id="sx_DocumentCategoryTag">
+        <a href="DocumentCategoryTag/">DocumentCategoryTag</a>
     </div>
-    <div class="entitylabelwidget">
-    <a href="Example/">Example</a>
+        <div class="entitylabelwidget" id="sx_Example">
+        <a href="Example/">Example</a>
     </div>
-    <div class="entitylabelwidget">
-    <a href="File/">File</a>
+        <div class="entitylabelwidget" id="sx_File">
+        <a href="File/">File</a>
     </div>
-    <div class="entitylabelwidget">
-    <a href="Group/">Group</a>
+        <div class="entitylabelwidget" id="sx_Group">
+        <a href="Group/">Group</a>
     </div>
-    <div class="entitylabelwidget">
-    <a href="Permission/">Permission</a>
+        <div class="entitylabelwidget" id="sx_Permission">
+        <a href="Permission/">Permission</a>
     </div>
-    <div class="entitylabelwidget">
-    <a href="Town/">Town</a>
+        <div class="entitylabelwidget" id="sx_Town">
+        <a href="Town/">Town</a>
     </div>
-    <div class="entitylabelwidget">
-    <a href="User/">User</a>
+        <div class="entitylabelwidget" id="sx_User">
+        <a href="User/">User</a>
     </div>
     </div>
 

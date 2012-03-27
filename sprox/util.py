@@ -102,3 +102,40 @@ def timestamp(value):
     if delta:
         data -= delta
     return data
+
+def name2label(name):
+    """
+    Took from ToscaWidgets2.
+
+    Convert a column name to a Human Readable name.
+       1) Strip _id from the end
+       2) Convert _ to spaces
+       3) Convert CamelCase to Camel Case
+       4) Upcase first character of Each Word
+    """
+    if name.endswith('_id'):
+        name = name[:-3]
+    return ' '.join([s.capitalize() for s in
+                     re.findall(r'([A-Z][a-z0-9]+|[a-z0-9]+|[A-Z0-9]+)', name)])
+
+try:
+    from tw2.core import Widget
+    from tw2.core.widgets import WidgetMeta
+    from tw2.forms import HiddenField
+except ImportError:
+    from tw.api import Widget
+    from tw.forms import HiddenField
+    class WidgetMeta(object):
+        """TW2 WidgetMetaClass"""
+
+def is_widget(w):
+    if hasattr(w, 'req'):
+        return isinstance(w, Widget) or isinstance(w, WidgetMeta) and w.__name__.endswith('_s')
+    else:
+        return isinstance(w, Widget)
+
+def is_widget_class(w):
+    if hasattr(w, 'req'):
+        return isinstance(w, WidgetMeta) and not w.__name__.endswith('_s')
+    else:
+        return issubclass(w, Widget)

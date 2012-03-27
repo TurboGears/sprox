@@ -21,10 +21,16 @@ Released under MIT license.
 """
 
 from sprox.validatorselector import ValidatorSelector
-from tw.forms.validators import *
 from ming import schema as s
 import ming.orm as o
 import inspect
+
+from formencode.validators import StringBool, Number, UnicodeString, Email, Int
+try:
+    import tw2.forms
+    from tw2.core.validation import *
+except ImportError:
+    from tw.forms.validators import *
 
 class MingValidatorSelector(ValidatorSelector):
 
@@ -55,7 +61,7 @@ class MingValidatorSelector(ValidatorSelector):
         type_ = s.String
         for t in self.default_validators.keys():
             if isinstance(field_type, s.OneOf):
-                break;
+                break
             if inspect.isclass(field_type) and issubclass(field_type, t):
                 type_ = t
                 break

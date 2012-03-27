@@ -11,7 +11,24 @@ try:
     from tw import framework
     framework.default_view = 'mako'
 except ImportError:
-    pass
+    class DisplayOnlyWidget(object):
+        """ToscaWidgets2 DisplayOnlyWidget"""
+
+try:
+    import tw2.core.core
+    import tw2.core.middleware as tmw
+    from tw2.core.widgets import DisplayOnlyWidgetMeta
+
+    _request_local = {'middleware':tmw.make_middleware(None)}
+    def request_local_tst():
+        return _request_local
+
+    tw2.core.core.request_local = request_local_tst
+    from tw2.core.core import request_local
+except ImportError:
+    tmw = None
+    request_local = None
+
 
 #try:
 import xml.etree.ElementTree as etree
@@ -71,6 +88,29 @@ def assert_in_xml(needle, haystack):
 
 def assert_eq_xml(needle, haystack):
     assert eq_xml(needle, haystack), "%s does not equal %s"%(needle, haystack)
+
+def widget_is_type(widget, wtype):
+    if hasattr(widget, 'req'):
+        return issubclass(widget, wtype)
+    else:
+        return isinstance(widget, wtype)
+
+def widget_children(w):
+    if hasattr(w, 'req'):
+        children = w.children
+        if isinstance(w, DisplayOnlyWidgetMeta):
+            children = w.child.children
+        return dict(((c.key, c) for c in children))
+    else:
+        return w.children
+
+def form_error_message(e):
+    try:
+        if e.widget.child.error_msg:
+            return e.widget.child.error_msg
+        return [c.error_msg for c in e.widget.child.children if c.error_msg is not None][0]
+    except:
+        return e.msg
 
 database_setup=False
 def setup_database():
@@ -169,6 +209,11 @@ def setup_reflection():
 
 class SproxTest(object):
     def setup(self):
+        if tmw and request_local:
+            rl = request_local()
+            rl.clear()
+            rl['middleware'] = tmw.make_middleware(None)
+
         self.session = session
         self.engine = engine
         try:

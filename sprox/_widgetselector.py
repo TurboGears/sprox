@@ -22,8 +22,12 @@ Original Version by Christopher Perkins 2007Database
 Released under MIT license.
 """
 
-from tw.api import Widget
-from tw.forms.fields import *
+try:
+    from tw2.core import Widget
+    from tw2.forms.widgets import *
+except ImportError, e:
+    from tw.api import Widget
+    from tw.forms.fields import *
 
 from sprox.widgets import *
 

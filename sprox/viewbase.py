@@ -1,6 +1,16 @@
 import inspect
-from tw.api import Widget
-from tw.forms import HiddenField
+from sprox.util import name2label, is_widget, is_widget_class
+
+try:
+    from tw2.core import Widget
+    from tw2.core.widgets import WidgetMeta
+    from tw2.forms import HiddenField
+except ImportError:
+    from tw.api import Widget
+    from tw.forms import HiddenField
+    class WidgetMeta(object):
+        """TW2 WidgetMetaClass"""
+
 from configbase import ConfigBase, ConfigBaseError
 
 from widgetselector import WidgetSelector
@@ -81,12 +91,12 @@ class ViewBase(ConfigBase):
         for attr in dir(self):
             if not attr.startswith('__'):
                 value = getattr(self, attr)
-                if isinstance(value, Widget):
+                if is_widget(value):
                     if not getattr(value, 'id', None):
                         raise ViewBaseError('Widgets must provide an id argument for use as a field within a ViewBase')
                     self.__add_fields__[attr] = value
                 try:
-                    if issubclass(value, Widget):
+                    if is_widget_class(value):
                         self.__field_widget_types__[attr] = value
                 except TypeError:
                     pass
@@ -96,12 +106,17 @@ class ViewBase(ConfigBase):
         widget = getattr(self, '___widget__', None)
         if not widget:
             self.___widget__ = self.__base_widget_type__(**self.__widget_args__)
-            widget = self.___widget__
         return self.___widget__
 
     #try to act like a widget as much as possible
     def __call__(self, *args, **kw):
-        return self.__widget__.__call__(*args, **kw)
+        return self.display(*args, **kw)
+
+    def display(self, *args, **kw):
+        if 'value' not in kw and args:
+            args = list(args)
+            kw['value'] = args.pop(0)
+        return self.__widget__.display(*args, **kw)
 
     @property
     def __widget_args__(self):
@@ -112,7 +127,6 @@ class ViewBase(ConfigBase):
 
         field_widgets = []
         for key in self.__fields__:
-            
             if key not in widget_dict:
                 continue
             value = widget_dict[key]
@@ -140,7 +154,15 @@ class ViewBase(ConfigBase):
         if inspect.isclass(field):
             entity = ClassViewer(field)
 
-        args = {'id':field_name, 'identity':self.__entity__.__name__+'_'+field_name, 'entity':entity, 'provider':self.__provider__}
+        if hasattr(Widget, 'req'):
+            args.update({'id':'sx_'+field_name, 'key':field_name})
+        else:
+            args.update({'id':field_name})
+
+        args.update({'name':field_name,
+                'identity':self.__entity__.__name__+'_'+field_name,
+                'entity':entity, 'provider':self.__provider__,
+                'label':name2label(field_name), 'label_text':name2label(field_name)})
         field_default_value = self.__provider__.get_field_default(entity)
         if field_default_value[0]:
             args['default'] = field_default_value[1]
@@ -193,11 +215,8 @@ class ViewBase(ConfigBase):
                 continue
             if field_name not in metadata_keys:
                 continue
+
             field = self.__metadata__[field_name]
-
-            if inspect.isclass(field):
-                identifier = ClassViewer(field)
-
             field_widget_type = self.__field_widget_types__.get(field_name,
                                                                 self.__widget_selector__.select(field))
             field_widget_args = self._do_get_field_widget_args(field_name, field)
@@ -206,7 +225,17 @@ class ViewBase(ConfigBase):
                 # in this case, we display the current field, disabling it, and also add
                 # a hidden field into th emix
                 field_widget_args['disabled'] = True
-                widgets[field_name] = (HiddenField(id=field_name.replace('.','_'), identifier=field_name), field_widget_type(**field_widget_args))
+                field_widget_args['attrs'] = {'disabled':True}
+
+                if hasattr(Widget, 'req'):
+                    hidden_id='disabled_' + field_name.replace('.','_')
+                else:
+                    hidden_id=field_name.replace('.','_')
+
+                widgets[field_name] = (HiddenField(id=hidden_id, key=field_name,
+                                                   name=field_name,
+                                                   identifier=field_name),
+                                       field_widget_type(**field_widget_args))
             else:
                 widgets[field_name] = field_widget_type(**field_widget_args)
 

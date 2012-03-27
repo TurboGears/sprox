@@ -1,13 +1,11 @@
 from nose.tools import raises, eq_
-from tw.forms.fields import *
-from tw.api import Widget
 from sqlalchemy import Column, Integer
 from sqlalchemy.types import *
 from sqlalchemy.orm import class_mapper
 
 from sprox.widgetselector import WidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
 from sprox.sa.widgetselector import SAWidgetSelector
-from sprox.widgets.widgets import *
+from sprox.widgets import *
 from sprox.sa.provider import SAORMProvider
 from sprox.test.model import Document
 

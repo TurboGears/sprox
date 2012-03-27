@@ -9,7 +9,7 @@ from tw.dojo import DojoBase, tundragrid_css, tundra_css, dojo_css, dojo_js
 from tw.core import JSLink
 
 sprox_grid_js = JSLink(modname="sprox",
-                       filename="widgets/static/dojo_grid.js",
+                       filename="widgets/tw1widgets/static/dojo_grid.js",
                        )
 
 class SproxDojoGrid(DojoBase):
@@ -44,7 +44,7 @@ class SproxDojoGrid(DojoBase):
     actions = True
     dojoStoreType = 'dojox.data.QueryReadStore'
     dojoStoreWidget = None
-    template = "sprox.widgets.templates.dojogrid"
+    template = "sprox.widgets.tw1widgets.templates.dojogrid"
     #attrs = {'style':"height:200px"}
     def update_params(self,d):
         d['dojoStoreWidget']=DojoQueryReadStore()
@@ -91,7 +91,7 @@ class SproxEditableDojoGrid(DojoBase):
     actions = True
     dojoStoreType = 'twdojo.data.TWDojoRestStore'
     dojoStoreWidget = None
-    template = "sprox.widgets.templates.dojogrid"
+    template = "sprox.widgets.tw1widgets.templates.dojogrid"
 
     def __init__(self,**kw):
         super(SproxEditableDojoGrid, self).__init__(**kw)

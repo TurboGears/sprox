@@ -23,6 +23,6 @@ class TestViewBase:
 
     def test__widget__(self):
         rendered = self.view()
-        assert """<div class="entitylabelwidget">
-<a href="User/">User</a>
+        assert '''<div class="entitylabelwidget"''' in rendered, rendered
+        assert """<a href="User/">User</a>
 </div>""" in rendered, rendered

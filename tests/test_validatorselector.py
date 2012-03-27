@@ -3,6 +3,13 @@ from sprox.validatorselector import ValidatorSelector
 from sprox.sa.validatorselector import SAValidatorSelector
 from sprox.test.base import *
 from formencode.validators  import *
+
+try:
+    import tw2.forms
+    from tw2.core.validation import DateValidator
+except:
+    pass
+
 from formencode.compound import All
 from sqlalchemy import Column, Integer, String
 from sprox.sa.provider import SAORMProvider

@@ -1,13 +1,18 @@
 from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm, Field
 from sprox.viewbase import ViewBaseError
-from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document, assert_in_xml
+from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, \
+    Example, Document, assert_in_xml, widget_children, widget_is_type, form_error_message
 from sprox.test.model import User, Group
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid, Schema
 from formencode.validators import FieldsMatch, NotEmpty, OpenId
-from tw.forms import PasswordField, TextField
+
+try:
+    from tw2.forms import PasswordField, TextField
+except:
+    from tw.forms import PasswordField, TextField
 
 class MyTextField(TextField):pass
 
@@ -37,12 +42,9 @@ class TestsEmptyDropdownWorks:
         self.base = UserForm(session)
 
     def test__widget__(self):
-        rendered = self.base.__widget__()
-        assert_in_xml("""<td class="fieldcol" >
-                <select name="town" class="propertysingleselectfield" id="town">
-        <option value="" selected="selected">-----------</option>
-</select>
-            </td>""", rendered)
+        rendered = self.base()
+        assert 'selected="selected"' in rendered
+        assert '-----------</option>' in rendered
 
 class TestFormBase(SproxTest):
     def setup(self):
@@ -59,9 +61,10 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
         try:
-            widget.validate({'user_name':'something'})
+            widget.validate({'user_name':'something', 'created':''})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_validator_instance(self):
         class UserForm(FormBase):
@@ -70,9 +73,10 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
         try:
-            widget.validate({'user_name':'something'})
+            widget.validate({'user_name':'something', 'created':''})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_instance(self):
         class UserForm(FormBase):
@@ -81,9 +85,10 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
         try:
-            widget.validate({'user_name':'something'})
+            widget.validate({'user_name':'something', 'created':''})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_class(self):
         class UserForm(FormBase):
@@ -92,9 +97,10 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
         try:
-            widget.validate({'user_name':'something'})
+            widget.validate({'user_name':'something', 'created':''})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_widget_class(self):
         class UserForm(FormBase):
@@ -102,7 +108,9 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField)
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
+
+        print widget_children(widget)['user_name']
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     def test_formbase_with_field_widget_instance(self):
         class UserForm(FormBase):
@@ -110,7 +118,7 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField('user_name'))
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     @raises(ViewBaseError)
     def test_formbase_with_field_widget_instance_no_id(self):
@@ -119,8 +127,7 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField())
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
-
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     def test_formbase_with_field_widget_and_validator_instance(self):
         class UserForm(FormBase):
@@ -128,25 +135,19 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField, OpenId)
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
         try:
-            widget.validate({'user_name':'something'})
+            widget.validate({'user_name':'something', 'created':''})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test__fields__(self):
         eq_(sorted_user_columns, sorted(self.base.__fields__))
 
     def test__widget__(self):
-        rendered = self.base.__widget__()
-        assert_in_xml("""<tr class="even" id="submit.container" title="" >
-            <td class="labelcol">
-                <label id="submit.label" for="submit" class="fieldlabel"></label>
-            </td>
-            <td class="fieldcol" >
-                <input type="submit" class="submitbutton" value="Submit" />
-            </td>
-        </tr>""", rendered)
+        rendered = self.base()
+        assert 'type="submit"' in rendered
 
     @raises(ViewBaseError)
     def test_form_field_with_no_id(self):
@@ -160,14 +161,7 @@ class TestFormBase(SproxTest):
             __entity__ = Document
         form = DocumentForm(session)
         rendered = form()
-        assert_in_xml("""<tr class="odd" id="address.container" title="" >
-            <td class="labelcol">
-                <label id="address.label" for="address" class="fieldlabel">Address</label>
-            </td>
-            <td class="fieldcol" >
-                <input type="text" id="address" class="textfield" name="address" value="" />
-            </td>
-        </tr>""", rendered)
+        assert 'name="address"' in rendered, rendered
 
     def test_entity_with_dropdown_field_names(self):
         class UserFormFieldNames(FormBase):
@@ -175,15 +169,12 @@ class TestFormBase(SproxTest):
             __dropdown_field_names__ = ['group_name']
         form = UserFormFieldNames(session)
         rendered = form()
-        assert_in_xml("""<td class="fieldcol" >
-                <select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
-        <option value="1">0</option>
-        <option value="2">1</option>
-        <option value="3">2</option>
-        <option value="4">3</option>
-        <option value="5">4</option>
-</select>
-            </td>""", rendered)
+
+        entries = ['<option value="1">0</option>', '<option value="2">1</option>', '<option value="3">2</option>',
+                   '<option value="4">3</option>', '<option value="5">4</option>']
+
+        for e in entries:
+            assert e in rendered
 
     def test_entity_with_dropdown_field_names2(self):
         class UserFormFieldNames(FormBase):
@@ -191,15 +182,12 @@ class TestFormBase(SproxTest):
             __dropdown_field_names__ = {'groups':'group_name'}
         form = UserFormFieldNames(session)
         rendered = form()
-        assert_in_xml("""<td class="fieldcol" >
-                <select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
-        <option value="1">0</option>
-        <option value="2">1</option>
-        <option value="3">2</option>
-        <option value="4">3</option>
-        <option value="5">4</option>
-</select>
-            </td>""", rendered)
+
+        entries = ['<option value="1">0</option>', '<option value="2">1</option>', '<option value="3">2</option>',
+                   '<option value="4">3</option>', '<option value="5">4</option>']
+
+        for e in entries:
+            assert e in rendered
 
     def test_entity_with_dropdown_field_names_title(self):
         class GroupFormFieldNames(FormBase):
@@ -207,9 +195,8 @@ class TestFormBase(SproxTest):
             __dropdown_field_names__ = {'groups':'group_name'}
         form = GroupFormFieldNames(session)
         rendered = form()
-        assert_in_xml("""<select name="users" class="propertymultipleselectfield" id="users" multiple="multiple" size="5">
-        <option value="1">asdf@asdf.com</option>
-</select>""", rendered)
+
+        assert '<option value="1">asdf@asdf.com</option>' in rendered
 
     def test_entity_with_dropdown_field_names_title_overridden(self):
         class GroupFormFieldNames(FormBase):
@@ -217,9 +204,8 @@ class TestFormBase(SproxTest):
             __dropdown_field_names__ = {'users':'user_name'}
         form = GroupFormFieldNames(session)
         rendered = form()
-        assert_in_xml("""<select name="users" class="propertymultipleselectfield" id="users" multiple="multiple" size="5">
-        <option value="1">asdf</option>
-</select>""", rendered)
+
+        assert '<option value="1">asdf</option>' in rendered
 
     def test_entity_with_dropdown_field_names_dict(self):
         class UserFormFieldNames(FormBase):
@@ -227,15 +213,13 @@ class TestFormBase(SproxTest):
             __dropdown_field_names__ = {'groups':['group_name']}
         form = UserFormFieldNames(session)
         rendered = form()
-        assert_in_xml( """<td class="fieldcol" >
-                <select name="groups" class="propertymultipleselectfield" id="groups" multiple="multiple" size="5">
-        <option value="1">0</option>
-        <option value="2">1</option>
-        <option value="3">2</option>
-        <option value="4">3</option>
-        <option value="5">4</option>
-</select>
-            </td>""", rendered)
+
+        entries = ['<option value="1">0</option>', '<option value="2">1</option>', '<option value="3">2</option>',
+                   '<option value="4">3</option>', '<option value="5">4</option>']
+
+        for e in entries:
+            assert e in rendered
+
 
 
     def test_require_field(self):
@@ -244,7 +228,7 @@ class TestFormBase(SproxTest):
             __require_fields__ = ['user_name']
 
         form = RegistrationForm(session)
-        eq_(form.__widget__.children['user_name'].validator.not_empty, True)
+        eq_(widget_children(form.__widget__)['user_name'].validator.not_empty, True)
 
 class TestAddRecordForm(SproxTest):
     def setup(self):
@@ -270,7 +254,11 @@ class TestAddRecordForm(SproxTest):
         assert "checkbox" in example_form({'boolean':"asdf"})
 
     def test_form_with_base_validator(self):
-        form_validator =  Schema(chained_validators=(FieldsMatch('password',
+        if hasattr(TextField, 'req'):
+            form_validator = FieldsMatch('password', 'verify_password',
+                messages={'invalidNoMatch': 'Passwords do not match'})
+        else:
+            form_validator =  Schema(chained_validators=(FieldsMatch('password',
                                                                 'verify_password',
                                                                 messages={'invalidNoMatch':
                                                                 'Passwords do not match'}),))
@@ -286,8 +274,9 @@ class TestAddRecordForm(SproxTest):
         registration_form = RegistrationForm()
         try:
             registration_form.validate(params={'password':'blah', 'verify_password':'not_blah'})
-        except Invalid, exc:
-            assert 'Passwords do not match' in exc.msg
+        except Invalid, e:
+            msg = form_error_message(e)
+            assert 'Passwords do not match' in msg
 
 class TestEditableForm(SproxTest):
     def setup(self):
@@ -306,15 +295,9 @@ class TestEditableForm(SproxTest):
         eq_(expected_form_fields, form_fields)
 
     def test__widget__(self):
-        rendered = self.base.__widget__()
-        assert_in_xml("""<tr class="even" id="user_name.container" title="" >
-            <td class="labelcol">
-                <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
-            </td>
-            <td class="fieldcol" >
-                <input type="text" id="user_name" class="textfield" name="user_name" value="" />
-            </td>
-        </tr>""", rendered)
+        rendered = self.base()
+        assert 'name="user_name"' in rendered
+        assert 'User Name' in rendered
 
 class TestDisabledForm(SproxTest):
     def setup(self):
@@ -328,12 +311,6 @@ class TestDisabledForm(SproxTest):
         self.base = UserForm(session)
 
     def test__widget__(self):
-        rendered = self.base.__widget__()
-        assert_in_xml( """<tr class="even" id="user_name.container" title="" >
-            <td class="labelcol">
-                <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
-            </td>
-            <td class="fieldcol" >
-                <input type="text" id="user_name" class="textfield" name="user_name" value="" disabled="disabled" />
-            </td>
-        </tr>""", rendered)
+        rendered = self.base()
+        assert 'name="user_name"' in rendered
+        assert 'User Name' in rendered

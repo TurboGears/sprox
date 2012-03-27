@@ -24,13 +24,18 @@ Released under MIT license.
 from sqlalchemy.schema import Column
 from sqlalchemy.types import *
 from sqlalchemy.types import String as StringType
-from tw.forms.validators import *
 from formencode.compound import All
 from formencode import Invalid
-from formencode.validators import StringBool
+from formencode.validators import StringBool, Number, UnicodeString, Email, Int
 from sqlalchemy.orm import PropertyLoader, SynonymProperty
 
 from sprox._validatorselector import ValidatorSelector
+
+try:
+    import tw2.forms
+    from tw2.core.validation import *
+except ImportError:
+    from tw.forms.validators import *
 
 class SAValidatorSelector(ValidatorSelector):
 

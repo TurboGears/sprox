@@ -1,32 +1,27 @@
 from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm, Field
 from sprox.viewbase import ViewBaseError
+from sprox.test.base import widget_children, widget_is_type, form_error_message
 from sprox.test.mg.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document, assert_in_xml
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
-from formencode import Invalid, Schema
 from formencode.validators import FieldsMatch, NotEmpty, OpenId
-from tw.forms import PasswordField, TextField, validators as twv
 from sprox.widgetselector import WidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
 from sprox.mg.provider import MingProvider
 from sprox.mg.widgetselector import MingWidgetSelector
-from sprox.mg.validatorselector import MingValidatorSelector
+from sprox.mg.validatorselector import *
 from sprox.tablebase import TableBase
 from strainer.operators import assert_in_xhtml
 
 from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town, UnrelatedDocument
 from sprox.test.mg.model import Permission, TGMMUser
-import formencode.validators as v
-
-from cgi import FieldStorage
-from StringIO import StringIO
 
 from bson.objectid import InvalidId
 
 from ming import schema as S
 from ming.orm import FieldProperty
 
-from tw.forms.fields import *
-from sprox.widgets.widgets import *
+from sprox.widgets import *
+from formencode import Invalid
 
 class MyTextField(TextField):pass
 
@@ -69,7 +64,8 @@ class TestFormBase(SproxTest):
         try:
             widget.validate({'user_name':'something'})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_validator_instance(self):
         class UserForm(FormBase):
@@ -80,7 +76,8 @@ class TestFormBase(SproxTest):
         try:
             widget.validate({'user_name':'something'})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_instance(self):
         class UserForm(FormBase):
@@ -91,7 +88,8 @@ class TestFormBase(SproxTest):
         try:
             widget.validate({'user_name':'something'})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_class(self):
         class UserForm(FormBase):
@@ -102,7 +100,8 @@ class TestFormBase(SproxTest):
         try:
             widget.validate({'user_name':'something'})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_widget_class(self):
         class UserForm(FormBase):
@@ -110,7 +109,7 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField)
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     def test_formbase_with_field_widget_instance(self):
         class UserForm(FormBase):
@@ -118,7 +117,7 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField('user_name'))
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     @raises(ViewBaseError)
     def test_formbase_with_field_widget_instance_no_id(self):
@@ -127,8 +126,7 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField())
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
-
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     def test_formbase_with_field_widget_and_validator_instance(self):
         class UserForm(FormBase):
@@ -136,22 +134,16 @@ class TestFormBase(SproxTest):
             user_name = Field(MyTextField, OpenId)
         user_form = UserForm(session)
         widget = user_form.__widget__
-        assert isinstance(widget.children['user_name'], MyTextField)
+        assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
         try:
             widget.validate({'user_name':'something'})
         except Invalid, e:
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in e.msg, e.msg
+            msg = form_error_message(e)
+            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test__widget__(self):
-        rendered = self.base.__widget__()
-        assert_in_xml("""<tr class="even" id="submit.container" title="" >
-            <td class="labelcol">
-                <label id="submit.label" for="submit" class="fieldlabel"></label>
-            </td>
-            <td class="fieldcol" >
-                <input type="submit" class="submitbutton" value="Submit" />
-            </td>
-        </tr>""", rendered)
+        rendered = self.base()
+        assert 'type="submit"' in rendered
 
     @raises(ViewBaseError)
     def test_form_field_with_no_id(self):
@@ -245,7 +237,7 @@ class TestFormBase(SproxTest):
             __require_fields__ = ['user_name']
 
         form = RegistrationForm(session)
-        eq_(form.__widget__.children['user_name'].validator.not_empty, True)
+        eq_(widget_children(form.__widget__)['user_name'].validator.not_empty, True)
 
 class TestAddRecordForm(SproxTest):
     def setup(self):
@@ -266,8 +258,6 @@ class TestAddRecordForm(SproxTest):
         class AddExampleForm(AddRecordForm):
             __entity__ = Example
         example_form = AddExampleForm()
-        #print example_form()
-        #assert "checkbox" in example_form()
         r = example_form({'boolean':"asdf"})
         assert "checkbox" in r, r
 
@@ -283,15 +273,9 @@ class TestEditableForm(SproxTest):
         self.base = UserForm(session)
 
     def test__widget__(self):
-        rendered = self.base.__widget__()
-        assert_in_xml("""<tr class="even" id="user_name.container" title="" >
-            <td class="labelcol">
-                <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
-            </td>
-            <td class="fieldcol" >
-                <input type="text" id="user_name" class="textfield" name="user_name" value="" />
-            </td>
-        </tr>""", rendered)
+        rendered = self.base()
+        assert 'name="user_name"' in rendered
+        assert 'User Name' in rendered
 
 class TestDisabledForm(SproxTest):
     def setup(self):
@@ -305,15 +289,9 @@ class TestDisabledForm(SproxTest):
         self.base = UserForm(session)
 
     def test__widget__(self):
-        rendered = self.base.__widget__()
-        assert_in_xml( """<tr class="even" id="user_name.container" title="" >
-            <td class="labelcol">
-                <label id="user_name.label" for="user_name" class="fieldlabel">User Name</label>
-            </td>
-            <td class="fieldcol" >
-                <input type="text" id="user_name" class="textfield" name="user_name" value="" disabled="disabled" />
-            </td>
-        </tr>""", rendered)
+        rendered = self.base()
+        assert 'name="user_name"' in rendered
+        assert 'User Name' in rendered
 
 # WidgetSelector tests
 
@@ -422,7 +400,7 @@ class TestMingValidatorSelector:
         self.selector = MingValidatorSelector()
 
     def test_select_with_one_relation(self):
-        eq_(self.selector.select(User.town), twv.UnicodeString)
+        eq_(self.selector.select(User.town), UnicodeString)
 
 # tablebase tests
 
@@ -437,21 +415,14 @@ class TestTableBase:
         pass
 
     def test__widget__(self):
-        rendered = self.base.__widget__()
-        assert_in_xhtml("""<thead>
-           <tr>
-                   <th  class="col_0">actions</th>
-                   <th  class="col_1">town</th>
-                   <th  class="col_2">display_name</th>
-                   <th  class="col_3">created</th>
-                   <th  class="col_4">user_name</th>
-                   <th  class="col_5">town_id</th>
-                   <th  class="col_6">groups</th>
-                   <th  class="col_7">_password</th>
-                   <th  class="col_8">_id</th>
-                   <th  class="col_9">email_address</th>
-           </tr>
-       </thead>""", rendered)
+        rendered = self.base()
+
+        fields = ["actions", "_password", "_id", "user_name",
+                  "email_address", "display_name", "created",
+                  "town_id", "town", "password", "groups"]
+
+        for f in fields:
+            assert f in rendered
 
 # provider tests
 
@@ -838,57 +809,59 @@ class TestMGORMProvider(SproxTest):
         assert new_user._groups[0] == groups[0].group_name
 
 
-#dojo tests
-from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm, DojoFormBase
+try:
+    #dojo tests
+    from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm, DojoFormBase
 
-# tablebase tests
+    # tablebase tests
 
-class DojoUserForm(DojoFormBase):
-    __entity__ = User
+    class DojoUserForm(DojoFormBase):
+        __entity__ = User
 
-class DojoUserEditableForm(DojoEditableForm):
-    __entity__ = User
+    class DojoUserEditableForm(DojoEditableForm):
+        __entity__ = User
 
-class DojoUserAddRecordForm(DojoAddRecordForm):
-    __entity__ = User
+    class DojoUserAddRecordForm(DojoAddRecordForm):
+        __entity__ = User
 
-class TestDojoForms:
-    def setup(self):
-        pass 
+    class TestDojoForms:
+        def setup(self):
+            pass
 
-    def test_formbase(self):
-        base = DojoUserForm(session)
-        rendered = base.__widget__()
-        assert_in_xhtml("""<tr class="odd" id="email_address.container" title="" >
-               <td class="labelcol">
-                   <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
-               </td>
-               <td class="fieldcol" >
-                   <input type="text" id="email_address" class="textfield" name="email_address" value="" />
-               </td>
-           </tr>""", rendered)
+        def test_formbase(self):
+            base = DojoUserForm(session)
+            rendered = base.__widget__()
+            assert_in_xhtml("""<tr class="odd" id="email_address.container" title="" >
+                   <td class="labelcol">
+                       <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
+                   </td>
+                   <td class="fieldcol" >
+                       <input type="text" id="email_address" class="textfield" name="email_address" value="" />
+                   </td>
+               </tr>""", rendered)
 
-    def test_addrecord(self):
-        base = DojoUserAddRecordForm(session)
-        rendered = base.__widget__()
-        assert_in_xhtml("""<tr class="odd" id="email_address.container" title="" >
-               <td class="labelcol">
-                   <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
-               </td>
-               <td class="fieldcol" >
-                   <input type="text" id="email_address" class="textfield" name="email_address" value="" />
-               </td>
-           </tr>""", rendered)
+        def test_addrecord(self):
+            base = DojoUserAddRecordForm(session)
+            rendered = base.__widget__()
+            assert_in_xhtml("""<tr class="odd" id="email_address.container" title="" >
+                   <td class="labelcol">
+                       <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
+                   </td>
+                   <td class="fieldcol" >
+                       <input type="text" id="email_address" class="textfield" name="email_address" value="" />
+                   </td>
+               </tr>""", rendered)
 
-    def test_editableform(self):
-        base = DojoUserEditableForm(session)
-        rendered = base.__widget__()
-        assert_in_xhtml("""<tr class="odd" id="email_address.container" title="" >
-               <td class="labelcol">
-                   <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
-               </td>
-               <td class="fieldcol" >
-                   <input type="text" id="email_address" class="textfield" name="email_address" value="" />
-               </td>
-           </tr>""", rendered)
-
+        def test_editableform(self):
+            base = DojoUserEditableForm(session)
+            rendered = base.__widget__()
+            assert_in_xhtml("""<tr class="odd" id="email_address.container" title="" >
+                   <td class="labelcol">
+                       <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
+                   </td>
+                   <td class="fieldcol" >
+                       <input type="text" id="email_address" class="textfield" name="email_address" value="" />
+                   </td>
+               </tr>""", rendered)
+except ImportError:
+    pass

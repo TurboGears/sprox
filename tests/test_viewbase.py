@@ -1,10 +1,14 @@
 from sprox.viewbase import ViewBase
-from sprox.test.base import setup_database
+from sprox.test.base import setup_database, widget_children, widget_is_type
 from sprox.test.model import User
 from sprox.sa.widgetselector import SAWidgetSelector
 from nose.tools import raises, eq_
 
-from tw.forms import TextField, HiddenField, Widget
+try:
+    from tw2.core import Widget
+    from tw2.forms import TextField, HiddenField
+except:
+    from tw.forms import TextField, HiddenField, Widget
 
 session = None
 engine  = None
@@ -51,7 +55,10 @@ class TestViewBase:
             sorted(self.base.__fields__))
 
     def test__widget__(self):
-        eq_(None, self.base.__widget__())
+        if not hasattr(Widget, 'req'):
+            eq_(None, self.base.__widget__())
+        else:
+            assert widget_is_type(self.base.__widget__(), Widget)
 
     def test_widget_with_attrs(self):
         class UserView(ViewBase):
@@ -63,8 +70,10 @@ class TestViewBase:
         user_view = UserView()
 
         widget = user_view.__widget__
-        child = widget.children['password']
-        eq_(child.attrs, {'class':'mypassclass'})
+        child = widget_children(widget)['password']
+
+        assert 'class' in child.attrs
+        eq_(child.attrs['class'], 'mypassclass')
 
     def test_hidden_fields(self):
         class UserView(ViewBase):
@@ -74,8 +83,8 @@ class TestViewBase:
 
         user_view = UserView()
         widget = user_view.__widget__
-        child = widget.children['password']
-        assert isinstance(child, HiddenField), child.__class__
+        child = widget_children(widget)['password']
+        assert widget_is_type(child, HiddenField), child.__class__
 
     def test_custom_field(self):
         class UserView(ViewBase):
@@ -86,8 +95,8 @@ class TestViewBase:
 
         user_view = UserView()
         widget = user_view.__widget__
-        child = widget.children['password']
-        assert isinstance(child, TextField), child.__class__
+        child =  widget_children(widget)['password']
+        assert widget_is_type(child, TextField), child.__class__
 
     def test_custom_with_none(self):
         class UserView(ViewBase):
@@ -98,8 +107,8 @@ class TestViewBase:
 
         user_view = UserView()
         widget = user_view.__widget__
-        child = widget.children['password']
-        assert isinstance(child, Widget), str(child.__class__)
+        child = widget_children(widget)['password']
+        assert widget_is_type(child, Widget), str(child.__class__)
 
     def test_omit_fields(self):
         class UserView(ViewBase):
@@ -110,7 +119,7 @@ class TestViewBase:
 
         user_view = UserView()
         widget = user_view.__widget__
-        assert 'password' not in widget.children.keys()
+        assert 'password' not in  widget_children(widget).keys()
 
     def test_bad_fieldname_in_limit(self):
         class UserView(ViewBase):
@@ -121,7 +130,7 @@ class TestViewBase:
 
         user_view = UserView()
         widget = user_view.__widget__
-        assert 'junk' not in widget.children.keys()
+        assert 'junk' not in  widget_children(widget).keys()
 
     def test_widget_attrs(self):
         class UserView(ViewBase):
@@ -132,7 +141,7 @@ class TestViewBase:
 
         user_view = UserView()
         widget = user_view.__widget__
-        assert widget.children['password'].test_param == 'crazy_param'
+        assert  widget_children(widget)['password'].test_param == 'crazy_param'
 
     def test_widget_attrs_hidden_field(self):
         class UserView(ViewBase):
@@ -143,7 +152,7 @@ class TestViewBase:
 
         user_view = UserView()
         widget = user_view.__widget__
-        assert widget.children['password'].css_classes == ['crazy_param'], widget.children['password'].css_classes
+        assert  widget_children(widget)['password'].css_classes == ['crazy_param'], widget.children['password'].css_classes
 
     def _test_enum_field(self):
         class EnumView(ViewBase):

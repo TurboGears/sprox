@@ -8,8 +8,25 @@ from sprox.test.mg.model_relational import *
 from cStringIO import StringIO
 from cgi import FieldStorage
 
-from tw import framework
-framework.default_view = 'mako'
+try:
+    from tw import framework
+    framework.default_view = 'mako'
+except ImportError:
+    pass
+
+try:
+    import tw2.core.core
+    import tw2.core.middleware as tmw
+
+    _request_local = {'middleware':tmw.make_middleware(None)}
+    def request_local_tst():
+        return _request_local
+
+    tw2.core.core.request_local = request_local_tst
+    from tw2.core.core import request_local
+except ImportError:
+    tmw = None
+    request_local = None
 
 #try:
 import xml.etree.ElementTree as etree
@@ -169,6 +186,11 @@ def setup_reflection():
 
 class SproxTest(object):
     def setup(self):
+        if tmw and request_local:
+            rl = request_local()
+            rl.clear()
+            rl['middleware'] = tmw.make_middleware(None)
+
         self.session = session
         self.engine = engine
         try:

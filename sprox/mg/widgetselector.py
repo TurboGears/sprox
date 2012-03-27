@@ -23,7 +23,6 @@ Mongo Contributions by Jorge Vargas
 
 from sprox.widgetselector import WidgetSelector
 from sprox.widgets import *
-from tw.forms import TextField, FileField, Label, TextArea, PasswordField
 
 from ming import schema as S
 from ming.orm.property import RelationProperty, ManyToOneJoin, OneToManyJoin
