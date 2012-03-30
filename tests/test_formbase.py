@@ -266,7 +266,7 @@ class TestAddRecordForm(SproxTest):
             __model__ = User
             __require_fields__     = ['password', 'user_name', 'email_address']
             __omit_fields__        = ['_password', 'groups', 'created', 'user_id', 'town']
-            __field_order__        = ['user_name', 'email_address', 'display_name', 'password', 'verify_password']
+            __field_order__        = ['password', 'verify_password', 'user_name', 'email_address', 'display_name']
             __base_validator__     = form_validator
             email_address          = TextField
             display_name           = TextField
@@ -276,7 +276,7 @@ class TestAddRecordForm(SproxTest):
             registration_form.validate(params={'password':'blah', 'verify_password':'not_blah'})
         except Invalid, e:
             msg = form_error_message(e)
-            assert 'Passwords do not match' in msg
+            assert 'Passwords do not match' in msg, msg
 
 class TestEditableForm(SproxTest):
     def setup(self):
