@@ -151,6 +151,10 @@ def setup_records(session):
     session.add(Town(name=u'Golden'))
     session.add(Town(name=u'Boulder'))
 
+    owner = WithoutNameOwner(data='owner')
+    session.add(owner)
+    session.add(WithoutName(data='Something', owner=owner))
+
     #test_table.insert(values=dict(BLOB=FieldStorage('asdf', StringIO()).value)).execute()
     #user_reference_table.insert(values=dict(user_id=user.user_id)).execute()
 

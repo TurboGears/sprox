@@ -291,6 +291,24 @@ class File(DeclarativeBase):
     def content(self):
         return self.data
 
+class WithoutNameOwner(DeclarativeBase):
+    __tablename__ = 'withoutname_owner'
+
+    uid = Column(Integer, primary_key=True)
+    data = Column(String(100))
+
+class WithoutName(DeclarativeBase):
+    __tablename__ = 'withoutname'
+
+    class __sprox__(object):
+        dropdown_field_names = {'owner': ['data']}
+
+    uid = Column(Integer, primary_key=True)
+    data = Column(String(100))
+
+    owner_id = Column(Integer, ForeignKey(WithoutNameOwner.uid))
+    owner = relation('WithoutNameOwner')
+
 #not supporting enums for now.
 #ModelWithEnum=None
 #if sa.__version__ >='0.6':

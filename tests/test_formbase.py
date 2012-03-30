@@ -2,7 +2,7 @@ from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm, 
 from sprox.viewbase import ViewBaseError
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, \
     Example, Document, assert_in_xml, widget_children, widget_is_type, form_error_message
-from sprox.test.model import User, Group
+from sprox.test.model import User, Group, WithoutName
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
@@ -188,6 +188,17 @@ class TestFormBase(SproxTest):
 
         for e in entries:
             assert e in rendered
+
+    def test_entity_with_dropdown_field_on_entity(self):
+        class OwnerFormFieldNames(FormBase):
+            __entity__ = WithoutName
+        form = OwnerFormFieldNames(session)
+        rendered = form()
+
+        entries = ['<option value="1">owner</option>']
+
+        for e in entries:
+            assert e in rendered, rendered
 
     def test_entity_with_dropdown_field_names_title(self):
         class GroupFormFieldNames(FormBase):

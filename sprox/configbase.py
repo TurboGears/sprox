@@ -64,6 +64,7 @@ class ConfigBase(object):
         self.__provider_type_selector__ = self.__provider_type_selector_type__()
         self.provider_hint  = provider_hint
         self.provider_hints = provider_hints
+        self._do_init_defaults_from_entity()
         self._do_init_attrs()
 
     def __remove_duplicates(self, l):
@@ -137,3 +138,17 @@ class ConfigBase(object):
             self.__add_fields__ = {}
         if self.__field_attrs__ is None:
             self.__field_attrs__ = {}
+
+    def _do_init_defaults_from_entity(self):
+        """
+        Users model __sprox__ attribute to
+        setup some defaults. This is useful for
+        TGAdmin to make possible for people to
+        customize its behavior without having to
+        write a custom AdminConfig
+        """
+        sprox_meta = getattr(self.__entity__, '__sprox__', None)
+        if sprox_meta:
+            for attr, value in vars(sprox_meta).items():
+                if not attr.startswith('_'):
+                    setattr(self, '__'+attr+'__', value)

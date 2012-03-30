@@ -155,6 +155,12 @@ class EntitiesBase(ViewBase):
         <div class="entitylabelwidget" id="sx_User">
         <a href="User/">User</a>
     </div>
+        <div class="entitylabelwidget" id="sx_WithoutName">
+        <a href="WithoutName/">WithoutName</a>
+    </div>
+        <div class="entitylabelwidget" id="sx_WithoutNameOwner">
+        <a href="WithoutNameOwner/">WithoutNameOwner</a>
+    </div>
     </div>
 
     """
