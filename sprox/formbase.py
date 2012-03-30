@@ -446,6 +446,13 @@ class AddRecordForm(FormBase):
     """
     __check_if_unique__ = True
 
+    def _do_init_attrs(self):
+        super(AddRecordForm, self)._do_init_attrs()
+
+        if not self.__omit_fields__:
+            pkey = self.__provider__.get_primary_field(self.__entity__)
+            self.__omit_fields__.append(pkey)
+
     def _do_get_disabled_fields(self):
         fields = self.__disable_fields__[:]
         fields.append(self.__provider__.get_primary_field(self.__entity__))
