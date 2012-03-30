@@ -398,12 +398,16 @@ class SAORMProvider(IProvider):
             order_by=None, desc=False, field_names=[], filters={}, **kw):
         query = self.session.query(entity)
 
+        filters = self._modify_params_for_dates(entity, filters)
+        filters = self._modify_params_for_relationships(entity, filters)
+
         for field_name, value in filters.iteritems():
-            if self.is_relation(entity, field_name):
-                field = self.get_field(entity, field_name)
-                value = self.session.query(field.argument).get(value)
             field = getattr(entity, field_name)
-            query = query.filter(field==value) 
+            if self.is_relation(entity, field_name) and isinstance(value, list):
+                value = value[0]
+                query = query.filter(field.contains(value))
+            else: 
+                query = query.filter(field==value) 
 
         count = query.count()
 
