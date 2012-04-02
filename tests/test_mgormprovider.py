@@ -843,7 +843,7 @@ try:
         def test_addrecord(self):
             base = DojoUserAddRecordForm(session)
             rendered = base.__widget__()
-            assert_in_xhtml("""<tr class="odd" id="email_address.container" title="" >
+            assert_in_xhtml("""<tr class="even" id="email_address.container" title="" >
                    <td class="labelcol">
                        <label id="email_address.label" for="email_address" class="fieldlabel">Email Address</label>
                    </td>
