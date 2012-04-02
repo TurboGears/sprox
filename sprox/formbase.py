@@ -8,11 +8,11 @@ Original Version by Christopher Perkins 2008
 Released under MIT license.
 """
 
-try:
+try: #pragma: no cover
     from tw2.core import Widget
     from tw2.core.widgets import WidgetMeta
     from tw2.forms import HiddenField, TableForm
-except ImportError:
+except ImportError: #pragma: no cover
     from tw.api import Widget
     from tw.forms import HiddenField, TableForm
     class WidgetMeta(object):

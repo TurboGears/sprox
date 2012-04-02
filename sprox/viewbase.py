@@ -1,11 +1,11 @@
 import inspect
 from sprox.util import name2label, is_widget, is_widget_class
 
-try:
+try: #pragma: no cover
     from tw2.core import Widget
     from tw2.core.widgets import WidgetMeta
     from tw2.forms import HiddenField
-except ImportError:
+except ImportError: #pragma: no cover
     from tw.api import Widget
     from tw.forms import HiddenField
     class WidgetMeta(object):
@@ -156,7 +156,7 @@ class ViewBase(ConfigBase):
 
         if hasattr(Widget, 'req'):
             args.update({'id':'sx_'+field_name, 'key':field_name})
-        else:
+        else: #pragma: no cover
             args.update({'id':field_name})
 
         args.update({'name':field_name,
@@ -229,7 +229,7 @@ class ViewBase(ConfigBase):
 
                 if hasattr(Widget, 'req'):
                     hidden_id='disabled_' + field_name.replace('.','_')
-                else:
+                else: #pragma: no cover
                     hidden_id=field_name.replace('.','_')
 
                 widgets[field_name] = (HiddenField(id=hidden_id, key=field_name,

@@ -22,10 +22,10 @@ Original Version by Christopher Perkins 2007Database
 Released under MIT license.
 """
 
-try:
+try: #pragma: no cover
     from tw2.core import Widget
     from tw2.forms.widgets import *
-except ImportError, e:
+except ImportError, e: #pragma: no cover
     from tw.api import Widget
     from tw.forms.fields import *
 

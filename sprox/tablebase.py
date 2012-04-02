@@ -9,11 +9,11 @@ Released under MIT license.
 """
 from operator import itemgetter
 
-try:
+try: #pragma: no cover
     import tw2.forms
     from tw2.core import Widget
     from tw2.core.widgets import WidgetMeta
-except ImportError:
+except ImportError: #pragma: no cover
     from tw.api import Widget
     class WidgetMeta(object):
         pass

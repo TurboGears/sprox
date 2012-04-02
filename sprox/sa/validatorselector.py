@@ -31,10 +31,10 @@ from sqlalchemy.orm import PropertyLoader, SynonymProperty
 
 from sprox._validatorselector import ValidatorSelector
 
-try:
+try: #pragma: no cover
     import tw2.forms
     from tw2.core.validation import *
-except ImportError:
+except ImportError: #pragma: no cover
     from tw.forms.validators import *
 
 class SAValidatorSelector(ValidatorSelector):

@@ -22,10 +22,10 @@ Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
 
-try:
+try: #pragma: no cover
     import tw2.forms
     from tw2.core.validation import *
-except ImportError:
+except ImportError: #pragma: no cover
     from tw.forms.validators import *
 
 from formencode import Invalid

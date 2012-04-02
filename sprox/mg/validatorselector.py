@@ -26,10 +26,10 @@ import ming.orm as o
 import inspect
 
 from formencode.validators import StringBool, Number, UnicodeString, Email, Int
-try:
+try: #pragma: no cover
     import tw2.forms
     from tw2.core.validation import *
-except ImportError:
+except ImportError: #pragma: no cover
     from tw.forms.validators import *
 
 class MingValidatorSelector(ValidatorSelector):

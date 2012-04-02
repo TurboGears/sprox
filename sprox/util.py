@@ -118,11 +118,11 @@ def name2label(name):
     return ' '.join([s.capitalize() for s in
                      re.findall(r'([A-Z][a-z0-9]+|[a-z0-9]+|[A-Z0-9]+)', name)])
 
-try:
+try: #pragma: no cover
     from tw2.core import Widget
     from tw2.core.widgets import WidgetMeta
     from tw2.forms import HiddenField
-except ImportError:
+except ImportError: #pragma: no cover
     from tw.api import Widget
     from tw.forms import HiddenField
     class WidgetMeta(object):
