@@ -208,6 +208,10 @@ class TestSAORMProvider(SproxTest):
         cnt, r = self.provider.query(User, filters={'town':1})
         assert r[0].town.town_id == 1, r
 
+    def test_query_filters_relations_many(self):
+        cnt, r = self.provider.query(User, filters={'groups':[5]})
+        assert r[0].groups[0].group_id == 5, r
+
     def test_update(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
