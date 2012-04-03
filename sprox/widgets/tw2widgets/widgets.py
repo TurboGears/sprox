@@ -1,3 +1,4 @@
+from formencode.validators import StringBool
 from tw2.core import Widget, Param, DisplayOnlyWidget, safe_validate, Invalid
 from tw2.forms import (CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid,
                        SingleSelectField, MultipleSelectField, InputField, HiddenField,
@@ -75,7 +76,9 @@ class SproxDataGrid(DataGrid):
     value = []
 
 class SproxCheckBox(CheckBox):
-    pass
+    def prepare(self):
+        super(SproxCheckBox, self).prepare()
+        self.attrs['value'] = 'true'
 
 class PropertySingleSelectField(SingleSelectField):
     entity = Param('entity', attribute=False, default=None)
