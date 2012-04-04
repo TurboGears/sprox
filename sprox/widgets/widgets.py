@@ -8,7 +8,8 @@ import inspect
 
 
 class SproxMethodPutHiddenField(HiddenField):
-    template="genshi:sprox.widgets.templates.hidden_put"
+    available_engines = ['mako', 'genshi']
+    template="sprox.widgets.templates.hidden_put"
 
 class SproxCalendarDatePicker(CalendarDatePicker):
     date_format = '%Y-%m-%d'
