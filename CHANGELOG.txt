@@ -1,3 +1,10 @@
+0.7.2
+* [MING] Support omit_fields in update function. This is used to avoid
+setting to empty values fields that the forms to ignore
+* Fix issue with postgres Sequence columns
+* Fix issue with projects using mako which still required Genshi for forms
+with Hidden PUT field.
+
 0.7.1 (1/31/12)
 * [MING] Now writing a read-only attribue on ming won't cause a crash
 anymore, it will be silently ignored
