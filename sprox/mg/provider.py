@@ -15,8 +15,8 @@ from ming.orm import mapper, ForeignIdProperty, FieldProperty, RelationProperty
 from ming.orm.declarative import MappedClass
 from ming.orm.property import OneToManyJoin, ManyToOneJoin, ORMProperty
 from ming import schema as S
-from pymongo.objectid import ObjectId
 import bson
+from bson import ObjectId
 
 from widgetselector import MingWidgetSelector
 from validatorselector import MingValidatorSelector
