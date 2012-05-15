@@ -1,2 +1,4 @@
-recursive-include sprox/widgets/templates *
-recursive-include sprox/widgets/static *
+recursive-include sprox/widgets/tw1widgets/templates *
+recursive-include sprox/widgets/tw1widgets/static *
+recursive-include sprox/widgets/tw2widgets/templates *
+recursive-include sprox/widgets/tw2widgets/static *
