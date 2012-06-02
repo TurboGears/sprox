@@ -94,14 +94,14 @@ class PropertySingleSelectField(SingleSelectField):
         entity = self.__class__.entity
 
         options = self.provider.get_dropdown_options(entity, self.field_name, self.dropdown_field_names)
-        self.options = [(str(k), str(v)) for k,v in options]
+        self.options = [(unicode(k), unicode(v)) for k,v in options]
         if self.nullable:
             self.options.append(['', "-----------"])
 
         if not self.value:
             self.value = ''
 
-        self.value = str(self.value)
+        self.value = unicode(self.value)
         super(PropertySingleSelectField, self).prepare()
 
 class PropertyMultipleSelectField(MultipleSelectField):
@@ -124,10 +124,10 @@ class PropertyMultipleSelectField(MultipleSelectField):
         entity = self.__class__.entity
 
         options = self.provider.get_dropdown_options(entity, self.field_name, self.dropdown_field_names)
-        self.options = [(str(k), str(v)) for k,v in options]
+        self.options = [(unicode(k), unicode(v)) for k,v in options]
 
         if not self.value:
             self.value = []
 
-        self.value = [str(v) for v in self.value]
+        self.value = [unicode(v) for v in self.value]
         super(PropertyMultipleSelectField, self).prepare()
