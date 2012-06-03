@@ -21,7 +21,7 @@ except ImportError: #pragma: no cover
 import inspect
 from sprox.util import name2label, is_widget, is_widget_class
 
-from sprox.widgets import SproxMethodPutHiddenField
+from sprox.widgets import SproxMethodPutHiddenField, CalendarDatePicker, CalendarDateTimePicker
 from viewbase import ViewBase, ViewBaseError
 from formencode import Schema, All
 from formencode import Validator
@@ -306,6 +306,12 @@ class FormBase(ViewBase):
         args['not_empty'] = (not self.__provider__.is_nullable(self.__entity__, field_name)) or \
                              field_name in self.__require_fields__
 
+        widget_type = self._do_get_field_wiget_type(field_name, field)
+        if widget_type and (issubclass(widget_type, CalendarDatePicker) or
+                            issubclass(widget_type, CalendarDateTimePicker)):
+            widget_args = super(FormBase, self)._do_get_field_widget_args(field_name, field)
+            args['format'] = widget_args.get('date_format', widget_type.date_format)
+
         if hasattr(field, 'type') and hasattr(field.type, 'length') and\
            issubclass(validator_type, String):
             args['max'] = field.type.length
@@ -365,7 +371,7 @@ class AddRecordForm(FormBase):
 
     >>> from sprox.formbase import AddRecordForm
     >>> from formencode.validators import FieldsMatch
-    >>> from tw2.forms import PasswordField, TextField
+    >>> from sprox.widgets import PasswordField, TextField
     >>> form_validator =  FieldsMatch('password', 'verify_password',
     ...                                 messages={'invalidNoMatch': 'Passwords do not match'})
     >>> class RegistrationForm(AddRecordForm):

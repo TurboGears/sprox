@@ -36,6 +36,7 @@ try: #pragma: no cover
     from tw2.core.validation import *
 except ImportError: #pragma: no cover
     from tw.forms.validators import *
+    DateTimeValidator = DateValidator
 
 class SAValidatorSelector(ValidatorSelector):
 
@@ -43,9 +44,9 @@ class SAValidatorSelector(ValidatorSelector):
     StringType:   UnicodeString,
     Integer:  Int,
     Numeric:  Number,
-    DateTime: DateValidator,
+    DateTime: DateTimeValidator,
     Date:     DateValidator,
-    Time:     DateValidator,
+    Time:     DateTimeValidator,
 #    Binary:   UnicodeString,
     PickleType: UnicodeString,
 #    Boolean: UnicodeString,

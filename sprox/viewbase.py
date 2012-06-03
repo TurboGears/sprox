@@ -195,6 +195,9 @@ class ViewBase(ConfigBase):
 
         return fields
 
+    def _do_get_field_wiget_type(self, field_name, field):
+        return self.__field_widget_types__.get(field_name, self.__widget_selector__.select(field))
+
     def _do_get_field_widgets(self, fields):
 
         metadata_keys = self.__metadata__.keys()
@@ -217,8 +220,7 @@ class ViewBase(ConfigBase):
                 continue
 
             field = self.__metadata__[field_name]
-            field_widget_type = self.__field_widget_types__.get(field_name,
-                                                                self.__widget_selector__.select(field))
+            field_widget_type = self._do_get_field_wiget_type(field_name, field)
             field_widget_args = self._do_get_field_widget_args(field_name, field)
 
             if field_name in self._do_get_disabled_fields():

@@ -31,6 +31,7 @@ try: #pragma: no cover
     from tw2.core.validation import *
 except ImportError: #pragma: no cover
     from tw.forms.validators import *
+    DateTimeValidator = DateValidator
 
 class MingValidatorSelector(ValidatorSelector):
 
@@ -38,7 +39,7 @@ class MingValidatorSelector(ValidatorSelector):
     #s.Bool: SproxCheckBox,
     s.Int: Int,
     s.Float: Number,
-    s.DateTime: DateValidator,
+    s.DateTime: DateTimeValidator,
     s.Binary: None,
     s.Value: None,
     s.ObjectId: None,
