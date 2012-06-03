@@ -55,7 +55,7 @@ class DojoEditableForm(EditableForm):
         <div>
                 <input type="hidden" id="sprox_id" class="hiddenfield" name="sprox_id" value="" />
                 <input type="hidden" id="user_id" class="hiddenfield" name="user_id" value="" />
-                <input xmlns="http://www.w3.org/1999/xhtml" type="hidden" name="_method" class="sproxmethodputhiddenfield" id="_method" value="PUT" />
+                <input type="hidden" name="_method" class="sproxmethodputhiddenfield" id="sprox_method" value="PUT" />
         </div>
         <table border="0" cellspacing="0" cellpadding="2" >
             <tr class="even" id="user_name.container" title="" >
@@ -97,7 +97,7 @@ class DojoEditableForm(EditableForm):
             </tr>
             <tr class="even" id="user_id.container" title="" >
                 <td class="labelcol">
-                    <label id="user_id.label" for="user_id" class="fieldlabel required">User Id</label>
+                    <label id="user_id.label" for="user_id" class="fieldlabel required">User</label>
                 </td>
                 <td class="fieldcol" >
                     <input type="text" id="user_id" class="textfield required" name="user_id" value="" disabled="disabled" />
