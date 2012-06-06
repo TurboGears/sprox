@@ -289,6 +289,13 @@ class TestAddRecordForm(SproxTest):
             msg = form_error_message(e)
             assert 'Passwords do not match' in msg, msg
 
+    def test_default_value(self):
+        class AddGroupForm(AddRecordForm):
+            __entity__ = Group
+        example_form = AddGroupForm()
+        rendered = example_form()
+        assert 'default group name' in rendered
+
 class TestEditableForm(SproxTest):
     def setup(self):
         super(TestEditableForm, self).setup()

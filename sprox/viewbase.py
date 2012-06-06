@@ -165,7 +165,10 @@ class ViewBase(ConfigBase):
                 'label':name2label(field_name), 'label_text':name2label(field_name)})
         field_default_value = self.__provider__.get_field_default(entity)
         if field_default_value[0]:
-            args['default'] = field_default_value[1]
+            if hasattr(Widget, 'req'):
+                args['value'] = field_default_value[1]
+            else:
+                args['default'] = field_default_value[1]
 
         #enum support works completely differently.
         #if isinstance(entity, Column) and isinstance(entity.type, Enum):

@@ -43,7 +43,7 @@ class Group(DeclarativeBase):
     __tablename__ = 'tg_group'
 
     group_id = Column(Integer, autoincrement=True, primary_key=True)
-    group_name = Column(Unicode(16), unique=True)
+    group_name = Column(Unicode(16), unique=True, default='default group name')
     display_name = Column(Unicode(255))
     created = Column(DateTime, default=datetime.now)
     users = relation('User', secondary=user_group_table, backref='groups')
