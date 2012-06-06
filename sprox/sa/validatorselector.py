@@ -26,7 +26,7 @@ from sqlalchemy.types import *
 from sqlalchemy.types import String as StringType
 from formencode.compound import All
 from formencode import Invalid
-from formencode.validators import StringBool, Number, UnicodeString, Email, Int
+from formencode.validators import StringBool, Number, UnicodeString as FEUnicodeString, Email, Int
 from sqlalchemy.orm import PropertyLoader, SynonymProperty
 
 from sprox._validatorselector import ValidatorSelector
@@ -34,9 +34,12 @@ from sprox._validatorselector import ValidatorSelector
 try: #pragma: no cover
     import tw2.forms
     from tw2.core.validation import *
+    class UnicodeString(FEUnicodeString):
+        outputEncoding = None
 except ImportError: #pragma: no cover
     from tw.forms.validators import *
     DateTimeValidator = DateValidator
+    UnicodeString = FEUnicodeString
 
 class SAValidatorSelector(ValidatorSelector):
 

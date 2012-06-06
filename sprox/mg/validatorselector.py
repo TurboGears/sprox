@@ -25,13 +25,16 @@ from ming import schema as s
 import ming.orm as o
 import inspect
 
-from formencode.validators import StringBool, Number, UnicodeString, Email, Int
+from formencode.validators import StringBool, Number, UnicodeString as FEUnicodeString, Email, Int
 try: #pragma: no cover
     import tw2.forms
     from tw2.core.validation import *
+    class UnicodeString(FEUnicodeString):
+        outputEncoding = None
 except ImportError: #pragma: no cover
     from tw.forms.validators import *
     DateTimeValidator = DateValidator
+    UnicodeString = FEUnicodeString
 
 class MingValidatorSelector(ValidatorSelector):
 
