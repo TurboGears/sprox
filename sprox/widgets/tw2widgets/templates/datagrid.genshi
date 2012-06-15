@@ -16,7 +16,7 @@
             <td py:for="j, col in enumerate(w.columns)" class="col_${j}">
                 <py:choose test="col.title == 'actions' or col.title in w.xml_fields">
                     <py:when test="True">
-                        ${XML(col.get_field(row, displays_on='genshi'))}
+                        ${Markup(col.get_field(row, displays_on='genshi'))}
                     </py:when>
                     <py:otherwise>
                         ${col.get_field(row, displays_on='genshi')}
