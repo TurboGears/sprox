@@ -167,7 +167,7 @@ class ViewBase(ConfigBase):
         if field_default_value[0]:
             if hasattr(Widget, 'req'):
                 args['value'] = field_default_value[1]
-            else:
+            else: #pragma: no cover
                 args['default'] = field_default_value[1]
 
         #enum support works completely differently.
