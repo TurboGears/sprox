@@ -1,3 +1,7 @@
+0.8 (8/16/2012)
+* tw2 support.
+
+
 0.7.2
 * [MING] Support omit_fields in update function. This is used to avoid
 setting to empty values fields that the forms to ignore
