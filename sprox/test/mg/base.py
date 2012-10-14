@@ -1,12 +1,20 @@
 import os, re
 from copy import copy
 from difflib import unified_diff
-from ming import datastore as DS
 from ming.orm import ORMSession
 from sprox.test.mg import model_relational
 from sprox.test.mg.model_relational import *
 from cStringIO import StringIO
 from cgi import FieldStorage
+
+try:
+    from ming import create_datastore
+    def create_ming_datastore():
+        return create_datastore(os.environ.get('MONGOURL', 'mongodb://127.0.0.1:27017/test_db'))
+except ImportError:
+    from ming import datastore as DS
+    def create_ming_datastore():
+        return DS.DataStore(master=os.environ.get('MONGOURL', 'mongodb://127.0.0.1:27017/'), database='test_db')
 
 try:
     from tw import framework
@@ -94,7 +102,7 @@ def setup_database():
 
     #singletonizes things
     if not database_setup:
-        datastore = DS.DataStore(master=os.environ.get('MONGOURL', 'mongodb://127.0.0.1:27017/'), database='test_db')
+        datastore = create_ming_datastore()
         session = model_relational.SproxTestClass.__mongometa__.session
         session.impl.bind = datastore
 
