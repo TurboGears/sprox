@@ -139,7 +139,7 @@ class FormBase(ViewBase):
             <span id=":error"></span>
         </td></tr>
     </table>
-    		<input type="submit" value="Save" id="submit"/>
+    		<input type="submit" value="Save"/>
     </form>
 
     Forms created with sprox can be validated as you would any other widget.
@@ -388,14 +388,14 @@ class AddRecordForm(FormBase):
     <form enctype="multipart/form-data" method="post">
          <span class="error"></span>
         <table >
-        <tr class="odd required"  id="sx_user_name:container">
+        <tr class="odd"  id="sx_user_name:container">
             <th>User Name</th>
             <td >
                 <input name="user_name" type="text" id="sx_user_name" value=""/>
                 <span id="sx_user_name:error"></span>
             </td>
         </tr>
-        <tr class="even required"  id="sx_email_address:container">
+        <tr class="even"  id="sx_email_address:container">
             <th>Email Address</th>
             <td >
                 <input name="email_address" type="text" id="sx_email_address"/>
@@ -409,7 +409,7 @@ class AddRecordForm(FormBase):
                 <span id="sx_display_name:error"></span>
             </td>
         </tr>
-        <tr class="even required"  id="sx_password:container">
+        <tr class="even"  id="sx_password:container">
             <th>Password</th>
             <td >
                 <input type="password" name="password" id="sx_password"/>
@@ -428,7 +428,7 @@ class AddRecordForm(FormBase):
             <span id=":error"></span>
         </td></tr>
     </table>
-        <input type="submit" value="Save" id="submit"/>
+        <input type="submit" value="Save"/>
     </form>
 
 
@@ -506,7 +506,7 @@ class DisabledForm(FormBase):
             <span id=":error"></span>
         </td></tr>
     </table>
-        <input type="submit" value="Save" id="submit"/>
+        <input type="submit" value="Save"/>
     </form>
 
 
