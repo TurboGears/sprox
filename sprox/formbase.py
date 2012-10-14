@@ -455,8 +455,8 @@ class AddRecordForm(FormBase):
     def _do_init_attrs(self):
         super(AddRecordForm, self)._do_init_attrs()
 
-        if not self.__omit_fields__:
-            pkey = self.__provider__.get_primary_field(self.__entity__)
+        pkey = self.__provider__.get_primary_field(self.__entity__)
+        if pkey not in self.__omit_fields__:
             self.__omit_fields__.append(pkey)
 
     def _do_get_disabled_fields(self):

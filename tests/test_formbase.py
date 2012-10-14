@@ -231,8 +231,6 @@ class TestFormBase(SproxTest):
         for e in entries:
             assert e in rendered
 
-
-
     def test_require_field(self):
         class RegistrationForm(FormBase):
             __entity__ = User
@@ -240,6 +238,14 @@ class TestFormBase(SproxTest):
 
         form = RegistrationForm(session)
         eq_(widget_children(form.__widget__)['user_name'].validator.not_empty, True)
+
+    def test_validator_for_hidden_fields(self):
+        class RegistrationForm(FormBase):
+            __entity__ = Group
+            __hide_fields__ = ['group_name']
+
+        form = RegistrationForm(session)
+        assert widget_children(form.__widget__)['group_name'].validator is not None
 
 class TestAddRecordForm(SproxTest):
     def setup(self):
@@ -255,6 +261,14 @@ class TestAddRecordForm(SproxTest):
     @raises(Invalid)
     def test_validate(self):
         self.base.validate(params={'sprox_id':'asdf', 'user_name':'asdf'})
+
+    def test_primary_key_is_omitted_with_omit_fields_specified(self):
+        class AddUserForm(AddRecordForm):
+            __entity__ = User
+            __omit_fields__ = ['user_name']
+        test_form = AddUserForm()
+
+        assert 'user_id' in test_form.__omit_fields__, test_form.__omit_fields__
 
     def test_example_form(self):
         class AddExampleForm(AddRecordForm):

@@ -189,12 +189,13 @@ class ViewBase(ConfigBase):
         fields = {}
         fields['sprox_id'] = HiddenField(id='sprox_id')
 
-        for field in self.__hide_fields__:
-            if field not in self.__omit_fields__:
-                args = {}
-                if field in self.__field_widget_args__:
-                    args.update(self.__field_widget_args__[field])
-                fields[field] = HiddenField(id=field, identifier=field, **args)
+        for field_name in self.__hide_fields__:
+            if field_name not in self.__omit_fields__:
+                field = self.__metadata__[field_name]
+                args = self._do_get_field_widget_args(field_name, field)
+                if field_name in self.__field_widget_args__:
+                    args.update(self.__field_widget_args__[field_name])
+                fields[field_name] = HiddenField(**args)
 
         return fields
 
