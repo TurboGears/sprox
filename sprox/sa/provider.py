@@ -229,7 +229,12 @@ class SAORMProvider(IProvider):
     def is_relation(self, entity, field_name):
         mapper = class_mapper(entity)
 
-        if isinstance(mapper.get_property(field_name), PropertyLoader):
+        try:
+            property = mapper.get_property(field_name)
+        except InvalidRequestError:
+            return False
+
+        if isinstance(property, PropertyLoader):
             return True
 
     def relation_fields(self, entity, field_name):

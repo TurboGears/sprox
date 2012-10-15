@@ -55,6 +55,9 @@ class TestSAORMProvider(SproxTest):
     def test_isbinary_related(self):
         assert not self.provider.is_binary(User, 'groups')
 
+    def test_isrelation_onproperty(self):
+        assert not self.provider.is_relation(User, 'permissions')
+
     def test_isbinary_synonym(self):
         assert not self.provider.is_binary(User, 'password')
         assert self.provider.is_binary(File, 'content')
