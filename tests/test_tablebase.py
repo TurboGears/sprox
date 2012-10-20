@@ -5,7 +5,7 @@ from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid
-from strainer.operators import assert_in_xhtml
+from sprox.widgets import TextField
 
 session = None
 engine  = None
@@ -20,6 +20,12 @@ def teardown():
 
 class UserTable(TableBase):
     __entity__ = User
+
+class UserTableWithWidget(TableBase):
+    __entity__ = User
+    __omit_fields__ = ['__actions__']
+    __limit_fields__ = ['user_id', 'display_name']
+    __field_widget_types__ = {'user_id': TextField}
 
 class TestTableBase(SproxTest):
     def setup(self):
@@ -38,3 +44,8 @@ class TestTableBase(SproxTest):
 
         for f in fields:
             assert f in rendered
+
+    def test_using_widgets(self):
+        table = UserTableWithWidget()
+        t = table(value=[{'user_id':'5', 'display_name':'Test'}])
+        assert 'input' in t

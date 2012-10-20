@@ -207,6 +207,13 @@ class TableBase(ViewBase):
         if self.__xml_fields__ is None:
             self.__xml_fields__ = {}
 
+    def _table_field_is_plain_widget(self, widget):
+        if widget.__class__ == Widget or\
+           (widget.__class__ == WidgetMeta and Widget in widget.__bases__):
+            return True
+
+        return False
+
     def _do_get_widget_args(self):
         args = super(TableBase, self)._do_get_widget_args()
         args['pks'] = None
@@ -256,7 +263,7 @@ class TableBase(ViewBase):
         field_columns = []
         for field in self.__fields__:
             widget = field_widget_dict.get(field, None)
-            if widget is None or widget.__class__ in (Widget, WidgetMeta): # yuck
+            if widget is None or self._table_field_is_plain_widget(widget): # yuck
                 column = Column(field, itemgetter(field), self.__headers__.get(field, field))
             else:
                 column = Column(field, widget, self.__headers__.get(field, field))
