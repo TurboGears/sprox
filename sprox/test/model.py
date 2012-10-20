@@ -160,7 +160,7 @@ class Permission(DeclarativeBase):
     permission_id = Column(Integer, autoincrement=True, primary_key=True)
     permission_name = Column(Unicode(16), unique=True)
     description = Column(Unicode(255))
-    groups = relation(Group, secondary=group_permission_table,
+    groups = relation(Group, secondary=group_permission_table, lazy='dynamic',
                       backref='permissions')
 
 class Example(DeclarativeBase):

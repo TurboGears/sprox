@@ -4,7 +4,7 @@ from sprox.test.base import setup_database, setup_records, SproxTest
 from sprox.test.model import *
 from sprox.sa.widgetselector import SAWidgetSelector
 import sqlalchemy
-from sqlalchemy.orm import mapper
+from sqlalchemy.orm import mapper, lazyload
 from sqlalchemy import MetaData, Table, Column, Integer
 from sqlalchemy.engine import Engine
 from nose.tools import raises, eq_
@@ -45,6 +45,8 @@ class TestSAORMProvider(SproxTest):
         session.add(DocumentCategory(document_category_id=1, department_id=1, name=u'Brochure'))
         session.add(DocumentCategory(document_category_id=2, department_id=1, name=u'Flyer'))
         session.add(DocumentCategory(document_category_id=3, department_id=2, name=u'Balance Sheet'))
+
+        session.add(Permission(permission_name='perm'))
         #session.add(DocumentRating(user_id=1, document_id=1, rating=5))
         self.provider.flush()
 
@@ -172,6 +174,11 @@ class TestSAORMProvider(SproxTest):
         assert 'password' not in d.keys()
         assert '_password' not in d.keys()
         assert 'user_name' in d.keys()
+
+    def test_dictify_dynamic_relation(self):
+        e = session.query(Permission).first()
+        d = self.provider.dictify(e)
+        assert isinstance(d['groups'], list)
 
     def test_dictify_none(self):
         d = self.provider.dictify(None)

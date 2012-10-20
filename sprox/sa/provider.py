@@ -24,10 +24,12 @@ from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, Binary, Met
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
+from sqlalchemy.orm.query import Query
 from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.schema import Column
+
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
 from datetime import datetime, date, timedelta
@@ -363,7 +365,7 @@ class SAORMProvider(IProvider):
                     if isinstance(klass, Mapper):
                         klass = klass.class_
                     pk_name = self.get_primary_field(klass)
-                    if isinstance(value, list):
+                    if isinstance(value, list) or isinstance(value, Query):
                         #joins
                         value = [getattr(value, pk_name) for value in value]
                     else:
