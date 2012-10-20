@@ -13,7 +13,7 @@
             class="${i%2 and 'odd' or 'even'}">
 
             <td py:for="j, col in enumerate(w.columns)" class="col_${j}">
-                <py:choose test="col.title == 'actions' or col.title in w.xml_fields">
+                <py:choose test="col.title == 'actions' or col.name in w.xml_fields">
                     <py:when test="True">
                         ${Markup(col.get_field(row, displays_on='genshi'))}
                     </py:when>

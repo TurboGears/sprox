@@ -16,7 +16,7 @@
             <tr class="${i%2 and 'odd' or 'even'}">
                 % for j, col in enumerate(w.columns):
                 <td class="col_${str(j)}">
-                    % if col.title == 'actions' or col.title in w.xml_fields:
+                    % if col.title == 'actions' or col.name in w.xml_fields:
                         ${col.get_field(row, displays_on='mako') | n}
                     % else:
                         ${col.get_field(row, displays_on='mako')}

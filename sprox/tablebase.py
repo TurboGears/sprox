@@ -13,7 +13,9 @@ try: #pragma: no cover
     import tw2.forms
     from tw2.core import Widget
     from tw2.core.widgets import WidgetMeta
+    from tw2.forms.datagrid import Column
 except ImportError: #pragma: no cover
+    from tw.forms.datagrid import Column
     from tw.api import Widget
     class WidgetMeta(object):
         pass
@@ -53,7 +55,7 @@ class TableBase(ViewBase):
     >>> class TownTable(TableBase):
     ...    __model__ = Town
     >>> town_table = TownTable(session)
-    >>> print town_table()
+    >>> print town_table() #doctest: +XML
     <div>
     <table class="grid">
         <thead>
@@ -63,7 +65,6 @@ class TableBase(ViewBase):
                     <th  class="col_2">name</th>
             </tr>
         </thead>
-    <BLANKLINE>
         <tbody>
         </tbody>
     </table>
@@ -133,7 +134,7 @@ class TableBase(ViewBase):
     ...     __model__ = Town
     ...     __omit_fields__ = ['__actions__']
     >>> town_table = TownTable(session)
-    >>> print town_table(value=value)
+    >>> print town_table(value=value) #doctest: +XML
     <div>
     <table class="grid">
         <thead>
@@ -142,7 +143,6 @@ class TableBase(ViewBase):
                     <th  class="col_1">name</th>
             </tr>
         </thead>
-    <BLANKLINE>
         <tbody>
                 <tr class="even">
                     <td class="col_0">
@@ -251,16 +251,17 @@ class TableBase(ViewBase):
         # classes with a __field_widget_types__ dictionary and have
         # those fields rendered differently.
 
-        field_headers = [ self.__headers__.get(field, field)
-                          for field in self.__fields__ ]
         field_widget_dict = self._do_get_field_widgets(self.__fields__)
-        field_widgets = []
+
+        field_columns = []
         for field in self.__fields__:
             widget = field_widget_dict.get(field, None)
             if widget is None or widget.__class__ in (Widget, WidgetMeta): # yuck
-                widget = itemgetter(field)
-            field_widgets.append(widget)
-        args['fields'] = zip(field_headers, field_widgets)
+                column = Column(field, itemgetter(field), self.__headers__.get(field, field))
+            else:
+                column = Column(field, widget, self.__headers__.get(field, field))
+            field_columns.append(column)
+        args['fields'] = field_columns
 
         # And, now back to our regularly-scheduled trunk-derived Sprox.
         if '__actions__' not in self.__omit_fields__:
