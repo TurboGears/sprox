@@ -1,5 +1,6 @@
 from formencode.validators import Validator
 from sprox.providerselector import ProviderTypeSelector
+import copy
 
 class ConfigBaseError(Exception):pass
 
@@ -151,4 +152,4 @@ class ConfigBase(object):
         if sprox_meta:
             for attr, value in vars(sprox_meta).items():
                 if not attr.startswith('_'):
-                    setattr(self, '__'+attr+'__', value)
+                    setattr(self, '__'+attr+'__', copy.deepcopy(value))
