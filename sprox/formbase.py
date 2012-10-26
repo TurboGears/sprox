@@ -305,6 +305,7 @@ class FormBase(ViewBase):
         args = {}
         args['not_empty'] = (not self.__provider__.is_nullable(self.__entity__, field_name)) or \
                              field_name in self.__require_fields__
+        args['required'] = args['not_empty']
 
         widget_type = self._do_get_field_wiget_type(field_name, field)
         if widget_type and (issubclass(widget_type, CalendarDatePicker) or
