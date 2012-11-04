@@ -114,6 +114,8 @@ class PropertyMultipleSelectField(MultipleSelectField):
 
     def _validate(self, value, state=None):
         value = value or []
+        if not isinstance(value, (list, tuple)):
+            value = [value]
         if self.validator:
             value = [safe_validate(self.validator, v) for v in value]
         self.value = [v for v in value if v is not Invalid]
