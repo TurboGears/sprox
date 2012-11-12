@@ -1,3 +1,14 @@
+0.8.1 (11/13/2012)
+* Fix for Multiple Selection fields when choosing only one entry
+* Fix for __sprox__ declared options being wrongly overwritten by successive forms sprox calls
+* Fix for __require_fields__ on TW2 validators
+* Support lazy=dynamic sqla relationships
+* Make tables with widgets inside work on TW2
+* TableBase now returns Column instances fixing issue with xml_fields being the field headers instead of the field id
+* Avoid crashes when is_relation is called on an hybrid_property
+* Apply validators also to hidden_fields
+
+
 0.8 (8/16/2012)
 * tw2 support.
 
