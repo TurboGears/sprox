@@ -271,10 +271,11 @@ class FormBase(ViewBase):
         fields = super(FormBase, self)._do_get_fields()
         provider = self.__provider__
         field_order = self.__field_order__ or []
+        add_fields = self.__add_fields__.keys()
         for relation in provider.get_relations(self.__entity__):
             # do not remove field if it is listed in field_order
             for rel in provider.relation_fields(self.__entity__, relation):
-                if rel not in field_order and rel in fields:
+                if rel not in field_order and rel in fields and rel not in add_fields:
                     fields.remove(rel)
         if 'sprox_id' not in fields:
             fields.append('sprox_id')
@@ -342,7 +343,7 @@ class EditableForm(FormBase):
         
         if '_method' not in fields:
             fields.append('_method')
-            
+
         return fields
 
     def _do_get_field_widgets(self, fields):
