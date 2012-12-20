@@ -125,7 +125,7 @@ class SAORMProvider(IProvider):
     def is_binary(self, entity, name):
         field = self.get_field(entity, name)
         if isinstance(field, PropertyLoader):
-            field = field.local_side[0]
+            field = self._relationship_local_side(field)[0]
         if isinstance(field, SynonymProperty):
             field = self.get_field(entity, field.name)
         return isinstance(field.type, Binary)
@@ -135,7 +135,7 @@ class SAORMProvider(IProvider):
         if isinstance(field, SynonymProperty):
             field = self.get_field(entity, field.name)
         if isinstance(field, PropertyLoader):
-            return getattr(field.local_side[0], 'nullable')
+            return getattr(self._relationship_local_side(field)[0], 'nullable')
         return getattr(field, 'nullable', True)
 
     def get_primary_fields(self, entity):
@@ -241,7 +241,7 @@ class SAORMProvider(IProvider):
 
     def relation_fields(self, entity, field_name):
         field = getattr(entity, field_name)
-        return [ col.name for col in field.property.local_side ]
+        return [ col.name for col in self._relationship_local_side(field.property)]
 
     def is_unique(self, entity, field_name, value):
         field = getattr(entity, field_name)
@@ -259,6 +259,11 @@ class SAORMProvider(IProvider):
         if isinstance(primary_key.type, Integer):
             value = int(value)
         return value
+
+    def _relationship_local_side(self, relationship):
+        if hasattr(relationship, 'local_columns'):
+            return list(relationship.local_columns)
+        return list(relationship.local_side)
 
     def _modify_params_for_relationships(self, entity, params, delete_first=True):
 
@@ -313,7 +318,7 @@ class SAORMProvider(IProvider):
                                 value = map(self._adapt_type, value.split("/"), prop.remote_side)
                                 value = tuple(value)
                             else:
-                                value = self._adapt_type(value, prop.remote_side[0])
+                                value = self._adapt_type(value, list(prop.remote_side)[0])
                             target_obj = self.session.query(target).get(value)
                     params[relation] = target_obj
                 else:
