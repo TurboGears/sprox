@@ -117,7 +117,7 @@ class PropertyMultipleSelectField(MultipleSelectField):
         if not isinstance(value, (list, tuple)):
             value = [value]
         if self.validator:
-            value = [safe_validate(self.validator, v) for v in value]
+            value = [safe_validate(self.validator, v, None) for v in value]
         self.value = [v for v in value if v is not Invalid]
         return self.value
 
