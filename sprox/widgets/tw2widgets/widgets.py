@@ -1,5 +1,6 @@
 from formencode.validators import StringBool
-from tw2.core import Widget, Param, DisplayOnlyWidget, safe_validate, Invalid
+from formencode import Invalid
+from tw2.core import Widget, Param, DisplayOnlyWidget, ValidationError
 from tw2.forms import (CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid,
                        SingleSelectField, MultipleSelectField, InputField, HiddenField,
                        TextField, FileField, CheckBox, PasswordField, TextArea)
@@ -112,12 +113,20 @@ class PropertyMultipleSelectField(MultipleSelectField):
     nullable = Param('nullable', attribute=False, default=False)
     disabled = Param('disabled', attribute=False, default=False)
 
+    def _safe_validate(self, validator, value, state=None):
+        try:
+            value = validator.to_python(value, state=state)
+            validator.validate_python(value, state=state)
+            return value
+        except Invalid:
+            return Invalid
+
     def _validate(self, value, state=None):
         value = value or []
         if not isinstance(value, (list, tuple)):
             value = [value]
         if self.validator:
-            value = [safe_validate(self.validator, v, None) for v in value]
+            value = [self._safe_validate(self.validator, v) for v in value]
         self.value = [v for v in value if v is not Invalid]
         return self.value
 
