@@ -263,7 +263,7 @@ class SAORMProvider(IProvider):
     def _relationship_local_side(self, relationship):
         if hasattr(relationship, 'local_columns'):
             return list(relationship.local_columns)
-        return list(relationship.local_side)
+        return list(relationship.local_side) #pragma: no cover
 
     def _modify_params_for_relationships(self, entity, params, delete_first=True):
 

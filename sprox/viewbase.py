@@ -195,7 +195,7 @@ class ViewBase(ConfigBase):
                 try:
                     field = self.__metadata__[field_name]
                     args = self._do_get_field_widget_args(field_name, field)
-                except KeyError:
+                except KeyError: #pragma: no cover
                     pass
                 if field_name in self.__field_widget_args__:
                     args.update(self.__field_widget_args__[field_name])
