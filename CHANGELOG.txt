@@ -1,3 +1,8 @@
+0.8.2
+* Fix MultipleSelections when only one entry was selected
+* Fix MultipleSelection validation not working correctly
+* Fix SQLA0.8 relationships detection
+
 0.8.1 (11/13/2012)
 * Fix for Multiple Selection fields when choosing only one entry
 * Fix for __sprox__ declared options being wrongly overwritten by successive forms sprox calls
