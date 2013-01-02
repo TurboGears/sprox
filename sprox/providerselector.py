@@ -41,7 +41,11 @@ MingProvider = None
 MappedClass = None
 try:
     from sprox.mg.provider import MingProvider
-    from ming.orm.declarative import MappedClass
+    try:
+        from ming.odm.declarative import MappedClass
+    except ImportError:
+        from ming.orm.declarative import MappedClass
+
 except ImportError:   # pragma: no cover
     pass
 

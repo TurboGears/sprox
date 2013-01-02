@@ -27,11 +27,11 @@ return str.replace(/&lt;/gi, "<");
     <thead>
             <tr>
                 % for column in columns:
-                    <th formatter="lessThan" width="${column_widths.get(column, default_column_width)}" name="${headers.get(column, column)}" field="${column}" \
+                    <th formatter="lessThan" width="${column_widths.get(column, default_column_width)}" field="${column}" \
                          %for name,value in column_options.get(column,default_column_options).iteritems():
                             ${name}="${value}"\
                         %endfor
->${column}</th>
+>${headers.get(column, column)}</th>
                 % endfor
             </tr>
     </thead>

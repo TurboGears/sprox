@@ -22,7 +22,10 @@ Released under MIT license.
 
 from sprox.validatorselector import ValidatorSelector
 from ming import schema as s
-import ming.orm as o
+try:
+    import ming.orm as o
+except ImportError:
+    import ming.odm as o
 import inspect
 
 from formencode.validators import StringBool, Number, UnicodeString as FEUnicodeString, Email, Int

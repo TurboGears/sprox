@@ -35,23 +35,23 @@ try:
 
         def test__widget__(self):
             rendered = self.base.__widget__()
-            assert_in_xml("""<table  dojoType="dojox.grid.DataGrid" jsId="listing__User" id="None" store="listing__User_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" autoHeight="false" class="sprox-dojo-grid"  escapeHTMLInData="False">
-        <thead>
-                <tr>
-                        <th formatter="lessThan" width="10em" name="actions" field="__actions__" >__actions__</th>
-                        <th formatter="lessThan" width="10em" name="_password" field="_password" >_password</th>
-                        <th formatter="lessThan" width="10em" name="user_id" field="user_id" >user_id</th>
-                        <th formatter="lessThan" width="10em" name="user_name" field="user_name" >user_name</th>
-                        <th formatter="lessThan" width="10em" name="email_address" field="email_address" >email_address</th>
-                        <th formatter="lessThan" width="10em" name="display_name" field="display_name" >display_name</th>
-                        <th formatter="lessThan" width="10em" name="created" field="created" >created</th>
-                        <th formatter="lessThan" width="10em" name="town_id" field="town_id" >town_id</th>
-                        <th formatter="lessThan" width="10em" name="town" field="town" >town</th>
-                        <th formatter="lessThan" width="10em" name="password" field="password" >password</th>
-                        <th formatter="lessThan" width="10em" name="groups" field="groups" >groups</th>
-                </tr>
-        </thead>
-    </table>""",rendered)
+            assert_in_xml("""<table  dojoType="dojox.grid.DataGrid" jsId="listing__User" id="None" store="listing__User_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" autoHeight="false" class="sprox-dojo-grid" escapeHTMLInData="False" >
+    <thead>
+            <tr>
+                    <th formatter="lessThan" width="10em" field="__actions__" >actions</th>
+                    <th formatter="lessThan" width="10em" field="_password" >_password</th>
+                    <th formatter="lessThan" width="10em" field="user_id" >user_id</th>
+                    <th formatter="lessThan" width="10em" field="user_name" >user_name</th>
+                    <th formatter="lessThan" width="10em" field="email_address" >email_address</th>
+                    <th formatter="lessThan" width="10em" field="display_name" >display_name</th>
+                    <th formatter="lessThan" width="10em" field="created" >created</th>
+                    <th formatter="lessThan" width="10em" field="town_id" >town_id</th>
+                    <th formatter="lessThan" width="10em" field="town" >town</th>
+                    <th formatter="lessThan" width="10em" field="password" >password</th>
+                    <th formatter="lessThan" width="10em" field="groups" >groups</th>
+            </tr>
+    </thead>
+</table>""",rendered)
 
     class TestDojoEditableTableBase:
         def setup(self):
@@ -62,23 +62,23 @@ try:
 
         def test__widget__(self):
             rendered = self.base.__widget__()
-            assert_in_xml("""<table  dojoType="dojox.grid.DataGrid" jsId="None" id="None" store="None_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" autoHeight="None" class="sprox-dojo-grid"  escapeHTMLInData="False">
-        <thead>
-                <tr>
-                        <th formatter="lessThan" width="10em" name="actions" field="__actions__"                             editable="true">__actions__</th>
-                        <th formatter="lessThan" width="10em" name="_password" field="_password"                             editable="true">_password</th>
-                        <th formatter="lessThan" width="10em" name="user_id" field="user_id"                             editable="true">user_id</th>
-                        <th formatter="lessThan" width="10em" name="user_name" field="user_name"                             editable="true">user_name</th>
-                        <th formatter="lessThan" width="10em" name="email_address" field="email_address"                             editable="true">email_address</th>
-                        <th formatter="lessThan" width="10em" name="display_name" field="display_name"                             editable="true">display_name</th>
-                        <th formatter="lessThan" width="10em" name="created" field="created"                             editable="true">created</th>
-                        <th formatter="lessThan" width="10em" name="town_id" field="town_id"                             editable="true">town_id</th>
-                        <th formatter="lessThan" width="10em" name="town" field="town"                             editable="true">town</th>
-                        <th formatter="lessThan" width="10em" name="password" field="password"                             editable="true">password</th>
-                        <th formatter="lessThan" width="10em" name="groups" field="groups"                             editable="true">groups</th>
-                </tr>
-        </thead>
-    </table>""", rendered)
+            assert_in_xml("""<table  dojoType="dojox.grid.DataGrid" jsId="None" id="None" store="None_store" columnReordering="false" rowsPerPage="20" model="None" delayScroll="true" autoHeight="None" class="sprox-dojo-grid" escapeHTMLInData="False" >
+    <thead>
+            <tr>
+                    <th formatter="lessThan" width="10em" field="__actions__"                             editable="true">actions</th>
+                    <th formatter="lessThan" width="10em" field="_password"                             editable="true">_password</th>
+                    <th formatter="lessThan" width="10em" field="user_id"                             editable="true">user_id</th>
+                    <th formatter="lessThan" width="10em" field="user_name"                             editable="true">user_name</th>
+                    <th formatter="lessThan" width="10em" field="email_address"                             editable="true">email_address</th>
+                    <th formatter="lessThan" width="10em" field="display_name"                             editable="true">display_name</th>
+                    <th formatter="lessThan" width="10em" field="created"                             editable="true">created</th>
+                    <th formatter="lessThan" width="10em" field="town_id"                             editable="true">town_id</th>
+                    <th formatter="lessThan" width="10em" field="town"                             editable="true">town</th>
+                    <th formatter="lessThan" width="10em" field="password"                             editable="true">password</th>
+                    <th formatter="lessThan" width="10em" field="groups"                             editable="true">groups</th>
+            </tr>
+    </thead>
+</table>""", rendered)
 
 except ImportError:
     print 'Dojo Tests disabled with ToscaWidgets2'

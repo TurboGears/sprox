@@ -25,7 +25,10 @@ from sprox.widgetselector import WidgetSelector
 from sprox.widgets import *
 
 from ming import schema as S
-from ming.orm.property import RelationProperty, ManyToOneJoin, OneToManyJoin
+try:
+    from ming.odm.property import RelationProperty, ManyToOneJoin, OneToManyJoin
+except ImportError:
+    from ming.orm.property import RelationProperty, ManyToOneJoin, OneToManyJoin
 
 class MingWidgetSelector(WidgetSelector):
 

@@ -24,7 +24,7 @@ return str.replace(/&lt;/gi, "<");
         >
     <thead>
             <tr>
-                <th formatter="lessThan" py:for="column in columns" width="${column_widths.get(column, default_column_width)}" name="${headers.get(column, column)}" field="${column}" py:attrs="column_options.get(column,default_column_options)">$column
+                <th formatter="lessThan" py:for="column in columns" width="${column_widths.get(column, default_column_width)}" field="${column}" py:attrs="column_options.get(column,default_column_options)">${headers.get(column, column)}
                 </th>
             </tr>
         </thead>

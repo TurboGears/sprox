@@ -11,9 +11,14 @@ from sprox.iprovider import IProvider
 from sprox.util import timestamp
 import datetime, inspect
 
-from ming.orm import mapper, ForeignIdProperty, FieldProperty, RelationProperty
-from ming.orm.declarative import MappedClass
-from ming.orm.property import OneToManyJoin, ManyToOneJoin, ORMProperty
+try:
+    from ming.odm import mapper, ForeignIdProperty, FieldProperty, RelationProperty
+    from ming.odm.declarative import MappedClass
+    from ming.odm.property import OneToManyJoin, ManyToOneJoin, ORMProperty
+except ImportError: #pragma nocover
+    from ming.orm import mapper, ForeignIdProperty, FieldProperty, RelationProperty
+    from ming.orm.declarative import MappedClass
+    from ming.orm.property import OneToManyJoin, ManyToOneJoin, ORMProperty
 from ming import schema as S
 import bson
 from bson import ObjectId
