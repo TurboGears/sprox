@@ -34,7 +34,6 @@ try: #pragma: no cover
 except ImportError: #pragma: no cover
     from tw.forms.validators import *
     DateTimeValidator = DateValidator
-    UnicodeString = FEUnicodeString
 
 class MingValidatorSelector(ValidatorSelector):
 
