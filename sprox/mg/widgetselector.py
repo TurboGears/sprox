@@ -27,7 +27,7 @@ from sprox.widgets import *
 from ming import schema as S
 try:
     from ming.odm.property import RelationProperty, ManyToOneJoin, OneToManyJoin
-except ImportError:
+except ImportError: #pragma: no cover
     from ming.orm.property import RelationProperty, ManyToOneJoin, OneToManyJoin
 
 class MingWidgetSelector(WidgetSelector):
