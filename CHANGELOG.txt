@@ -2,6 +2,9 @@
 * Fix MultipleSelections when only one entry was selected
 * Fix MultipleSelection validation not working correctly
 * Fix SQLA0.8 relationships detection
+* Fix broken Unicode validation for strings on TW1
+* Fix ming provider trying to cast already correctly casted values
+* Fixes to the Dojogrid
 
 0.8.1 (11/13/2012)
 * Fix for Multiple Selection fields when choosing only one entry
