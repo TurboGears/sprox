@@ -22,6 +22,7 @@ from ming.orm import FieldProperty
 
 from sprox.widgets import *
 from formencode import Invalid
+from datetime import datetime
 
 class MyTextField(TextField):pass
 
@@ -660,6 +661,19 @@ class TestMGORMProvider(SproxTest):
         q_user = User.query.find({ "_id": new_user._id }).first()
         eq_(new_user.email_address, u'asdf@asdf.commy')
         eq_(q_user.email_address, u'asdf@asdf.commy')
+
+    def test_update_datetime(self):
+        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com'}
+        new_user = self.provider.create(User, params)
+        params['email_address'] = u'asdf@asdf.commy'
+        params['created'] = datetime.utcnow().replace(microsecond=0)
+        params['_id'] = new_user._id
+        session.flush()
+        new_user = self.provider.update(User, params)
+        q_user = User.query.find({ "_id": new_user._id }).first()
+        eq_(new_user.email_address, u'asdf@asdf.commy')
+        eq_(q_user.email_address, u'asdf@asdf.commy')
+        eq_(q_user.created, params['created'])
 
     def test_update_sprox_id(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'sprox_id': 'xyz'}
