@@ -43,7 +43,7 @@ try:
     from sprox.mg.provider import MingProvider
     try:
         from ming.odm.declarative import MappedClass
-    except ImportError:
+    except ImportError: #pragma: no cover
         from ming.orm.declarative import MappedClass
 
 except ImportError:   # pragma: no cover
