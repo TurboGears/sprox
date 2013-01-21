@@ -4,6 +4,7 @@ from sprox.test.base import widget_children, widget_is_type, form_error_message
 from sprox.test.mg.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document, assert_in_xml
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
+from nose import SkipTest
 from formencode.validators import FieldsMatch, NotEmpty, OpenId
 from sprox.widgetselector import WidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
 from sprox.mg.provider import MingProvider
@@ -19,6 +20,7 @@ from bson.objectid import InvalidId
 
 from ming import schema as S
 from ming.orm import FieldProperty
+from pymongo.errors import ConnectionFailure
 
 from sprox.widgets import *
 from formencode import Invalid
@@ -33,7 +35,10 @@ user = None
 def setup():
     global session, engine, metadata, user
     session, engine, metadata = setup_database()
-    user = setup_records(session)
+    try:
+        user = setup_records(session)
+    except ConnectionFailure:
+        raise SkipTest('MongoDB not running...')
 
 class UserForm(FormBase):
     __entity__ = User
