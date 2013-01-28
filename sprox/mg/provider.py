@@ -174,6 +174,11 @@ class MingProvider(IProvider):
         return not getattr(fld, 'kwargs', {}).get("required", False)
 
     def get_field_default(self, field):
+        field = getattr(field, 'field', None)
+        if field is not None:
+            if_missing = field.schema.if_missing
+            if if_missing is not None:
+                return (True, if_missing)
         return (False, None)
 
     def get_field_provider_specific_widget_args(self, entity, field, field_name):
