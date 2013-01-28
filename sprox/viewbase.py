@@ -2,7 +2,7 @@ import inspect
 from sprox.util import name2label, is_widget, is_widget_class
 
 try: #pragma: no cover
-    from tw2.core import Widget
+    from tw2.core import Widget, Deferred
     from tw2.core.widgets import WidgetMeta
     from tw2.forms import HiddenField
 except ImportError: #pragma: no cover
@@ -166,7 +166,10 @@ class ViewBase(ConfigBase):
         field_default_value = self.__provider__.get_field_default(entity)
         if field_default_value[0]:
             if hasattr(Widget, 'req'):
-                args['value'] = field_default_value[1]
+                if callable(field_default_value[1]):
+                    args['value'] = Deferred(field_default_value[1])
+                else:
+                    args['value'] = field_default_value[1]
             else: #pragma: no cover
                 args['default'] = field_default_value[1]
 
