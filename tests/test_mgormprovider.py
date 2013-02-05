@@ -455,6 +455,9 @@ class TestMGORMProvider(SproxTest):
     def test_isbinary_related(self):
         assert not self.provider.is_binary(User, 'groups')
 
+    def test_isbinary(self):
+        assert self.provider.is_binary(File, 'data')
+
     def test_binary_create(self):
         fs = "fake_content"
 

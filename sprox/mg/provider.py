@@ -321,9 +321,14 @@ class MingProvider(IProvider):
         fld = getattr(fld, 'field', None)
         return isinstance(fld.schema, S.String)
 
-    def is_binary(self, entity, name):
-        field = self.get_field(entity, name)
-        return isinstance(field,S.Binary)
+    def is_binary(self, entity, field_name):
+        fld = self.get_field(entity, field_name)
+        if isinstance(fld, RelationProperty):
+            # check the required attribute on the corresponding foreign key field
+            fld = fld.join.prop
+
+        fld = getattr(fld, 'field', None)
+        return isinstance(fld.schema,S.Binary)
 
     def relation_fields(self, entity, field_name):
         field = self.get_field(entity, field_name)
