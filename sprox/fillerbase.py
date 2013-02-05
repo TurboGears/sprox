@@ -170,7 +170,10 @@ class TableFiller(FillerBase):
         offset = kw.pop('offset', None)
         order_by = kw.pop('order_by', None)
         desc = kw.pop('desc', False)
-        count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__, order_by, desc, filters=kw)
+        substring_filters = kw.pop('substring_filters', [])
+        count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__,
+                                              order_by, desc, substring_filters=substring_filters,
+                                              filters=kw)
         self.__count__ = count
         return count, objs
 

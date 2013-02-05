@@ -64,6 +64,13 @@ class TestSAORMProvider(SproxTest):
         assert not self.provider.is_binary(User, 'password')
         assert self.provider.is_binary(File, 'content')
 
+    def test_isstring(self):
+        assert self.provider.is_string(User, 'email_address')
+        assert not self.provider.is_string(User, 'groups')
+
+    def test_isstring_synonym(self):
+        assert self.provider.is_string(User, 'password')
+
     def test_binary_create(self):
         fs = FieldStorage()
         fs.file = StringIO('fake_content')
@@ -221,6 +228,10 @@ class TestSAORMProvider(SproxTest):
     def test_query_filters_relations_many(self):
         cnt, r = self.provider.query(User, filters={'groups':[5]})
         assert r[0].groups[0].group_id == 5, r
+
+    def test_query_filters_substring(self):
+        cnt, r = self.provider.query(Town, filters={'name':'Gol'}, substring_filters=['name'])
+        eq_([t.name for t in r], [u'Golden'])
 
     def test_update(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}

@@ -21,6 +21,7 @@ Released under MIT license.
 import inspect
 import re
 from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, Binary, MetaData, desc as _desc
+from sqlalchemy import String, literal
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
@@ -137,6 +138,16 @@ class SAORMProvider(IProvider):
         if isinstance(field, PropertyLoader):
             return getattr(self._relationship_local_side(field)[0], 'nullable')
         return getattr(field, 'nullable', True)
+
+    def is_string(self, entity, name):
+        field = self.get_field(entity, name)
+        if isinstance(field, PropertyLoader):
+            field = self._relationship_local_side(field)[0]
+        if isinstance(field, SynonymProperty):
+            field = self.get_field(entity, field.name)
+
+        #should cover Unicode, UnicodeText, Text and so on by inheritance
+        return isinstance(field.type, String)
 
     def get_primary_fields(self, entity):
         #sometimes entities get surrounded by functions, not sure why.
@@ -407,7 +418,8 @@ class SAORMProvider(IProvider):
         return self.dictify(obj, fields, omit_fields)
 
     def query(self, entity, limit=None, offset=None, limit_fields=None,
-            order_by=None, desc=False, field_names=[], filters={}, **kw):
+            order_by=None, desc=False, field_names=[], filters={},
+            substring_filters=[], **kw):
         query = self.session.query(entity)
 
         filters = self._modify_params_for_dates(entity, filters)
@@ -418,7 +430,9 @@ class SAORMProvider(IProvider):
             if self.is_relation(entity, field_name) and isinstance(value, list):
                 value = value[0]
                 query = query.filter(field.contains(value))
-            else: 
+            elif field_name in substring_filters and self.is_string(entity, field_name):
+                query = query.filter(field.ilike('%' + literal(value) + '%'))
+            else:
                 query = query.filter(field==value) 
 
         count = query.count()
