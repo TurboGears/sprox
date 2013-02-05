@@ -23,6 +23,7 @@ from ming import schema as S
 import bson
 from bson import ObjectId
 
+import re
 from widgetselector import MingWidgetSelector
 from validatorselector import MingValidatorSelector
 from pymongo import ASCENDING, DESCENDING
@@ -289,7 +290,13 @@ class MingProvider(IProvider):
         obj.delete()
         return obj
 
-    def query(self, entity, limit=None, offset=0, limit_fields=None, order_by=None, desc=False, filters={}, **kw):
+    def query(self, entity, limit=None, offset=0, limit_fields=None,
+              order_by=None, desc=False, filters={},
+              substring_filters=[], **kw):
+
+        for field in substring_filters:
+            filters[field] = {'$regex':re.compile(filters[field], re.IGNORECASE)}
+
         iter = entity.query.find(filters)
         if offset:
             iter = iter.skip(int(offset))

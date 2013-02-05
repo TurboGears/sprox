@@ -642,6 +642,14 @@ class TestMGORMProvider(SproxTest):
         cnt, r = self.provider.query(Town, filters={'name':'Golden'})
         eq_([t.name for t in r], [u'Golden']), r
 
+    def test_query_filters_substring(self):
+        cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=['name'])
+        eq_([t.name for t in r], [u'Golden']), r
+
+    def test_query_filters_substring_disabled(self):
+        cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=[])
+        eq_(r, [])
+
     # expected failure; needs updatable RelationProperty
     @raises(TypeError)
     def test_update(self):
