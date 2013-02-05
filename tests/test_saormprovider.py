@@ -230,8 +230,12 @@ class TestSAORMProvider(SproxTest):
         assert r[0].groups[0].group_id == 5, r
 
     def test_query_filters_substring(self):
-        cnt, r = self.provider.query(Town, filters={'name':'Gol'}, substring_filters=['name'])
+        cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=['name'])
         eq_([t.name for t in r], [u'Golden'])
+
+    def test_query_filters_substring_disabled(self):
+        cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=[])
+        eq_(r, [])
 
     def test_update(self):
         params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
