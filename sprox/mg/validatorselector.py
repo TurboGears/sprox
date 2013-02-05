@@ -37,11 +37,12 @@ try: #pragma: no cover
 except ImportError: #pragma: no cover
     from tw.forms.validators import *
     DateTimeValidator = DateValidator
+    BoolValidator = StringBool
 
 class MingValidatorSelector(ValidatorSelector):
 
     default_validators = {
-    #s.Bool: SproxCheckBox,
+    s.Bool: BoolValidator,
     s.Int: Int,
     s.Float: Number,
     s.DateTime: DateTimeValidator,
