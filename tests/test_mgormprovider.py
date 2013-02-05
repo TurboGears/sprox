@@ -646,12 +646,23 @@ class TestMGORMProvider(SproxTest):
         cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=['name'])
         eq_([t.name for t in r], [u'Golden']), r
 
+    def test_query_filters_substring_related(self):
+        cnt, r = self.provider.query(Town, filters={'users':'this_does_not_work'}, substring_filters=['users'])
+        eq_(r, []), r
+
     def test_query_filters_substring_insensitive(self):
         cnt, r = self.provider.query(Town, filters={'name':'gold'}, substring_filters=['name'])
         eq_([t.name for t in r], [u'Golden']), r
 
     def test_query_filters_substring_disabled(self):
         cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=[])
+        eq_(r, [])
+
+    def test_query_filters_substring_notstring(self):
+        cnt, towns = self.provider.query(Town)
+        cnt, r = self.provider.query(Town, filters={'_id':towns[0]._id}, substring_filters=['_id'])
+        eq_([t.name for t in r], [towns[0].name])
+        cnt, r = self.provider.query(Town, filters={'_id':'this_is_the_id'}, substring_filters=['_id'])
         eq_(r, [])
 
     # expected failure; needs updatable RelationProperty

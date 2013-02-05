@@ -295,7 +295,8 @@ class MingProvider(IProvider):
               substring_filters=[], **kw):
 
         for field in substring_filters:
-            filters[field] = {'$regex':re.compile(filters[field], re.IGNORECASE)}
+            if self.is_string(entity, field):
+                filters[field] = {'$regex':re.compile(filters[field], re.IGNORECASE)}
 
         iter = entity.query.find(filters)
         if offset:
@@ -310,6 +311,15 @@ class MingProvider(IProvider):
             iter.sort(order_by, dir)
         count = iter.count()
         return count, iter.all()
+
+    def is_string(self, entity, field_name):
+        fld = self.get_field(entity, field_name)
+        if isinstance(fld, RelationProperty):
+            # check the required attribute on the corresponding foreign key field
+            fld = fld.join.prop
+
+        fld = getattr(fld, 'field', None)
+        return isinstance(fld.schema, S.String)
 
     def is_binary(self, entity, name):
         field = self.get_field(entity, name)
