@@ -652,6 +652,10 @@ class TestMGORMProvider(SproxTest):
         cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=['name'])
         eq_([t.name for t in r], [u'Golden']), r
 
+    def test_query_filters_substring_escaping(self):
+        cnt, r = self.provider.query(Town, filters={'name':'o.*l.*d'}, substring_filters=['name'])
+        eq_(r, []), r
+
     def test_query_filters_substring_related(self):
         cnt, r = self.provider.query(Town, filters={'users':'this_does_not_work'}, substring_filters=['users'])
         eq_(r, []), r

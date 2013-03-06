@@ -301,7 +301,7 @@ class MingProvider(IProvider):
 
         for field in substring_filters:
             if self.is_string(entity, field):
-                filters[field] = {'$regex':re.compile(filters[field], re.IGNORECASE)}
+                filters[field] = {'$regex':re.compile(re.escape(filters[field]), re.IGNORECASE)}
 
         iter = entity.query.find(filters)
         if offset:
