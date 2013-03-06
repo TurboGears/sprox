@@ -211,7 +211,7 @@ class TableFiller(FillerBase):
                     if 'password' in field.lower():
                         row[field] = '******'
                         continue
-                    elif isinstance(value, list):
+                    elif isinstance(value, list) or self.__provider__.is_query(self.__entity__, value):
                         value = self._get_list_data_value(field, value)
                     elif isinstance(value, datetime):
                         value = value.strftime("%m/%d/%Y %H:%M%p")

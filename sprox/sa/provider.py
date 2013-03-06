@@ -254,6 +254,10 @@ class SAORMProvider(IProvider):
         field = getattr(entity, field_name)
         return [ col.name for col in self._relationship_local_side(field.property)]
 
+    def is_query(self, entity, value):
+        """determines if a field is a query instead of actual list of data"""
+        return isinstance(value, Query)
+
     def is_unique(self, entity, field_name, value):
         field = getattr(entity, field_name)
         try:

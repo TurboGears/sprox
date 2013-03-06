@@ -166,6 +166,11 @@ class MingProvider(IProvider):
         """Determine if a field is related to a field in another entity."""
         return isinstance(self.get_field(entity, field_name), RelationProperty)
 
+    def is_query(self, entity, value):
+        """determines if a field is a query instead of actual list of data"""
+        #Currently not supported in MING
+        return False
+
     def is_nullable(self, entity, field_name):
         """Determine if a field is nullable."""
         fld = self.get_field(entity, field_name)
