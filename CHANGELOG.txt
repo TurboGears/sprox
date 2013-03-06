@@ -1,3 +1,15 @@
+0.8.3
+* Support for default values in MongoDB
+* Support for callables as default values for form fields
+* Support for substring searches in FillerBase filters through the substring_filters
+list of fields to search for substrings instead of comparing for equality
+* Fix MongoDB is_binary
+* Fix MongoDB Checkboxes
+* Fix requiring column defaults requiring __nonzero__
+* Fix SQLA relation with lazy='dynamic' in FillerBase, make tables able to show
+entries for dynamic relations
+* Improve Validator Selection for DateTime, fixes issues with dates on TW2
+
 0.8.2
 * Fix MultipleSelections when only one entry was selected
 * Fix MultipleSelection validation not working correctly
