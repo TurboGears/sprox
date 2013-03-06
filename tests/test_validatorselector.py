@@ -1,16 +1,9 @@
 from nose.tools import raises, eq_
 from sprox.validatorselector import ValidatorSelector
-from sprox.sa.validatorselector import SAValidatorSelector
 from sprox.test.base import *
-from formencode.validators  import *
 
-try:
-    import tw2.forms
-    from tw2.core.validation import DateValidator
-except:
-    pass
+from sprox.sa.validatorselector import *
 
-from formencode.compound import All
 from sqlalchemy import Column, Integer, String
 from sprox.sa.provider import SAORMProvider
 from types import NoneType
@@ -37,7 +30,7 @@ class TestValidatorSelector(SproxTest):
         pass
 
     def testSelect(self):
-        assert issubclass(self.validatorSelector.select('lala'), UnicodeString)
+        assert issubclass(self.validatorSelector.select('lala'), FEUnicodeString)
 
 class TestSAValidatorSelector(SproxTest):
     testColumns = (
@@ -48,10 +41,10 @@ class TestSAValidatorSelector(SproxTest):
     (CHAR,        UnicodeString),
     (CLOB,        UnicodeString),
     (DATE,        DateValidator),
-    (DATETIME,    DateValidator),
+    (DATETIME,    DateTimeValidator),
     (DECIMAL,     Number),
     (Date,        DateValidator),
-    (DateTime,    DateValidator),
+    (DateTime,    DateTimeValidator),
     (FLOAT,       Number),
     (Float,       Number),
     (INT,         Int),
@@ -62,9 +55,9 @@ class TestSAValidatorSelector(SproxTest):
     (SmallInteger,Int),
     (String,      UnicodeString),
     (TEXT,        UnicodeString),
-    (TIME,        DateValidator),
-    (Time,        DateValidator),
-    (TIMESTAMP,   DateValidator),
+    (TIME,        DateTimeValidator),
+    (Time,        DateTimeValidator),
+    (TIMESTAMP,   DateTimeValidator),
     (Unicode,     UnicodeString),
     (VARCHAR,     UnicodeString),
     )

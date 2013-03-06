@@ -22,14 +22,17 @@ Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
 
+from formencode import Invalid
+from formencode.validators import StringBool, Number, UnicodeString as FEUnicodeString, Email, Int
+
 try: #pragma: no cover
     import tw2.forms
     from tw2.core.validation import *
+    class UnicodeString(FEUnicodeString):
+        outputEncoding = None
 except ImportError: #pragma: no cover
     from tw.forms.validators import *
-
-from formencode import Invalid
-from formencode.validators import StringBool, UnicodeString
+    DateTimeValidator = DateValidator
 
 class ValidatorSelector(object):
     _name_based_validators = {}
