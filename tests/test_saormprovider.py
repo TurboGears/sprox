@@ -240,6 +240,10 @@ class TestSAORMProvider(SproxTest):
         cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=['name'])
         eq_([t.name for t in r], [u'Golden'])
 
+    def test_query_filters_substring_escaping(self):
+        cnt, r = self.provider.query(Town, filters={'name':'o%l%d'}, substring_filters=['name'])
+        eq_(r, [])
+
     def test_query_filters_substring_notstring(self):
         cnt, towns = self.provider.query(Town)
         cnt, r = self.provider.query(Town, filters={'town_id':towns[0].town_id}, substring_filters=['town_id'])

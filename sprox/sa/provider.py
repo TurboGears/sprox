@@ -20,8 +20,8 @@ Released under MIT license.
 """
 import inspect
 import re
-from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, Binary, MetaData, desc as _desc
-from sqlalchemy import String, literal
+from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, Binary, MetaData, desc as _desc, func
+from sqlalchemy import String
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
@@ -435,7 +435,8 @@ class SAORMProvider(IProvider):
                 value = value[0]
                 query = query.filter(field.contains(value))
             elif field_name in substring_filters and self.is_string(entity, field_name):
-                query = query.filter(field.ilike('%' + literal(value) + '%'))
+                escaped_value = re.sub('[\\\\%\\[\\]_]', '\\\\\g<0>', value.lower())
+                query = query.filter(func.lower(field).contains(escaped_value, escape='\\'))
             else:
                 query = query.filter(field==value) 
 
