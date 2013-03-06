@@ -60,6 +60,13 @@ class TestSAORMProvider(SproxTest):
     def test_isrelation_onproperty(self):
         assert not self.provider.is_relation(User, 'permissions')
 
+    def test_is_query_not_a_query(self):
+        assert self.provider.is_query(User, None) == False
+
+    def test_is_query_with_dynamic(self):
+        e = session.query(Permission).first()
+        assert self.provider.is_query(Permission, e.groups) == True
+
     def test_isbinary_synonym(self):
         assert not self.provider.is_binary(User, 'password')
         assert self.provider.is_binary(File, 'content')

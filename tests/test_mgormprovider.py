@@ -458,6 +458,9 @@ class TestMGORMProvider(SproxTest):
     def test_isbinary(self):
         assert self.provider.is_binary(File, 'data')
 
+    def test_is_query_not_a_query(self):
+        assert self.provider.is_query(File, None) == False
+
     def test_binary_create(self):
         fs = "fake_content"
 
