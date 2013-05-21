@@ -308,7 +308,7 @@ class FormBase(ViewBase):
                              field_name in self.__require_fields__
         args['required'] = args['not_empty']
 
-        widget_type = self._do_get_field_wiget_type(field_name, field)
+        widget_type = self._do_get_field_widget_type(field_name, field)
         if widget_type and (issubclass(widget_type, CalendarDatePicker) or
                             issubclass(widget_type, CalendarDateTimePicker)):
             widget_args = super(FormBase, self)._do_get_field_widget_args(field_name, field)
