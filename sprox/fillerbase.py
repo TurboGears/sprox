@@ -78,7 +78,15 @@ class TableFiller(FillerBase):
     +-----------------------------------+--------------------------------------------+------------------------------+
     | __metadata_type__                 | How should we get data from the provider.  | FieldsMetadata               |
     +-----------------------------------+--------------------------------------------+------------------------------+
-    | __possible_field_names__          | See explanation below.                     | See below.                   |
+    | __possible_field_names__          | list or dict of names to use for discovery | None                         |
+    |                                   | of field names for relationship columns    | (See below.)                 |
+    |                                   | (None uses the default list below.)        |                              |
+    |                                   | a dict provides field-level granularity    |                              |
+    |                                   | (See also explanation below.)              |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
+    | __possible_field_name_defaults__  | Default field name list for relationship   | ['_name', 'name',            |
+    |                                   | columns. Used when there is no entry in    | 'description', 'title']      |
+    |                                   | __possible_field_names__.                  |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
 
     see modifiers also in :mod:`sprox.configbase`.
@@ -89,8 +97,8 @@ class TableFiller(FillerBase):
     from the related table, or a comma-separated list of values.  These values are derived from
     the related object given the field names provided by the __possible_field_names__ modifier.
     For instance, if you have a User class which is related to Groups, the groups item in the result
-    dictionaries will be populated with Group.group_name.  The default field names are:
-    _name, name, description, title.
+    dictionaries will be populated with Group.group_name.  The default field names are specified
+    in __possible_field_name_defaults__: _name, name, description, title.
 
     :RESTful Actions:
 
@@ -116,17 +124,28 @@ class TableFiller(FillerBase):
     __actions__ = True
     __metadata_type__ = FieldsMetadata
     __possible_field_names__ = None
+    __possible_field_name_defaults__ = ['_name', 'name', 'description', 'title']
 
     def _do_init_attrs(self):
         super(TableFiller, self)._do_init_attrs()
         if self.__possible_field_names__ is None:
-            self.__possible_field_names__ = ['_name', 'name', 'description', 'title']
+            self.__possible_field_names__ = self.__possible_field_name_defaults__
 
     def _get_list_data_value(self, field, values):
         l = []
+
+        if isinstance(self.__possible_field_names__, dict) and field in self.__possible_field_names__:
+            view_names = self.__possible_field_names__[field]
+            if not isinstance(view_names, list):
+                view_names = [view_names]
+        elif isinstance(self.__possible_field_names__, list):
+            view_names = self.__possible_field_names__
+        else:
+            view_names = self.__possible_field_name_defaults__
+
         for value in values:
             if not isinstance(value, basestring):
-                name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
+                name = self.__provider__.get_view_field_name(value.__class__, view_names)
                 l.append(unicode(getattr(value, name)))
             else:
                 #this is needed for postgres to see array values

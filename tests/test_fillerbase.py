@@ -63,6 +63,30 @@ class TestTableFiller(SproxTest):
         c = self.filler.get_count()
         assert c == 1, c
 
+    def test_possible_field_name_dict(self):
+        class UserFiller(TableFiller):
+            __entity__ = User
+            __possible_field_names__ = {'groups': 'group_name'}
+        filler = UserFiller(session)
+        value = filler.get_value()
+        eq_(value[0]['groups'], '4')
+
+    def test_possible_field_name_list(self):
+        class UserFiller(TableFiller):
+            __entity__ = User
+            __possible_field_names__ = ['_name']
+        filler = UserFiller(session)
+        value = filler.get_value()
+        eq_(value[0]['groups'], '4')
+
+    def test_possible_field_name_default(self):
+        class UserFiller(TableFiller):
+            __entity__ = User
+            __possible_field_names__ = {}
+        filler = UserFiller(session)
+        value = filler.get_value()
+        eq_(value[0]['groups'], '4')
+
 class TestEditFormFiller(SproxTest):
     def setup(self):
         super(TestEditFormFiller, self).setup()
