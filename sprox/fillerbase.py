@@ -115,7 +115,12 @@ class TableFiller(FillerBase):
     """
     __actions__ = True
     __metadata_type__ = FieldsMetadata
-    __possible_field_names__ = ['_name', 'name', 'description', 'title']
+    __possible_field_names__ = None
+
+    def _do_init_attrs(self):
+        super(TableFiller, self)._do_init_attrs()
+        if self.__possible_field_names__ is None:
+            self.__possible_field_names__ = ['_name', 'name', 'description', 'title']
 
     def _get_list_data_value(self, field, values):
         l = []
