@@ -209,6 +209,9 @@ class ViewBase(ConfigBase):
     def _do_get_field_widget_type(self, field_name, field):
         return self.__field_widget_types__.get(field_name, self.__widget_selector__.select(field))
 
+    # This was a typo once, keeping it around for backwards compatibility
+    _do_get_field_wiget_type = _do_get_field_widget_type
+
     def _do_get_field_widgets(self, fields):
 
         metadata_keys = self.__metadata__.keys()
