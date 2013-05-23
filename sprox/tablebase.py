@@ -1,7 +1,7 @@
 """
-fillerbase Module
+tablebase Module
 
-Classes to help fill widgets with data
+Classes to create table widgets.
 
 Copyright (c) 2008-10 Christopher Perkins
 Original Version by Christopher Perkins 2008
@@ -35,14 +35,14 @@ class TableBase(ViewBase):
       +-----------------------------------+--------------------------------------------+------------------------------+
       | __metadata_type__                 | Type the widget is based on.               | FieldsMetadata               |
       +-----------------------------------+--------------------------------------------+------------------------------+
-      | __headers__                       | A dictionay of field/header pairs.         | {}                           |
+      | __headers__                       | A dictionary of field/header pairs.        | {}                           |
       +-----------------------------------+--------------------------------------------+------------------------------+
-      | __column_widths__                 | A dictionay of field/width(string) pairs.  | {}                           |
+      | __column_widths__                 | A dictionary of field/width(string) pairs. | {}                           |
       +-----------------------------------+--------------------------------------------+------------------------------+
       | __default_column_width__          | Header size to use when not specified in   | '10em'                       |
       |                                   | __column_widths__                          |                              |
       +-----------------------------------+--------------------------------------------+------------------------------+
-      | __xml_fields__                    | fields whos values should show as html     |                              |
+      | __xml_fields__                    | fields whose values should show as html    |                              |
       +-----------------------------------+--------------------------------------------+------------------------------+
 
 
