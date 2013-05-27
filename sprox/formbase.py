@@ -84,9 +84,10 @@ class FormBase(ViewBase):
     |                                   | info on this object                        |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
     | __possible_field_names__          | list or dict of names to use for discovery | None                         |
-    |                                   | of field names for dropdowns (None uses    |                              |
-    |                                   | sprox default names.)                      |                              |
-    |                                   | a dict provides field-level granularity    |                              |
+    |                                   | of field names for dropdowns.              |                              |
+    |                                   | (None uses the default list from           |                              |
+    |                                   | :class:`sprox.configbase:ConfigBase`.)     |                              |
+    |                                   | A dict provides field-level granularity    |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
 
     Modifiers inherited from :class:`sprox.viewbase.ViewBase`
@@ -197,7 +198,8 @@ class FormBase(ViewBase):
             if self.__dropdown_field_names__ is not None:
                 warnings.warn('The __dropdown_field_names__ attribute is deprecated', DeprecationWarning)
                 self.__possible_field_names__ = self.__dropdown_field_names__
-            self.__possible_field_names__ = ['name', '_name', 'description', '_description']
+            else:
+                self.__possible_field_names__ = self.__possible_field_name_defaults__
 
         #bring in custom declared validators
         for attr in dir(self):

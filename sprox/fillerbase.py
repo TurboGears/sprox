@@ -79,14 +79,11 @@ class TableFiller(FillerBase):
     | __metadata_type__                 | How should we get data from the provider.  | FieldsMetadata               |
     +-----------------------------------+--------------------------------------------+------------------------------+
     | __possible_field_names__          | list or dict of names to use for discovery | None                         |
-    |                                   | of field names for relationship columns    | (See below.)                 |
-    |                                   | (None uses the default list below.)        |                              |
-    |                                   | a dict provides field-level granularity    |                              |
+    |                                   | of field names for relationship columns.   | (See below.)                 |
+    |                                   | (None uses the default list from           |                              |
+    |                                   | :class:`sprox.configbase:ConfigBase`.)     |                              |
+    |                                   | A dict provides field-level granularity    |                              |
     |                                   | (See also explanation below.)              |                              |
-    +-----------------------------------+--------------------------------------------+------------------------------+
-    | __possible_field_name_defaults__  | Default field name list for relationship   | ['_name', 'name',            |
-    |                                   | columns. Used when there is no entry in    | 'description', 'title']      |
-    |                                   | __possible_field_names__.                  |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
 
     see modifiers also in :mod:`sprox.configbase`.
@@ -124,7 +121,6 @@ class TableFiller(FillerBase):
     __actions__ = True
     __metadata_type__ = FieldsMetadata
     __possible_field_names__ = None
-    __possible_field_name_defaults__ = ['_name', 'name', 'description', 'title']
 
     def _do_init_attrs(self):
         super(TableFiller, self)._do_init_attrs()
