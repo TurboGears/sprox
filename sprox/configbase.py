@@ -35,6 +35,11 @@ class ConfigBase(object):
     +-----------------------------------+--------------------------------------------+------------------------------+
     | __metadata_type__                 | Metadata associated with this config.      | None                         |
     +-----------------------------------+--------------------------------------------+------------------------------+
+    | __possible_field_name_defaults__  | Default foreign field name list for        | ['name', 'title', '_name',   |
+    |                                   | relationship columns.                      | 'description',               |
+    |                                   | Used when there is no entry in             | '_description']              |
+    |                                   | __possible_field_names__.                  |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
     """
     # what object does will this object use for metadata extraction
     # model and entity are one in the same
@@ -55,6 +60,8 @@ class ConfigBase(object):
     __limit_fields__       = None
     __field_attrs__        = None
     __metadata_type__      = None
+
+    __possible_field_name_defaults__ = ['name', 'title', '_name', 'description', '_description']
 
     def __init__(self, provider_hint=None, **provider_hints):
 

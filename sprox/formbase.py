@@ -8,6 +8,8 @@ Original Version by Christopher Perkins 2008
 Released under MIT license.
 """
 
+import warnings
+
 try: #pragma: no cover
     from tw2.core import Widget
     from tw2.core.widgets import WidgetMeta
@@ -81,10 +83,11 @@ class FormBase(ViewBase):
     | __metadata_type__                 | What metadata type to use to get schema    | FieldsMetadata               |
     |                                   | info on this object                        |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
-    | __dropdown_field_names__          | list or dict of names to use for discovery | None                         |
-    |                                   | of field names for dropdowns (None uses    |                              |
-    |                                   | sprox default names.)                      |                              |
-    |                                   | a dict provides field-level granularity    |                              |
+    | __possible_field_names__          | list or dict of names to use for discovery | None                         |
+    |                                   | of field names for dropdowns.              |                              |
+    |                                   | (None uses the default list from           |                              |
+    |                                   | :class:`sprox.configbase:ConfigBase`.)     |                              |
+    |                                   | A dict provides field-level granularity    |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
 
     Modifiers inherited from :class:`sprox.viewbase.ViewBase`
@@ -178,6 +181,7 @@ class FormBase(ViewBase):
 
     __metadata_type__ = FieldsMetadata
 
+    __possible_field_names__      = None
     __dropdown_field_names__      = None
 
     def _do_init_attrs(self):
@@ -190,8 +194,12 @@ class FormBase(ViewBase):
             self.__validator_selector__ = self.__validator_selector_type__(self.__provider__)
         if self.__field_validator_types__ is None:
             self.__field_validator_types__ = {}
-        if self.__dropdown_field_names__ is None:
-            self.__dropdown_field_names__ = ['name', '_name', 'description', '_description']
+        if self.__possible_field_names__ is None:
+            if self.__dropdown_field_names__ is not None:
+                warnings.warn('The __dropdown_field_names__ attribute is deprecated', DeprecationWarning)
+                self.__possible_field_names__ = self.__dropdown_field_names__
+            else:
+                self.__possible_field_names__ = self.__possible_field_name_defaults__
 
         #bring in custom declared validators
         for attr in dir(self):
@@ -254,13 +262,13 @@ class FormBase(ViewBase):
         if self.__provider__.is_relation(self.__entity__, field_name):
             args['entity'] = self.__entity__
             args['field_name'] = field_name
-            if isinstance(self.__dropdown_field_names__, dict) and field_name in self.__dropdown_field_names__:
-                view_names = self.__dropdown_field_names__[field_name]
+            if isinstance(self.__possible_field_names__, dict) and field_name in self.__possible_field_names__:
+                view_names = self.__possible_field_names__[field_name]
                 if not isinstance(view_names, list):
                     view_names = [view_names]
                 args['dropdown_field_names'] = view_names
-            elif isinstance(self.__dropdown_field_names__, list):
-                args['dropdown_field_names'] = self.__dropdown_field_names__
+            elif isinstance(self.__possible_field_names__, list):
+                args['dropdown_field_names'] = self.__possible_field_names__
         if v:
             args['validator'] = v
         return args
