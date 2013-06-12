@@ -41,7 +41,7 @@ class EntityLabelWidget(Widget):
 
 class RecordViewWidget(Widget):
     template = "genshi:sprox.widgets.tw2widgets.templates.recordViewTable"
-    entity = Param('entity', attribute=False)
+    entity = Param('entity', attribute=False, default=None)
 
 class RecordFieldWidget(Widget):
     template = "genshi:sprox.widgets.tw2widgets.templates.recordField"
@@ -72,7 +72,6 @@ class SproxDataGrid(DataGrid):
     template = "sprox.widgets.tw2widgets.templates.datagrid"
 
     pks = Param('pks', attribute=False),
-    controller = Param('controller', attribute=False)
     xml_fields = Param('xml_fields', attribute=False, default=['actions'])
     value = []
 
