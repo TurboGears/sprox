@@ -22,6 +22,7 @@ class ContainerWidget(DisplayOnlyWidget):
     template = "genshi:sprox.widgets.tw2widgets.templates.container"
     controller = Param('controller', attribute=False, default=None)
     css_class = "containerwidget"
+    id_suffix = 'container'
 
 class TableLabelWidget(Widget):
     template = "genshi:sprox.widgets.tw2widgets.templates.tableLabel"
