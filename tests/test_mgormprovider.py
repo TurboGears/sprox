@@ -648,6 +648,20 @@ class TestMGORMProvider(SproxTest):
         cnt, r = self.provider.query(Town, filters={'name':'Golden'})
         eq_([t.name for t in r], [u'Golden']), r
 
+    def test_query_filters_id_by_string(self):
+        cnt, r = self.provider.query(Town, filters={'name':'Golden'})
+        golden_id = str(r[0]._id)
+
+        cnt, r = self.provider.query(Town, filters={'_id':golden_id})
+        eq_([t.name for t in r], [u'Golden']), r
+
+    def test_query_filters_id_by_objectid(self):
+        cnt, r = self.provider.query(Town, filters={'name':'Golden'})
+        golden_id = r[0]._id
+
+        cnt, r = self.provider.query(Town, filters={'_id':golden_id})
+        eq_([t.name for t in r], [u'Golden']), r
+
     def test_query_filters_substring(self):
         cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=['name'])
         eq_([t.name for t in r], [u'Golden']), r

@@ -7,6 +7,7 @@ Copyright &copy 2009 Jorge Vargas
 Original Version by Jorge Vargas 2009
 Released under MIT license.
 """
+from bson.errors import InvalidId
 from sprox.iprovider import IProvider
 from sprox.util import timestamp
 import datetime, inspect
@@ -302,6 +303,12 @@ class MingProvider(IProvider):
         for field in substring_filters:
             if self.is_string(entity, field):
                 filters[field] = {'$regex':re.compile(re.escape(filters[field]), re.IGNORECASE)}
+
+        if '_id' in filters:
+            try:
+                filters['_id'] = ObjectId(filters['_id'])
+            except InvalidId:
+                pass
 
         iter = entity.query.find(filters)
         if offset:
