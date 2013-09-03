@@ -162,8 +162,8 @@ class SAORMProvider(IProvider):
             except AttributeError:
                 # Relations won't be attributes, but can't be primary anyway.
                 continue
-            if value.primary_key and not value.key in fields:
-                fields.append(value.key)
+            if value.primary_key and not field_name in fields:
+                fields.append(field_name)
         return fields
 
     def get_primary_field(self, entity):
