@@ -11,6 +11,7 @@ from sprox.mg.provider import MingProvider
 from sprox.mg.widgetselector import MingWidgetSelector
 from sprox.mg.validatorselector import *
 from sprox.tablebase import TableBase
+from sprox.fillerbase import TableFiller
 from strainer.operators import assert_in_xhtml
 
 from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town, UnrelatedDocument
@@ -508,7 +509,7 @@ class TestMGORMProvider(SproxTest):
         eq_(field, '_id')
 
     def test_get_view_field_name_defaults_substring(self):
-        field = self.provider.get_view_field_name(Permission, None)
+        field = self.provider.get_view_field_name(Permission, ['name'])
         eq_(field, 'permission_name')
 
     def test_get_view_field_name_with_title(self):
@@ -522,6 +523,31 @@ class TestMGORMProvider(SproxTest):
     def test_get_view_field_name_not_found(self):
         field = self.provider.get_view_field_name(Group, [])
         assert field in self.provider.get_fields(Group)
+
+    def test_get_view_field_name_for_subdocument(self):
+        doc = self.provider.create(Document, dict(metadata=[{'name': 'author',
+                                                             'value': 'Philip K Dick'},
+                                                            {'name': 'year',
+                                                             'value': '1968'}]))
+
+        class DocumentsFiller(TableFiller):
+            __model__ = Document
+        tf = DocumentsFiller(self.provider.session)
+
+        names = tf._get_list_data_value(Document, doc.metadata)
+        assert names == 'author, year'
+
+    def test_get_view_field_name_for_unknown_objects(self):
+        first_list_value = {'name': 'author', 'value': 'Philip K Dick'}
+
+        doc = self.provider.create(Document, dict(metadata=[first_list_value,
+                                                            {'name': 'year',
+                                                             'value': '1968'}]))
+
+        entry = doc.metadata[0]
+        suggested_name = self.provider.get_view_field_name(entry.__class__, ['name'])
+        value = str(getattr(entry, suggested_name))
+        assert value == str(first_list_value)
 
     def test_get_dropdown_options_oneof(self):
         options = self.provider.get_dropdown_options(Example, 'oneof')

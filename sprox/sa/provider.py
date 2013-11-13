@@ -177,7 +177,7 @@ class SAORMProvider(IProvider):
                 return column.key
         return None
 
-    def get_view_field_name(self, entity, possible_names):
+    def get_view_field_name(self, entity, possible_names, item=None):
         view_field = self._find_title_column(entity)
 
         fields = self.get_fields(entity)
@@ -187,13 +187,13 @@ class SAORMProvider(IProvider):
                     view_field = actual_name
                     break
             if view_field:
-                break;
+                break
             for actual_name in fields:
                 if column_name in actual_name:
                     view_field = actual_name
                     break
             if view_field:
-                break;
+                break
         if view_field is None:
             view_field = fields[0]
         return view_field

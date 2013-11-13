@@ -317,8 +317,11 @@ class Document(SproxTestClass):
     edited = FieldProperty(S.DateTime, if_missing=datetime.now)
     blob = FieldProperty(S.Binary)
     owner = ForeignIdProperty(User)
-    url = FieldProperty(str)
+    url = FieldProperty(S.String)
     document_category_id = ForeignIdProperty(DocumentCategory)
+
+    metadata = FieldProperty([{'name': S.String,
+                               'value': S.String}])
     
     def _get_address(self):
         return self.url

@@ -16,10 +16,13 @@ try:
     from ming.odm import mapper, ForeignIdProperty, FieldProperty, RelationProperty
     from ming.odm.declarative import MappedClass
     from ming.odm.property import OneToManyJoin, ManyToOneJoin, ORMProperty
+    from ming.odm.icollection import InstrumentedObj
 except ImportError: #pragma nocover
     from ming.orm import mapper, ForeignIdProperty, FieldProperty, RelationProperty
     from ming.orm.declarative import MappedClass
     from ming.orm.property import OneToManyJoin, ManyToOneJoin, ORMProperty
+    from ming.orm.icollection import InstrumentedObj
+
 from ming import schema as S
 import bson
 from bson import ObjectId
@@ -76,7 +79,7 @@ class MingProvider(IProvider):
         field = self.get_field(entity, field_name)
         return getattr(field, "sprox_meta", {}).get(metaprop, None)
 
-    def get_view_field_name(self, entity, possible_names=None):
+    def get_view_field_name(self, entity, possible_names, item=None):
         """Get the name of the field which first matches the possible colums
 
         :Arguments:
@@ -86,12 +89,19 @@ class MingProvider(IProvider):
             a list of names which define what the view field may contain.  This allows the first
             field that has a name in the list of names will be returned as the view field.
         """
-        if possible_names is None:
-            possible_names = ('_name', 'name', 'description', 'title')
-        fields = self.get_fields(entity)
-        for field in fields:
-            if self._get_meta(entity, field, 'title'):
-                return field
+        if entity is InstrumentedObj:
+            # Cope with subdocuments
+            if item is not None:
+                fields = item.keys()
+            else:
+                fields = ['_impl']
+        else:
+            fields = self.get_fields(entity)
+
+            for field in fields:
+                if self._get_meta(entity, field, 'title'):
+                    return field
+
         view_field = None
         for column_name in possible_names:
             for actual_name in fields:
@@ -99,15 +109,17 @@ class MingProvider(IProvider):
                     view_field = actual_name
                     break
             if view_field:
-                break;
+                break
             for actual_name in fields:
                 if column_name in actual_name:
                     view_field = actual_name
                     break
             if view_field:
-                break;
+                break
+
         if view_field is None:
             view_field = fields[0]
+
         return view_field
 
     def get_dropdown_options(self, entity_or_field, field_name, view_names=None):
@@ -126,6 +138,9 @@ class MingProvider(IProvider):
           A list of tuples with (id, view_value) as items.
 
         """
+        if view_names is None:
+            view_names = ['_name', 'name', 'description', 'title']
+
         if field_name is not None:
             field = self.get_field(entity_or_field, field_name)
         else:
