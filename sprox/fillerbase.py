@@ -85,6 +85,11 @@ class TableFiller(FillerBase):
     |                                   | A dict provides field-level granularity    |                              |
     |                                   | (See also explanation below.)              |                              |
     +-----------------------------------+--------------------------------------------+------------------------------+
+    | __datetime_formatstr__            | format string for the strftime function of | '%Y-%m-%d %H:%M:%S'          |
+    |                                   | datetime objects.                          | ("simplified" ISO-8601)      |
+    |                                   | Classical american format would be         |                              |
+    |                                   | '%m/%d/%Y %H:%M%p'.                        |                              |
+    +-----------------------------------+--------------------------------------------+------------------------------+
 
     see modifiers also in :mod:`sprox.configbase`.
 
@@ -121,6 +126,7 @@ class TableFiller(FillerBase):
     __actions__ = True
     __metadata_type__ = FieldsMetadata
     __possible_field_names__ = None
+    __datetime_formatstr__ = '%Y-%m-%d %H:%M:%S'
 
     def _do_init_attrs(self):
         super(TableFiller, self)._do_init_attrs()
@@ -234,7 +240,7 @@ class TableFiller(FillerBase):
                     elif isinstance(value, list) or self.__provider__.is_query(self.__entity__, value):
                         value = self._get_list_data_value(field, value)
                     elif isinstance(value, datetime):
-                        value = value.strftime("%m/%d/%Y %H:%M%p")
+                        value = value.strftime(self.__datetime_formatstr__)
                     elif self.__provider__.is_relation(self.__entity__, field) and value is not None:
                         value = self._get_relation_value(field, value)
                     elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
