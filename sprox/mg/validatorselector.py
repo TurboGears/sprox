@@ -65,6 +65,9 @@ class MingValidatorSelector(ValidatorSelector):
                 field = field.field
                 field_type = field.type
 
+        if hasattr(field, 'schema') and isinstance(field.schema, (s.Array, s.Object)):
+            return None
+
         type_ = s.String
         for t in self.default_validators.keys():
             if isinstance(field_type, s.OneOf):

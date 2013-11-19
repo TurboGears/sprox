@@ -77,6 +77,9 @@ class MingWidgetSelector(WidgetSelector):
         sprox_meta = getattr(field, 'sprox_meta', None)
         if sprox_meta and 'password' in sprox_meta:
             return PasswordField
-        
+
+        if isinstance(schemaitem, (S.Array, S.Object)):
+            return SubDocument
+
         return self.default_widgets.get(schemaitem.__class__, TextField)
 

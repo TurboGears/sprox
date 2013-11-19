@@ -3,7 +3,8 @@ from formencode import Invalid
 from tw2.core import Widget, Param, DisplayOnlyWidget, ValidationError
 from tw2.forms import (CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid,
                        SingleSelectField, MultipleSelectField, InputField, HiddenField,
-                       TextField, FileField, CheckBox, PasswordField, TextArea)
+                       TextField, FileField, CheckBox, PasswordField, TextArea,
+                       GridLayout)
 from tw2.forms import Label as tw2Label
 
 class Label(tw2Label):
@@ -81,6 +82,7 @@ class SproxCheckBox(CheckBox):
         super(SproxCheckBox, self).prepare()
         self.attrs['value'] = 'true'
 
+
 class PropertySingleSelectField(SingleSelectField):
     entity = Param('entity', attribute=False, default=None)
     provider = Param('provider', attribute=False, default=None)
@@ -104,6 +106,7 @@ class PropertySingleSelectField(SingleSelectField):
 
         self.value = unicode(self.value)
         super(PropertySingleSelectField, self).prepare()
+
 
 class PropertyMultipleSelectField(MultipleSelectField):
     entity = Param('entity', attribute=False, default=None)
@@ -142,3 +145,10 @@ class PropertyMultipleSelectField(MultipleSelectField):
 
         self.value = [unicode(v) for v in self.value]
         super(PropertyMultipleSelectField, self).prepare()
+
+
+class SubDocument(GridLayout):
+    extra_reps = 1
+
+    def prepare(self):
+        super(SubDocument, self).prepare()

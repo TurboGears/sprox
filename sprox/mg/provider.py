@@ -204,6 +204,27 @@ class MingProvider(IProvider):
         return (False, None)
 
     def get_field_provider_specific_widget_args(self, entity, field, field_name):
+        field = getattr(field, 'field', None)
+        if field is not None:
+            schema = getattr(field, 'schema', None)
+            if isinstance(schema, (S.Array, S.Object)):
+                if isinstance(schema, S.Array):
+                    field_type = schema.field_type
+                else:
+                    field_type = schema
+
+                children = []
+                if isinstance(field_type, S.Object):
+                    for subfield_name, subfield_type in field_type.fields.items():
+                        widget = self.default_widget_selector_type().select(subfield_type)
+                        children.append(widget(label=subfield_name, id=subfield_name,
+                                               key=subfield_name))
+                    return {'children': children}
+                else:
+                    widget = self.default_widget_selector_type().select(field_type)
+                    widget = widget(label=None, id='', children_non_hidden=[])
+                    return {'child': widget}
+
         return {}
 
     def get_default_values(self, entity, params):
