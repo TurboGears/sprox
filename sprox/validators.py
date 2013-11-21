@@ -6,6 +6,12 @@ Original Version by Christopher Perkins 2008
 Released under MIT license.
 """
 from formencode import FancyValidator, Invalid
+from formencode.validators import UnicodeString as FEUnicodeString
+
+
+class UnicodeString(FEUnicodeString):
+    outputEncoding = None
+
 
 class UniqueValue(FancyValidator):
     def __init__(self, provider, entity, field_name, *args, **kw):

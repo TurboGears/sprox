@@ -27,7 +27,8 @@ from sprox.widgets import SproxMethodPutHiddenField, CalendarDatePicker, Calenda
 from .viewbase import ViewBase, ViewBaseError
 from formencode import Schema, All
 from formencode import Validator
-from formencode.validators import UnicodeString, String
+from formencode.validators import String
+from sprox.validators import UnicodeString
 
 from sprox.validators import UniqueValue
 from sprox.metadata import FieldsMetadata
@@ -299,7 +300,7 @@ class FormBase(ViewBase):
         """
         v_type = self.__field_validator_types__.get(field_name, self.__validator_selector__[field])
         if field_name in self.__require_fields__ and v_type is None:
-            v_type = String
+            v_type = UnicodeString
         if v_type is None:
             return
         args = self._do_get_validator_args(field_name, field, v_type)
@@ -356,7 +357,8 @@ class EditableForm(FormBase):
 
     def _do_get_field_widgets(self, fields):
         widgets = super(EditableForm, self)._do_get_field_widgets(fields)
-        widgets['_method'] = SproxMethodPutHiddenField(id='sprox_method', validator=String(if_missing=None))
+        widgets['_method'] = SproxMethodPutHiddenField(id='sprox_method',
+                                                       validator=UnicodeString(if_missing=None))
         return widgets
 
     __check_if_unique__ = False
