@@ -141,7 +141,7 @@ class _SAORMSelector(ProviderSelector):
 
         >>> from sprox.providerselector import SAORMSelector
         >>> provider = SAORMSelector.get_provider(User, session=session)
-        >>> provider.engine.url.drivername
+        >>> str(provider.engine.url.drivername)
         'sqlite'
         """
 

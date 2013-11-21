@@ -125,7 +125,7 @@ class FormBase(ViewBase):
          <span class="error"></span>
         <table >
         <tr class="odd"  id="sx_town:container">
-            <th>Town</th>
+            <th><label for="sx_town">Town</label></th>
             <td >
                 <select name="town" id="sx_town">
              <option value="1">Arvada</option>
@@ -398,36 +398,36 @@ class AddRecordForm(FormBase):
     <form enctype="multipart/form-data" method="post">
          <span class="error"></span>
         <table >
-        <tr class="odd"  id="sx_user_name:container">
-            <th>User Name</th>
+        <tr class="odd required"  id="sx_user_name:container">
+            <th><label for="sx_user_name">User Name</label></th>
             <td >
                 <input name="user_name" type="text" id="sx_user_name" value=""/>
                 <span id="sx_user_name:error"></span>
             </td>
         </tr>
-        <tr class="even"  id="sx_email_address:container">
-            <th>Email Address</th>
+        <tr class="even required"  id="sx_email_address:container">
+            <th><label for="sx_email_address">Email Address</label></th>
             <td >
                 <input name="email_address" type="text" id="sx_email_address"/>
                 <span id="sx_email_address:error"></span>
             </td>
         </tr>
         <tr class="odd"  id="sx_display_name:container">
-            <th>Display Name</th>
+            <th><label for="sx_display_name">Display Name</label></th>
             <td >
                 <input name="display_name" type="text" id="sx_display_name" value=""/>
                 <span id="sx_display_name:error"></span>
             </td>
         </tr>
-        <tr class="even"  id="sx_password:container">
-            <th>Password</th>
+        <tr class="even required"  id="sx_password:container">
+            <th><label for="sx_password">Password</label></th>
             <td >
                 <input type="password" name="password" id="sx_password"/>
                 <span id="sx_password:error"></span>
             </td>
         </tr>
         <tr class="odd"  id="verify_password:container">
-            <th>Verify Password</th>
+            <th><label for="verify_password">Verify Password</label></th>
             <td >
                 <input type="password" name="verify_password" id="verify_password"/>
                 <span id="verify_password:error"></span>
@@ -451,7 +451,7 @@ class AddRecordForm(FormBase):
     ...     __entity__ = User
     ...     __limit_fields__ = ['user_name']
     >>> user_form = AddUserForm(session)
-    >>> user_form.validate(params={'sprox_id':'asdf', 'user_name':u'asdf'}) # doctest: +SKIP
+    >>> user_form.validate(params={'sprox_id':'asdf', 'user_name':'asdf'}) # doctest: +SKIP
     Traceback (most recent call last):
     ...
     Invalid: user_name: That value already exists
@@ -496,14 +496,14 @@ class DisabledForm(FormBase):
          <span class="error"></span>
         <table >
         <tr class="odd"  id="sx_user_name:container">
-            <th>User Name</th>
+            <th><label for="sx_user_name">User Name</label></th>
             <td >
                 <input name="user_name" value="" disabled="disabled" type="text" id="sx_user_name"/>
                 <span id="sx_user_name:error"></span>
             </td>
         </tr>
         <tr class="even"  id="sx_email_address:container">
-            <th>Email Address</th>
+            <th><label for="sx_email_address">Email Address</label></th>
             <td >
                 <textarea disabled="disabled" name="email_address" id="sx_email_address"></textarea>
                 <span id="sx_email_address:error"></span>
