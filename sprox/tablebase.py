@@ -55,7 +55,7 @@ class TableBase(ViewBase):
     >>> class TownTable(TableBase):
     ...    __model__ = Town
     >>> town_table = TownTable(session)
-    >>> print town_table() #doctest: +XML
+    >>> print(town_table()) #doctest: +XML
     <div>
     <table class="grid">
         <thead>
@@ -79,7 +79,7 @@ class TableBase(ViewBase):
     ...     __model__ = Town
     >>> town_filler = TownFiller(session)
     >>> value = town_filler.get_value()
-    >>> print town_table(value=value) #doctest: +SKIP
+    >>> print(town_table(value=value)) #doctest: +SKIP
     <div xmlns="http://www.w3.org/1999/xhtml">
     <div>
     <table
@@ -134,7 +134,7 @@ class TableBase(ViewBase):
     ...     __model__ = Town
     ...     __omit_fields__ = ['__actions__']
     >>> town_table = TownTable(session)
-    >>> print town_table(value=value) #doctest: +XML
+    >>> print(town_table(value=value)) #doctest: +XML
     <div>
     <table class="grid">
         <thead>

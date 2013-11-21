@@ -1,11 +1,10 @@
+from __future__ import unicode_literals
+
 import os, re
 from copy import copy
-from difflib import unified_diff
-from ming.orm import ORMSession
 from sprox.test.mg import model_relational
 from sprox.test.mg.model_relational import *
-from cStringIO import StringIO
-from cgi import FieldStorage
+from sprox._compat import unicode_text
 
 try:
     from ming import create_datastore
@@ -124,24 +123,24 @@ def setup_records(session):
     #session.ensure_indexes(User)
         
     user = User()
-    user.user_name = u'asdf'
-    user.email_address = u"asdf@asdf.com"
-    user.password = u"asdf"
+    user.user_name = 'asdf'
+    user.email_address = "asdf@asdf.com"
+    user.password = "asdf"
 
-    arvada = Town(name=u'Arvada')
+    arvada = Town(name='Arvada')
     session.flush()
     user.town_id = arvada._id
 
-    Town(name=u'Denver')
-    Town(name=u'Golden')
-    Town(name=u'Boulder')
+    Town(name='Denver')
+    Town(name='Golden')
+    Town(name='Boulder')
 
     #test_table.insert(values=dict(BLOB=FieldStorage('asdf', StringIO()).value)).execute()
     #user_reference_table.insert(values=dict(user_id=user.user_id)).execute()
 
 #    print user.user_id
     for i in range (5):
-        group = Group(group_name=unicode(i))
+        group = Group(group_name=unicode_text(i))
         UserGroup(user_id=user._id, group_id=group._id)
 
 #    user.groups.append(group)
@@ -203,7 +202,7 @@ class SproxTest(object):
         self.engine = engine
         try:
             self.user = setup_records(session)
-        except Exception, ex:
+        except Exception as ex:
             try:
                 self.session.close()
             except: pass

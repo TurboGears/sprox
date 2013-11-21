@@ -3,7 +3,7 @@ import os
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
-execfile(os.path.join(here, 'sprox', 'release.py'))
+exec(compile(open(os.path.join(here, 'sprox', 'release.py')).read(), 'release.py', 'exec'), globals(), locals())
 
 setup(
   name="sprox",
@@ -15,9 +15,9 @@ setup(
   author_email="chris@percious.com",
   license="MIT",
   url="http://www.sprox.org",
-  install_requires=['formencode>=1.2.2',
+  install_requires=['formencode>=1.3.0a1',
                     ],
-  tests_require=['sqlalchemy'],
+  tests_require=['sqlalchemy', 'sieve'],
   packages = find_packages(),
   classifiers=[
         "Development Status :: 4 - Beta",

@@ -1,11 +1,12 @@
+from __future__ import unicode_literals
+
 import os, re
 from copy import copy
-from difflib import unified_diff
 from sqlalchemy import *
 from sqlalchemy.orm import *
-from model import *
-from cStringIO import StringIO
+from .model import *
 from cgi import FieldStorage
+from sprox._compat import unicode_text
 
 try:
     from tw import framework
@@ -73,7 +74,7 @@ def fix_xml(needle):
     needle_node = remove_whitespace_nodes(needle_node)
     remove_namespace(needle_node)
     needle_s = etree.tostring(needle_node)
-    return needle_s
+    return needle_s.decode('utf-8')
 
 def in_xml(needle, haystack):
     needle_s, haystack_s = map(fix_xml, (needle, haystack))
@@ -137,19 +138,19 @@ def setup_records(session):
     session.expunge_all()
 
     user = User()
-    user.user_name = u'asdf'
-    user.email_address = u"asdf@asdf.com"
-    user.password = u"asdf"
+    user.user_name = "asdf"
+    user.email_address = "asdf@asdf.com"
+    user.password = "asdf"
     session.add(user)
 
-    arvada = Town(name=u'Arvada')
+    arvada = Town(name='Arvada')
     session.add(arvada)
     session.flush()
     user.town = arvada
 
-    session.add(Town(name=u'Denver'))
-    session.add(Town(name=u'Golden'))
-    session.add(Town(name=u'Boulder'))
+    session.add(Town(name='Denver'))
+    session.add(Town(name='Golden'))
+    session.add(Town(name='Boulder'))
 
     owner = WithoutNameOwner(data='owner')
     session.add(owner)
@@ -160,7 +161,7 @@ def setup_records(session):
 
 #    print user.user_id
     for i in range (5):
-        group = Group(group_name=unicode(i))
+        group = Group(group_name=unicode_text(i))
         session.add(group)
 
     user.groups.append(group)

@@ -36,7 +36,7 @@ class ProgrammaticRelationProperty(RelationProperty):
 
     def __set__(self, instance, value):
         if not self.setter:
-            raise TypeError, 'read-only property'
+            raise TypeError('read-only property')
         else:
             self.setter(instance, value)
 

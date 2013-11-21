@@ -1,10 +1,16 @@
+from nose import SkipTest
+
+try:
+    import ming
+except ImportError:
+    raise SkipTest('Ming not available, skipping MongoDB tests...')
+
 from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm, Field
 from sprox.viewbase import ViewBaseError
 from sprox.test.base import widget_children, widget_is_type, form_error_message
 from sprox.test.mg.base import setup_database, sorted_user_columns, SproxTest, setup_records, Example, Document, assert_in_xml
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
-from nose import SkipTest
 from formencode.validators import FieldsMatch, NotEmpty, OpenId
 from sprox.widgetselector import WidgetSelector, EntityDefWidget, EntityDefWidgetSelector, RecordFieldWidget, RecordViewWidgetSelector
 from sprox.mg.provider import MingProvider
@@ -12,7 +18,7 @@ from sprox.mg.widgetselector import MingWidgetSelector
 from sprox.mg.validatorselector import *
 from sprox.tablebase import TableBase
 from sprox.fillerbase import TableFiller
-from strainer.operators import assert_in_xhtml
+from sieve.operators import assert_in_xml as assert_in_xhtml
 
 from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town, UnrelatedDocument
 from sprox.test.mg.model import Permission, TGMMUser
@@ -70,9 +76,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something'})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_validator_instance(self):
         class UserForm(FormBase):
@@ -82,9 +88,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something'})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_instance(self):
         class UserForm(FormBase):
@@ -94,9 +100,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something'})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_class(self):
         class UserForm(FormBase):
@@ -106,9 +112,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something'})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_widget_class(self):
         class UserForm(FormBase):
@@ -144,9 +150,9 @@ class TestFormBase(SproxTest):
         assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
         try:
             widget.validate({'user_name':'something'})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test__widget__(self):
         rendered = self.base()
@@ -437,11 +443,11 @@ class TestMGORMProvider(SproxTest):
     def setup(self):
         super(TestMGORMProvider, self).setup()
         self.provider = MingProvider(User.__mongometa__.session)
-        Department(_id=1, name=u'Marketing')
-        Department(_id=2, name=u'Accounting')
-        DocumentCategory(_id=1, department_id=1, name=u'Brochure')
-        DocumentCategory(_id=2, department_id=1, name=u'Flyer')
-        DocumentCategory(_id=3, department_id=2, name=u'Balance Sheet')
+        Department(_id=1, name='Marketing')
+        Department(_id=2, name='Accounting')
+        DocumentCategory(_id=1, department_id=1, name='Brochure')
+        DocumentCategory(_id=2, department_id=1, name='Flyer')
+        DocumentCategory(_id=3, department_id=2, name='Balance Sheet')
         #session.add(DocumentRating(user_id=1, document_id=1, rating=5))
         session.flush_all()
         #session.close_all()
@@ -576,19 +582,19 @@ class TestMGORMProvider(SproxTest):
 
     def test_get_dropdown_options_fk_multi(self):
         options = self.provider.get_dropdown_options(Document, 'category')
-        eq_(set(options), set((('1', u'Brochure'), ('2', u'Flyer'), ('3', u'Balance Sheet'))))
+        eq_(set(options), set((('1', 'Brochure'), ('2', 'Flyer'), ('3', 'Balance Sheet'))))
 
     # expected failure; need many-to-many support
     @raises(AssertionError)
     def test_get_dropdown_options_join(self):
         options = self.provider.get_dropdown_options(User, 'groups')
-        eq_(options, [('1', u'0'), ('2', u'1'), ('3', u'2'), ('4', u'3'), ('5', u'4')])
+        eq_(options, [('1', '0'), ('2', '1'), ('3', '2'), ('4', '3'), ('5', '4')])
 
     # expected failure; need many-to-many support
     @raises(AssertionError)
     def test_get_dropdown_options_join_2(self):
         options = self.provider.get_dropdown_options(Group, 'users')
-        eq_(options, [(1, u'asdf@asdf.com'),])
+        eq_(options, [(1, 'asdf@asdf.com'),])
 
     def test_get_relations(self):
         relations = self.provider.get_relations(User)
@@ -601,13 +607,13 @@ class TestMGORMProvider(SproxTest):
     def test_dictify_limit_fields(self):
         d = self.provider.dictify(self.user, fields=['user_name'])
         eq_(d['user_name'], 'asdf')
-        eq_(d.keys(), ['user_name'])
+        eq_(list(d.keys()), ['user_name'])
 
     def test_dictify_omit_fields(self):
         d = self.provider.dictify(self.user, omit_fields=['password', '_password'])
-        assert 'password' not in d.keys()
-        assert '_password' not in d.keys()
-        assert 'user_name' in d.keys()
+        assert 'password' not in list(d.keys())
+        assert '_password' not in list(d.keys())
+        assert 'user_name' in list(d.keys())
 
     def test_dictify_none(self):
         d = self.provider.dictify(None)
@@ -616,14 +622,14 @@ class TestMGORMProvider(SproxTest):
     # expected failure; ming does not yet support writing into RelationProperties
     @raises(TypeError)
     def test_create(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
         assert q_user == new_user
 
     def test_create_blank__id(self):
-        params = {'user_name':u'asdf3', 'password':u'asdf3', 'email_address':u'email111@addy.com', '_id':''}
+        params = {'user_name':'asdf3', 'password':'asdf3', 'email_address':'email111@addy.com', '_id':''}
         new_user = self.provider.create(User, params)
-        q_user = self.provider.get(User, {'user_name':u'asdf3'})
+        q_user = self.provider.get(User, {'user_name':'asdf3'})
         assert q_user is not None
 
     # expected failure; needs many-to-many support
@@ -664,33 +670,33 @@ class TestMGORMProvider(SproxTest):
 
     def test_query_sort_asc(self):
         cnt, r = self.provider.query(Town, order_by="name")
-        eq_([t.name for t in r], [u'Arvada', u'Boulder', u'Denver', u'Golden'])
+        eq_([t.name for t in r], ['Arvada', 'Boulder', 'Denver', 'Golden'])
 
     def test_query_sort_desc(self):
         cnt, r = self.provider.query(Town, order_by="name", desc=True)
-        eq_([t.name for t in r], [u'Golden', u'Denver', u'Boulder', u'Arvada'])
+        eq_([t.name for t in r], ['Golden', 'Denver', 'Boulder', 'Arvada'])
 
     def test_query_filters(self):
         cnt, r = self.provider.query(Town, filters={'name':'Golden'})
-        eq_([t.name for t in r], [u'Golden']), r
+        eq_([t.name for t in r], ['Golden']), r
 
     def test_query_filters_id_by_string(self):
         cnt, r = self.provider.query(Town, filters={'name':'Golden'})
         golden_id = str(r[0]._id)
 
         cnt, r = self.provider.query(Town, filters={'_id':golden_id})
-        eq_([t.name for t in r], [u'Golden']), r
+        eq_([t.name for t in r], ['Golden']), r
 
     def test_query_filters_id_by_objectid(self):
         cnt, r = self.provider.query(Town, filters={'name':'Golden'})
         golden_id = r[0]._id
 
         cnt, r = self.provider.query(Town, filters={'_id':golden_id})
-        eq_([t.name for t in r], [u'Golden']), r
+        eq_([t.name for t in r], ['Golden']), r
 
     def test_query_filters_substring(self):
         cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=['name'])
-        eq_([t.name for t in r], [u'Golden']), r
+        eq_([t.name for t in r], ['Golden']), r
 
     def test_query_filters_substring_escaping(self):
         cnt, r = self.provider.query(Town, filters={'name':'o.*l.*d'}, substring_filters=['name'])
@@ -702,7 +708,7 @@ class TestMGORMProvider(SproxTest):
 
     def test_query_filters_substring_insensitive(self):
         cnt, r = self.provider.query(Town, filters={'name':'gold'}, substring_filters=['name'])
-        eq_([t.name for t in r], [u'Golden']), r
+        eq_([t.name for t in r], ['Golden']), r
 
     def test_query_filters_substring_disabled(self):
         cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=[])
@@ -718,91 +724,91 @@ class TestMGORMProvider(SproxTest):
     # expected failure; needs updatable RelationProperty
     @raises(TypeError)
     def test_update(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
-        params['email_address'] = u'asdf@asdf.commy'
+        params['email_address'] = 'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
         params['_id'] = new_user._id
         new_user = self.provider.update(User, params)
         q_user = User.query.find({ "_id": new_user._id }).first()
-        eq_(new_user.email_address, u'asdf@asdf.commy')
-        eq_(q_user.email_address, u'asdf@asdf.commy')
+        eq_(new_user.email_address, 'asdf@asdf.commy')
+        eq_(q_user.email_address, 'asdf@asdf.commy')
 
     def test_update_simple(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com'}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com'}
         new_user = self.provider.create(User, params)
-        params['email_address'] = u'asdf@asdf.commy'
+        params['email_address'] = 'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
         params['_id'] = new_user._id
         session.flush()
         new_user = self.provider.update(User, params)
         q_user = User.query.find({ "_id": new_user._id }).first()
-        eq_(new_user.email_address, u'asdf@asdf.commy')
-        eq_(q_user.email_address, u'asdf@asdf.commy')
+        eq_(new_user.email_address, 'asdf@asdf.commy')
+        eq_(q_user.email_address, 'asdf@asdf.commy')
 
     def test_update_datetime(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com'}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com'}
         new_user = self.provider.create(User, params)
-        params['email_address'] = u'asdf@asdf.commy'
+        params['email_address'] = 'asdf@asdf.commy'
         params['created'] = datetime.utcnow().replace(microsecond=0)
         params['_id'] = new_user._id
         session.flush()
         new_user = self.provider.update(User, params)
         q_user = User.query.find({ "_id": new_user._id }).first()
-        eq_(new_user.email_address, u'asdf@asdf.commy')
-        eq_(q_user.email_address, u'asdf@asdf.commy')
+        eq_(new_user.email_address, 'asdf@asdf.commy')
+        eq_(q_user.email_address, 'asdf@asdf.commy')
         eq_(q_user.created, params['created'])
 
     def test_update_sprox_id(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'sprox_id': 'xyz'}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'sprox_id': 'xyz'}
         new_user = self.provider.create(User, params)
-        params['email_address'] = u'asdf@asdf.commy'
+        params['email_address'] = 'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
         params['_id'] = new_user._id
         session.flush()
         new_user = self.provider.update(User, params)
         q_user = User.query.find({ "_id": new_user._id }).first()
-        eq_(new_user.email_address, u'asdf@asdf.commy')
-        eq_(q_user.email_address, u'asdf@asdf.commy')
+        eq_(new_user.email_address, 'asdf@asdf.commy')
+        eq_(q_user.email_address, 'asdf@asdf.commy')
 
     def test_update_method(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', '_method': 'xyz'}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', '_method': 'xyz'}
         new_user = self.provider.create(User, params)
-        params['email_address'] = u'asdf@asdf.commy'
+        params['email_address'] = 'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
         params['_id'] = new_user._id
         session.flush()
         new_user = self.provider.update(User, params)
         q_user = User.query.find({ "_id": new_user._id }).first()
-        eq_(new_user.email_address, u'asdf@asdf.commy')
-        eq_(q_user.email_address, u'asdf@asdf.commy')
+        eq_(new_user.email_address, 'asdf@asdf.commy')
+        eq_(q_user.email_address, 'asdf@asdf.commy')
 
     def test_update_extra_keys(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'extraneous': 'xyz'}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'extraneous': 'xyz'}
         new_user = self.provider.create(User, params)
-        params['email_address'] = u'asdf@asdf.commy'
+        params['email_address'] = 'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
         params['_id'] = new_user._id
         session.flush()
         new_user = self.provider.update(User, params)
         q_user = User.query.find({ "_id": new_user._id }).first()
-        eq_(new_user.email_address, u'asdf@asdf.commy')
-        eq_(q_user.email_address, u'asdf@asdf.commy')
+        eq_(new_user.email_address, 'asdf@asdf.commy')
+        eq_(q_user.email_address, 'asdf@asdf.commy')
 
     def test_update_omit_fieds(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com'}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com'}
         new_user = self.provider.create(User, params)
-        params['email_address'] = u'asdf@asdf.commy'
+        params['email_address'] = 'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
         params['_id'] = new_user._id
         session.flush()
         new_user = self.provider.update(User, params, omit_fields=['email_address'])
         q_user = User.query.find({ "_id": new_user._id }).first()
-        eq_(new_user.email_address, u'email@addy.com')
-        eq_(q_user.email_address, u'email@addy.com')
+        eq_(new_user.email_address, 'email@addy.com')
+        eq_(q_user.email_address, 'email@addy.com')
 
     def test_create_one_to_many_relation(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'extraneous': 'xyz'}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'extraneous': 'xyz'}
         new_user = self.provider.create(User, params)
         session.flush()
 
@@ -821,17 +827,17 @@ class TestMGORMProvider(SproxTest):
     # expected failure; needs updatable RelationProperty
     @raises(TypeError)
     def test_update_omit(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
 
         params = {}
-        params['email_address'] = u'asdf@asdf.commy'
+        params['email_address'] = 'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
         params['_id'] = 2
         new_user = self.provider.update(User, params, omit_fields=['email_address', 'groups'])
         q_user = self.session.query(User).get(2)
 
-        eq_(q_user.email_address, u'email@addy.com')
+        eq_(q_user.email_address, 'email@addy.com')
         eq_([group.group_id for group in q_user.groups], [1,4])
 
     def test_get_default_values(self):
@@ -881,14 +887,14 @@ class TestMGORMProvider(SproxTest):
 
     def test_tgmanymany_create(self):
         count, groups = self.provider.query(Group, limit=1)
-        params = {'user_name':u'mmuser', 'groups':[groups[0]]}
+        params = {'user_name':'mmuser', 'groups':[groups[0]]}
         new_user = self.provider.create(TGMMUser, params)
 
         assert new_user.groups[0].group_name == groups[0].group_name
         assert new_user._groups[0] == groups[0].group_name
 
     def test_tgmanymany_update(self):
-        params = {'user_name':u'mmuser', 'groups':[]}
+        params = {'user_name':'mmuser', 'groups':[]}
         new_user = self.provider.create(TGMMUser, params)
 
         assert len(new_user.groups) == 0

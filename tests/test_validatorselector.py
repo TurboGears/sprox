@@ -6,7 +6,7 @@ from sprox.sa.validatorselector import *
 
 from sqlalchemy import Column, Integer, String
 from sprox.sa.provider import SAORMProvider
-from types import NoneType
+NoneType = type(None)
 
 session = None
 engine = None

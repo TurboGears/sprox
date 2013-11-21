@@ -8,10 +8,11 @@ Original Version by Christopher Perkins 2008
 Released under MIT license.
 """
 
-from configbase import ConfigBase, ConfigBaseError
-from metadata import FieldsMetadata
+from .configbase import ConfigBase, ConfigBaseError
+from .metadata import FieldsMetadata
 import inspect
 from datetime import datetime
+from sprox._compat import string_type, byte_string, unicode_text
 
 encoding = 'utf-8'
 
@@ -146,9 +147,9 @@ class TableFiller(FillerBase):
             view_names = self.__possible_field_name_defaults__
 
         for value in values:
-            if not isinstance(value, basestring):
+            if not isinstance(value, string_type):
                 name = self.__provider__.get_view_field_name(value.__class__, view_names, value)
-                l.append(unicode(getattr(value, name)))
+                l.append(unicode_text(getattr(value, name)))
             else:
                 #this is needed for postgres to see array values
                 return values
@@ -245,9 +246,9 @@ class TableFiller(FillerBase):
                         value = self._get_relation_value(field, value)
                     elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
                         value = '&lt;file&gt;'
-                if isinstance(value, str):
-                    value = unicode(value, encoding='utf-8')
-                row[field] = unicode(value)
+                if isinstance(value, byte_string):
+                    value = unicode_text(value, encoding='utf-8')
+                row[field] = unicode_text(value)
             rows.append(row)
         return rows
 

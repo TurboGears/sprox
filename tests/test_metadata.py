@@ -40,7 +40,7 @@ class MetadataTest(SproxTest):
 
     @raises(NotImplementedError)
     def test_keys(self):
-        value = self.metadata.keys()
+        value = list(self.metadata.keys())
 
 class TestMetadata(MetadataTest):pass
 

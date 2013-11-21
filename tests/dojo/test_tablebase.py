@@ -81,4 +81,4 @@ try:
 </table>""", rendered)
 
 except ImportError:
-    print 'Dojo Tests disabled with ToscaWidgets2'
+    print('Dojo Tests disabled with ToscaWidgets2')

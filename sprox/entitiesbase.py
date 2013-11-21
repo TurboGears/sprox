@@ -1,6 +1,6 @@
 from sprox.widgets import ContainerWidget, TableWidget
-from viewbase import ViewBase
-from widgetselector import EntitiesViewWidgetSelector, EntityDefWidgetSelector
+from .viewbase import ViewBase
+from .widgetselector import EntitiesViewWidgetSelector, EntityDefWidgetSelector
 from sprox.metadata import EntitiesMetadata, FieldsMetadata
 
 class EntityDefBase(ViewBase):
@@ -15,7 +15,7 @@ class EntityDefBase(ViewBase):
     >>> class UserEntityDef(EntityDefBase):
     ...     __entity__ = User
     >>> base = UserEntityDef(session)
-    >>> print base()
+    >>> print(base())
     <table>
     <tr><th>Name</th><th>Definition</th></tr>
     <tr class="odd" id="sx__password">
@@ -106,7 +106,7 @@ class EntityDefBase(ViewBase):
     __widget_selector_type__   = EntityDefWidgetSelector
     __metadata_type__          = FieldsMetadata
 
-from dummyentity import DummyEntity
+from .dummyentity import DummyEntity
 
 class EntitiesBase(ViewBase):
     """This view can display all of the entities for a given provider.
@@ -120,7 +120,7 @@ class EntitiesBase(ViewBase):
     >>> class MyEntitiesBase(EntitiesBase):
     ...     __entity__ = User
     >>> base = MyEntitiesBase(session, metadata=metadata)
-    >>> print base()
+    >>> print(base())
     <div class="containerwidget">
         <div class="entitylabelwidget" id="sx_Department">
         <a href="Department/">Department</a>

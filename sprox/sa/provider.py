@@ -38,6 +38,7 @@ from warnings import warn
 
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.sa.validatorselector import SAValidatorSelector
+from sprox._compat import string_type
 
 class SAORMProviderError(Exception):pass
 
@@ -82,7 +83,7 @@ class SAORMProvider(IProvider):
         if inspect.isfunction(entity):
             entity = entity()
         mapper = class_mapper(entity)
-        field_names = mapper.c.keys()
+        field_names = list(mapper.c.keys())
         for prop in mapper.iterate_properties:
             try:
                 getattr(mapper.c, prop.key)
@@ -304,7 +305,7 @@ class SAORMProvider(IProvider):
                                     pk = target.primary_key
                                 else:
                                     pk = class_mapper(target).primary_key
-                                if isinstance(v, basestring) and "/" in v:
+                                if isinstance(v, string_type) and "/" in v:
                                     v = map(self._adapt_type, v.split("/"), pk)
                                     v = tuple(v)
                                 else:
@@ -329,7 +330,7 @@ class SAORMProvider(IProvider):
                             object_mapper(value)
                             target_obj = value
                         except UnmappedInstanceError:
-                            if isinstance(value, basestring) and "/" in value:
+                            if isinstance(value, string_type) and "/" in value:
                                 value = map(self._adapt_type, value.split("/"), prop.remote_side)
                                 value = tuple(value)
                             else:
@@ -348,7 +349,7 @@ class SAORMProvider(IProvider):
 
         relations = self.get_relations(entity)
         mapper = class_mapper(entity)
-        for key, value in params.iteritems():
+        for key, value in params.items():
             if value is not None:
                 if isinstance(value, FieldStorage):
                     value = value.file.read()
@@ -396,11 +397,8 @@ class SAORMProvider(IProvider):
 
     def get_field_default(self, field):
         if isinstance(field, Column) and field.default and getattr(field.default, 'arg', None) is not None:
-            if isinstance(field.default.arg, str) or \
-               isinstance(field.default.arg, unicode) or \
-               isinstance(field.default.arg, int) or \
-               isinstance(field.default.arg, float):
-                    return (True, field.default.arg)
+            if isinstance(field.default.arg, (string_type, int, float)):
+                return (True, field.default.arg)
         return (False, None)
 
     def get_field_provider_specific_widget_args(self, entity, field, field_name):
@@ -429,7 +427,7 @@ class SAORMProvider(IProvider):
         filters = self._modify_params_for_dates(entity, filters)
         filters = self._modify_params_for_relationships(entity, filters)
 
-        for field_name, value in filters.iteritems():
+        for field_name, value in filters.items():
             field = getattr(entity, field_name)
             if self.is_relation(entity, field_name) and isinstance(value, list):
                 value = value[0]
@@ -473,7 +471,7 @@ class SAORMProvider(IProvider):
 
     def _modify_params_for_dates(self, entity, params):
         mapper = class_mapper(entity)
-        for key, value in params.iteritems():
+        for key, value in list(params.items()):
             if key in mapper.c and value is not None:
                 field = mapper.c[key]
                 if hasattr(field, 'type'):
@@ -492,7 +490,7 @@ class SAORMProvider(IProvider):
                                 r'(?P<minutes>\d+):(?P<seconds>\d+)',
                                 str(value)).groupdict(0)
                             dt = timedelta(**dict(( (key, int(value))
-                                                    for key, value in d.items() )))
+                                                    for key, value in list(d.items()) )))
                             params[key] = dt
         return params
 
@@ -524,7 +522,7 @@ class SAORMProvider(IProvider):
         obj = self._get_obj(entity, params)
         relations = self.get_relations(entity)
         mapper = object_mapper(obj)
-        for key, value in params.iteritems():
+        for key, value in params.items():
             if omit_fields and key in omit_fields:
                 continue
 

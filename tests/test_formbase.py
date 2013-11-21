@@ -62,9 +62,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something', 'created':''})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_validator_instance(self):
         class UserForm(FormBase):
@@ -74,9 +74,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something', 'created':''})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_instance(self):
         class UserForm(FormBase):
@@ -86,9 +86,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something', 'created':''})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_class(self):
         class UserForm(FormBase):
@@ -98,9 +98,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something', 'created':''})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_widget_class(self):
         class UserForm(FormBase):
@@ -109,7 +109,6 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
 
-        print widget_children(widget)['user_name']
         assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     def test_formbase_with_field_widget_instance(self):
@@ -138,9 +137,9 @@ class TestFormBase(SproxTest):
         assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
         try:
             widget.validate({'user_name':'something', 'created':''})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test__fields__(self):
         eq_(sorted_user_columns, sorted(self.base.__fields__))
@@ -299,7 +298,7 @@ class TestAddRecordForm(SproxTest):
         registration_form = RegistrationForm()
         try:
             registration_form.validate(params={'password':'blah', 'verify_password':'not_blah'})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
             assert 'Passwords do not match' in msg, msg
 

@@ -1,7 +1,7 @@
 from sprox.sprockets import Sprocket, SprocketCache, ConfigCache, FillerCache, ViewCache, ConfigCacheError
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, User
 from nose.tools import raises, eq_
-from strainer.operators import assert_in_xhtml
+from sieve.operators import assert_in_xml as assert_in_xhtml
 
 session = None
 engine  = None

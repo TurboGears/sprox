@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from nose import SkipTest
 from sprox.sa.provider import SAORMProvider
 from sprox.test.base import setup_database, setup_records, SproxTest
@@ -11,7 +13,11 @@ from nose.tools import raises, eq_
 import datetime
 
 from cgi import FieldStorage
-from StringIO import StringIO
+
+try:
+    from io import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 session = None
 engine  = None
@@ -40,11 +46,11 @@ class TestSAORMProvider(SproxTest):
     def setup(self):
         super(TestSAORMProvider, self).setup()
         self.provider = SAORMProvider(session)
-        session.add(Department(department_id=1, name=u'Marketing'))
-        session.add(Department(department_id=2, name=u'Accounting'))
-        session.add(DocumentCategory(document_category_id=1, department_id=1, name=u'Brochure'))
-        session.add(DocumentCategory(document_category_id=2, department_id=1, name=u'Flyer'))
-        session.add(DocumentCategory(document_category_id=3, department_id=2, name=u'Balance Sheet'))
+        session.add(Department(department_id=1, name='Marketing'))
+        session.add(Department(department_id=2, name='Accounting'))
+        session.add(DocumentCategory(document_category_id=1, department_id=1, name='Brochure'))
+        session.add(DocumentCategory(document_category_id=2, department_id=1, name='Flyer'))
+        session.add(DocumentCategory(document_category_id=3, department_id=2, name='Balance Sheet'))
 
         session.add(Permission(permission_name='perm'))
         #session.add(DocumentRating(user_id=1, document_id=1, rating=5))
@@ -146,19 +152,19 @@ class TestSAORMProvider(SproxTest):
 
     def test_get_dropdown_options_fk(self):
         options = self.provider.get_dropdown_options(User, 'town')
-        eq_(options, [(1, u'Arvada'), (2, u'Denver'), (3, u'Golden'), (4, u'Boulder')])
+        eq_(options, [(1, 'Arvada'), (2, 'Denver'), (3, 'Golden'), (4, 'Boulder')])
 
     def test_get_dropdown_options_fk_multi(self):
         options = self.provider.get_dropdown_options(Document, 'category')
-        eq_(options, [('1/1', u'Brochure'), ('2/1', u'Flyer'), ('3/2', u'Balance Sheet')])
+        eq_(options, [('1/1', 'Brochure'), ('2/1', 'Flyer'), ('3/2', 'Balance Sheet')])
 
     def test_get_dropdown_options_join(self):
         options = self.provider.get_dropdown_options(User, 'groups')
-        eq_(options, [(1, u'0'), (2, u'1'), (3, u'2'), (4, u'3'), (5, u'4')])
+        eq_(options, [(1, '0'), (2, '1'), (3, '2'), (4, '3'), (5, '4')])
 
     def test_get_dropdown_options_join_2(self):
         options = self.provider.get_dropdown_options(Group, 'users')
-        eq_(options, [(1, u'asdf@asdf.com'),])
+        eq_(options, [(1, 'asdf@asdf.com'),])
 
     def test_dropdown_options_warn(self):
         provider = SAORMProvider(metadata)
@@ -181,13 +187,13 @@ class TestSAORMProvider(SproxTest):
     def test_dictify_limit_fields(self):
         d = self.provider.dictify(self.user, fields=['user_name'])
         eq_(d['user_name'], 'asdf')
-        eq_(d.keys(), ['user_name'])
+        eq_(list(d.keys()), ['user_name'])
 
     def test_dictify_omit_fields(self):
         d = self.provider.dictify(self.user, omit_fields=['password', '_password'])
-        assert 'password' not in d.keys()
-        assert '_password' not in d.keys()
-        assert 'user_name' in d.keys()
+        assert 'password' not in list(d.keys())
+        assert '_password' not in list(d.keys())
+        assert 'user_name' in list(d.keys())
 
     def test_dictify_dynamic_relation(self):
         e = session.query(Permission).first()
@@ -199,7 +205,8 @@ class TestSAORMProvider(SproxTest):
         eq_(d, {})
 
     def test_create(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
+        params = {'user_name': 'asdf2', 'password': 'asdf2',
+                  'email_address': 'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
         q_user = self.session.query(User).get(2)
         assert q_user == new_user
@@ -226,7 +233,7 @@ class TestSAORMProvider(SproxTest):
 
     def test_query_filters(self):
         cnt, r = self.provider.query(Town, filters={'name':'Golden'})
-        eq_([t.name for t in r], [u'Golden'])
+        eq_([t.name for t in r], ['Golden'])
 
     def test_query_filters_relations(self):
         cnt, r = self.provider.query(User, filters={'town':1})
@@ -238,7 +245,7 @@ class TestSAORMProvider(SproxTest):
 
     def test_query_filters_substring(self):
         cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=['name'])
-        eq_([t.name for t in r], [u'Golden'])
+        eq_([t.name for t in r], ['Golden'])
 
     def test_query_filters_substring_escaping(self):
         cnt, r = self.provider.query(Town, filters={'name':'o%l%d'}, substring_filters=['name'])
@@ -253,34 +260,36 @@ class TestSAORMProvider(SproxTest):
 
     def test_query_filters_substring_insensitive(self):
         cnt, r = self.provider.query(Town, filters={'name':'gold'}, substring_filters=['name'])
-        eq_([t.name for t in r], [u'Golden'])
+        eq_([t.name for t in r], ['Golden'])
 
     def test_query_filters_substring_disabled(self):
         cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=[])
         eq_(r, [])
 
     def test_update(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
+        params = {'user_name': 'asdf2', 'password': 'asdf2',
+                  'email_address': 'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
-        params['email_address'] = u'asdf@asdf.commy'
+        params['email_address'] = 'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
         params['user_id'] = 2
         new_user = self.provider.update(User, params)
         q_user = self.session.query(User).get(2)
-        eq_(new_user.email_address, u'asdf@asdf.commy')
+        eq_(new_user.email_address, 'asdf@asdf.commy')
 
     def test_update_omit(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
+        params = {'user_name': 'asdf2', 'password': 'asdf2',
+                  'email_address': 'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
 
         params = {}
-        params['email_address'] = u'asdf@asdf.commy'
+        params['email_address'] = 'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
         params['user_id'] = 2
         new_user = self.provider.update(User, params, omit_fields=['email_address', 'groups'])
         q_user = self.session.query(User).get(2)
 
-        eq_(q_user.email_address, u'email@addy.com')
+        eq_(q_user.email_address, 'email@addy.com')
         eq_([group.group_id for group in q_user.groups], [1,4])
 
     def test_get_default_values(self):
@@ -292,10 +301,10 @@ class TestSAORMProvider(SproxTest):
 
     def test_delete(self):
         #causes some kind of persistence error in SA 0.7 (rollback not working)
-        
+
         if sqlalchemy.__version__ > '0.6.6':
             raise SkipTest
- 
+
         user = self.provider.delete(User, params={'user_id':1})
         users = self.session.query(User).all()
         assert len(users) == 0
@@ -317,13 +326,13 @@ class TestSAORMProvider(SproxTest):
         params = {'groups':group}
         params = self.provider._modify_params_for_relationships(User, params)
         assert params['groups'] == [group], params
-        
+
     def test_get_field_widget_args(self):
         a = self.provider.get_field_widget_args(User, 'groups', User.groups)
         eq_(a, {'nullable': False, 'provider': self.provider})
 
     def test_create_with_unicode_cast_to_int(self):
-        self.provider.create(User, dict(user_id=u'34', user_name=u'something'))
+        self.provider.create(User, dict(user_id='34', user_name='something'))
 
     def test_create_relationships_with_wacky_relation(self):
         obj = session.query(Group).first()

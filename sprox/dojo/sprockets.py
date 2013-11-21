@@ -28,8 +28,8 @@ from sprox.formbase import FormBase, AddRecordForm, EditableForm
 from sprox.entitiesbase import EntitiesBase, EntityDefBase
 
 from sprox.fillerbase import ModelsFiller, ModelDefFiller, EditFormFiller, AddFormFiller, FormFiller
-from fillerbase import DojoTableFiller
-from tablebase import DojoTableBase
+from .fillerbase import DojoTableFiller
+from .tablebase import DojoTableBase
 
 class ViewCache(ConfigCache):
     default_configs = { 'model_view'   : EntitiesBase,

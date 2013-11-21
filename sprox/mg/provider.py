@@ -28,9 +28,10 @@ import bson
 from bson import ObjectId
 
 import re
-from widgetselector import MingWidgetSelector
-from validatorselector import MingValidatorSelector
+from .widgetselector import MingWidgetSelector
+from .validatorselector import MingValidatorSelector
 from pymongo import ASCENDING, DESCENDING
+from sprox._compat import string_type
 
 class MingProvider(IProvider):
 
@@ -54,7 +55,7 @@ class MingProvider(IProvider):
     def _entities(self):
         entities = getattr(self, '__entities', None)
         if entities is None:
-            entities = dict(((m.mapped_class.__name__, m) for m in MappedClass._registry.itervalues()))
+            entities = dict(((m.mapped_class.__name__, m) for m in MappedClass._registry.values()))
             self.__entities = entities
         return entities
     
@@ -64,7 +65,7 @@ class MingProvider(IProvider):
 
     def get_entities(self):
         """Get all entities available for this provider."""
-        return self._entities.iterkeys()
+        return iter(self._entities.keys())
 
     def get_primary_fields(self, entity):
         """Get the fields in the entity which uniquely identifies a record."""
@@ -92,7 +93,7 @@ class MingProvider(IProvider):
         if entity is InstrumentedObj:
             # Cope with subdocuments
             if item is not None:
-                fields = item.keys()
+                fields = list(item.keys())
             else:
                 fields = ['_impl']
         else:
@@ -233,7 +234,7 @@ class MingProvider(IProvider):
         field = getattr(field, 'field', None)
         if field is not None:
             if field.type is S.DateTime or field.type is datetime.datetime:
-                if isinstance(value, basestring):
+                if isinstance(value, string_type):
                     return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
                 else:
                     return value
@@ -252,7 +253,7 @@ class MingProvider(IProvider):
         """Create an entry of type entity with the given params."""
         obj = entity()
         fields = self.get_fields(entity)
-        for key, value in params.iteritems():
+        for key, value in params.items():
             if key not in fields:
                 continue
             value = self._cast_value(entity, key, value)
@@ -290,7 +291,7 @@ class MingProvider(IProvider):
             pass
 
         fields = self.get_fields(entity)
-        for key, value in params.iteritems():
+        for key, value in params.items():
             if key not in fields:
                 continue
 

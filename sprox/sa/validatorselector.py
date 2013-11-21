@@ -76,7 +76,7 @@ class SAValidatorSelector(ValidatorSelector):
             return self.name_based_validators[field.name]
 
         type_ = StringType
-        for t in self.default_validators.keys():
+        for t in list(self.default_validators.keys()):
             if isinstance(field.type, t):
                 type_ = t
                 break

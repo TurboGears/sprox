@@ -24,7 +24,7 @@ import inspect
 from sprox.util import name2label, is_widget, is_widget_class
 
 from sprox.widgets import SproxMethodPutHiddenField, CalendarDatePicker, CalendarDateTimePicker
-from viewbase import ViewBase, ViewBaseError
+from .viewbase import ViewBase, ViewBaseError
 from formencode import Schema, All
 from formencode import Validator
 from formencode.validators import UnicodeString, String
@@ -120,7 +120,7 @@ class FormBase(ViewBase):
     >>>
     >>> town_form = UserOnlyTownForm(session)
     >>>
-    >>> print town_form() # doctest: +XML
+    >>> print(town_form()) # doctest: +XML
     <form enctype="multipart/form-data" method="post">
          <span class="error"></span>
         <table >
@@ -279,7 +279,7 @@ class FormBase(ViewBase):
         fields = super(FormBase, self)._do_get_fields()
         provider = self.__provider__
         field_order = self.__field_order__ or []
-        add_fields = self.__add_fields__.keys()
+        add_fields = list(self.__add_fields__.keys())
         for relation in provider.get_relations(self.__entity__):
             # do not remove field if it is listed in field_order
             for rel in provider.relation_fields(self.__entity__, relation):
@@ -394,7 +394,7 @@ class AddRecordForm(FormBase):
     ...     display_name           = TextField
     ...     verify_password        = PasswordField('verify_password')
     >>> registration_form = RegistrationForm()
-    >>> print registration_form() # doctest: +XML
+    >>> print(registration_form()) # doctest: +XML
     <form enctype="multipart/form-data" method="post">
          <span class="error"></span>
         <table >
@@ -491,7 +491,7 @@ class DisabledForm(FormBase):
     ...     __model__ = User
     ...     __limit_fields__ = ['user_name', 'email_address']
     >>> disabled_user_form = DisabledUserForm()
-    >>> print disabled_user_form(values=dict(user_name='percious', email='chris@percious.com'))  # doctest: +XML
+    >>> print(disabled_user_form(values=dict(user_name='percious', email='chris@percious.com')))  # doctest: +XML
     <form enctype="multipart/form-data" method="post">
          <span class="error"></span>
         <table >

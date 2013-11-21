@@ -78,7 +78,7 @@ class SAWidgetSelector(WidgetSelector):
             return self.default_single_select_field_widget_type
 
         type_ = String
-        for t in self.default_widgets.keys():
+        for t in list(self.default_widgets.keys()):
             if isinstance(field.type, t):
                 type_ = t
                 break
