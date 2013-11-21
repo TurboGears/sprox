@@ -43,7 +43,7 @@ class TestTableFiller(SproxTest):
     def test_get_value_with_binary_field(self):
         class ExampleFiller(TableFiller):
             __entity__ = Example
-        example = Example(binary='datadatadata')
+        example = Example(binary=b'datadatadata')
         session.add(example)
 
         filler = ExampleFiller(session)

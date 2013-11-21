@@ -15,9 +15,9 @@ import datetime
 from cgi import FieldStorage
 
 try:
-    from io import StringIO
+    from io import BytesIO
 except ImportError:
-    from StringIO import StringIO
+    from StringIO import StringIO as BytesIO
 
 session = None
 engine  = None
@@ -86,14 +86,14 @@ class TestSAORMProvider(SproxTest):
 
     def test_binary_create(self):
         fs = FieldStorage()
-        fs.file = StringIO('fake_content')
+        fs.file = BytesIO(b'fake_content')
 
         values = {'data':fs}
         self.provider.create(File, values)
 
     def test_binary_update(self):
         fs = FieldStorage()
-        fs.file = StringIO('fake_content')
+        fs.file = BytesIO(b'fake_content')
 
         values = {'data':fs}
         entity = self.provider.create(File, values)
