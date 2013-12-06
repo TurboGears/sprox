@@ -5,3 +5,4 @@ omit =
     */site-packages/nose/*
     sprox/widgets/tw1widgets/*
     sprox/dojo/*
+    sprox/test/*
