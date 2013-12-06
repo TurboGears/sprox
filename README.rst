@@ -18,7 +18,7 @@ Form Generation from database schema for ToscaWidgets with support for various d
 License
 -----------
 
-Crank is licensed under an MIT-style license (see LICENSE.txt).
+Sprox is licensed under an MIT-style license (see LICENSE.txt).
 Other incorporated projects may be licensed under different licenses.
 All licenses allow for non-commercial and commercial use.
 
