@@ -45,8 +45,16 @@ sorted_user_columns = ['_password', 'created', 'display_name', 'email_address',
                        'user_name']
 
 def remove_whitespace_nodes(node):
+    # Create a copy of the node without children
     new_node = copy(node)
-    new_node._children = []
+
+    try:
+        new_node._children = []
+    except AttributeError:
+        # On Python 3.3 it is not possible to change _children anymore
+        for child in list(new_node):
+            new_node.remove(child)
+
     if new_node.text and new_node.text.strip() == '':
         new_node.text = ''
     if new_node.tail and new_node.tail.strip() == '':
