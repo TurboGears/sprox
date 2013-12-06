@@ -5,6 +5,10 @@ from setuptools import setup, find_packages
 here = os.path.abspath(os.path.dirname(__file__))
 exec(compile(open(os.path.join(here, 'sprox', 'release.py')).read(), 'release.py', 'exec'), globals(), locals())
 
+TESTS_DEPENDENCIES = ['sqlalchemy', 'sieve']
+TEST_SUITE_DEPENDENCIES = TESTS_DEPENDENCIES + ['tw2.forms', 'genshi', 'mako']
+MONGODB_TEST_SUITE_DEPENDENCIES = TEST_SUITE_DEPENDENCIES + ['ming']
+
 setup(
   name="sprox",
   version=__version__,
@@ -17,11 +21,12 @@ setup(
   url="http://www.sprox.org",
   install_requires=['formencode>=1.3.0a1',
                     ],
-  tests_require=['sqlalchemy', 'sieve'],
+  tests_require=TESTS_DEPENDENCIES,
   extras_require={
        # Used by Travis and Coverage due to setup.py nosetests
        # causing a coredump when used with coverage
-       'testing': ['sqlalchemy', 'ming', 'tw2.forms', 'genshi', 'mako', 'sieve'],
+       'testing': TEST_SUITE_DEPENDENCIES,
+       'testing-mongodb': MONGODB_TEST_SUITE_DEPENDENCIES
   },
   packages = find_packages(),
   classifiers=[

@@ -13,6 +13,8 @@ install:
   - "pip install nose"
   - "pip install coveralls"
   - "pip install -e .[testing]"
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install -e .[testing-mongodb]; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install -e .[testing-mongodb]; fi
 
 script: "nosetests -v --with-coverage --cover-package=sprox --cover-erase"
 
