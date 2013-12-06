@@ -21,7 +21,7 @@ setup(
   extras_require={
        # Used by Travis and Coverage due to setup.py nosetests
        # causing a coredump when used with coverage
-       'testing': ['sqlalchemy', 'ming', 'tw2.forms'],
+       'testing': ['sqlalchemy', 'ming', 'tw2.forms', 'genshi', 'mako'],
   },
   packages = find_packages(),
   classifiers=[
