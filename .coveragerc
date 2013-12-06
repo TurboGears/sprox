@@ -3,3 +3,5 @@ omit =
     tests/*
     */python?.?/*
     */site-packages/nose/*
+    sprox/widgets/tw1widgets/*
+    sprox/dojo/*
