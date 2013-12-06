@@ -33,7 +33,7 @@ setup(
        # Used by Travis and Coverage due to setup.py nosetests
        # causing a coredump when used with coverage
        'testing': TEST_SUITE_DEPENDENCIES,
-       'testing-mongodb': MONGODB_TEST_SUITE_DEPENDENCIES
+       'testing_mongodb': MONGODB_TEST_SUITE_DEPENDENCIES
   },
   packages = find_packages(),
   classifiers=[
