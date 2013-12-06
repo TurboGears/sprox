@@ -5,6 +5,9 @@ python:
   - "3.2"
   - "3.3"
 
+services:
+  - mongodb
+
 install:
   - "pip install coverage"
   - "pip install nose"
