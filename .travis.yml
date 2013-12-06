@@ -12,8 +12,8 @@ install:
   - "pip install coverage"
   - "pip install nose"
   - "pip install coveralls"
-  - "pip install git+https://github.com/toscawidgets/tw2.core.git#egg=tw2.core"
-  - "pip install git+https://github.com/toscawidgets/tw2.forms.git#egg=tw2.forms"
+  - "pip install git+https://github.com/toscawidgets/tw2.core.git@develop#egg=tw2.core"
+  - "pip install git+https://github.com/toscawidgets/tw2.forms.git@develop#egg=tw2.forms"
   - "pip install -e .[testing]"
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install -e .[testing-mongodb]; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install -e .[testing-mongodb]; fi
