@@ -18,6 +18,11 @@ setup(
   install_requires=['formencode>=1.2.2',
                     ],
   tests_require=['sqlalchemy'],
+  extras_require={
+       # Used by Travis and Coverage due to setup.py nosetests
+       # causing a coredump when used with coverage
+       'testing': ['sqlalchemy', 'ming', 'tw2.forms'],
+  },
   packages = find_packages(),
   classifiers=[
         "Development Status :: 4 - Beta",
