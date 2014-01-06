@@ -27,8 +27,8 @@ from sqlalchemy.types import String as StringType
 from formencode.compound import All
 from formencode import Invalid
 from formencode.validators import StringBool, Number, UnicodeString as FEUnicodeString, Email, Int
-from sqlalchemy.orm import PropertyLoader, SynonymProperty
-
+from sqlalchemy.orm import SynonymProperty
+from sprox.sa.support import PropertyLoader
 from sprox._validatorselector import ValidatorSelector
 
 try: #pragma: no cover

@@ -25,8 +25,8 @@ from sqlalchemy.types import *
 from sprox.widgets import *
 
 from sqlalchemy.schema import Column
-from sqlalchemy.orm import PropertyLoader, SynonymProperty
-
+from sqlalchemy.orm import SynonymProperty
+from sprox.sa.support import PropertyLoader
 from sprox._widgetselector import WidgetSelector
 
 text_field_limit=100

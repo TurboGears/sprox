@@ -26,10 +26,11 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm.query import Query
-from sqlalchemy.orm import class_mapper, Mapper, PropertyLoader, _mapper_registry, SynonymProperty, object_mapper
+from sqlalchemy.orm import Mapper, _mapper_registry, SynonymProperty, object_mapper, class_mapper
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.schema import Column
+from sprox.sa.support import PropertyLoader, resolve_entity
 
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
@@ -80,8 +81,7 @@ class SAORMProvider(IProvider):
         return engine, session, metadata
 
     def get_fields(self, entity):
-        if inspect.isfunction(entity):
-            entity = entity()
+        entity = resolve_entity(entity)
         mapper = class_mapper(entity)
         field_names = list(mapper.c.keys())
         for prop in mapper.iterate_properties:
@@ -113,6 +113,7 @@ class SAORMProvider(IProvider):
         return entities
 
     def get_field(self, entity, name):
+        entity = resolve_entity(entity)
         mapper = class_mapper(entity)
         try:
             return getattr(mapper.c, name)
@@ -151,9 +152,7 @@ class SAORMProvider(IProvider):
         return isinstance(field.type, String)
 
     def get_primary_fields(self, entity):
-        #sometimes entities get surrounded by functions, not sure why.
-        if inspect.isfunction(entity):
-            entity = entity()
+        entity = resolve_entity(entity)
         mapper = class_mapper(entity)
         fields = []
 
@@ -173,6 +172,7 @@ class SAORMProvider(IProvider):
         return fields[0]
 
     def _find_title_column(self, entity):
+        entity = resolve_entity(entity)
         for column in class_mapper(entity).columns:
             if 'title' in column.info and column.info['title']:
                 return column.key
@@ -214,8 +214,7 @@ class SAORMProvider(IProvider):
         target_field = entity
         if isinstance(field, PropertyLoader):
             target_field = field.argument
-        if inspect.isfunction(target_field):
-            target_field = target_field()
+        target_field = resolve_entity(target_field)
 
         #some kind of relation
         if isinstance(target_field, Mapper):
@@ -237,10 +236,12 @@ class SAORMProvider(IProvider):
         return [ (build_pk(row), getattr(row, view_name)) for row in rows ]
 
     def get_relations(self, entity):
+        entity = resolve_entity(entity)
         mapper = class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, PropertyLoader)]
 
     def is_relation(self, entity, field_name):
+        entity = resolve_entity(entity)
         mapper = class_mapper(entity)
 
         try:
@@ -260,6 +261,7 @@ class SAORMProvider(IProvider):
         return isinstance(value, Query)
 
     def is_unique(self, entity, field_name, value):
+        entity = resolve_entity(entity)
         field = getattr(entity, field_name)
         try:
             self.session.query(entity).filter(field==value).one()
@@ -268,6 +270,7 @@ class SAORMProvider(IProvider):
         return False
 
     def get_synonyms(self, entity):
+        entity = resolve_entity(entity)
         mapper = class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, SynonymProperty)]
 
@@ -282,7 +285,7 @@ class SAORMProvider(IProvider):
         return list(relationship.local_side) #pragma: no cover
 
     def _modify_params_for_relationships(self, entity, params, delete_first=True):
-
+        entity = resolve_entity(entity)
         mapper = class_mapper(entity)
         relations = self.get_relations(entity)
 
@@ -290,8 +293,7 @@ class SAORMProvider(IProvider):
             if relation in params:
                 prop = mapper.get_property(relation)
                 target = prop.argument
-                if inspect.isfunction(target):
-                    target = target()
+                target = resolve_entity(target)
                 value = params[relation]
                 if value:
                     if prop.uselist and isinstance(value, list):
@@ -342,6 +344,7 @@ class SAORMProvider(IProvider):
         return params
 
     def create(self, entity, params):
+        entity = resolve_entity(entity)
         params = self._modify_params_for_dates(entity, params)
         params = self._modify_params_for_relationships(entity, params)
         obj = entity()
@@ -422,6 +425,7 @@ class SAORMProvider(IProvider):
     def query(self, entity, limit=None, offset=None, limit_fields=None,
             order_by=None, desc=False, field_names=[], filters={},
             substring_filters=[], **kw):
+        entity = resolve_entity(entity)
         query = self.session.query(entity)
 
         filters = self._modify_params_for_dates(entity, filters)
@@ -470,6 +474,7 @@ class SAORMProvider(IProvider):
 
 
     def _modify_params_for_dates(self, entity, params):
+        entity = resolve_entity(entity)
         mapper = class_mapper(entity)
         for key, value in list(params.items()):
             if key in mapper.c and value is not None:
@@ -512,6 +517,7 @@ class SAORMProvider(IProvider):
                         setattr(obj, relation, None)
 
     def _get_obj(self, entity, pkdict):
+        entity = resolve_entity(entity)
         pk_names = self.get_primary_fields(entity)
         pks = tuple([pkdict[n] for n in pk_names])
         return self.session.query(entity).get(pks)
