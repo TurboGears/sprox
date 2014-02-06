@@ -812,9 +812,10 @@ class TestMGORMProvider(SproxTest):
         new_user = self.provider.create(User, params)
         session.flush()
 
-        #One-To-Many relations are not writable in Ming, we ensure that we do not have a crash when one is set
+        #One-To-Many relations are now writable in Ming, check that it correctly changed the relation
         new_town = self.provider.create(Town, {'users':[new_user._id]})
-        assert new_town.users == []
+        assert len(new_town.users) == 1
+        assert new_town.users[0]._id == new_user._id
 
     @raises(TypeError)
     def test_relation_fields_invalid(self):
