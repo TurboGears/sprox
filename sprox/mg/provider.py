@@ -98,7 +98,6 @@ class MingProvider(IProvider):
                 fields = ['_impl']
         else:
             fields = self.get_fields(entity)
-
             for field in fields:
                 if self._get_meta(entity, field, 'title'):
                     return field
@@ -299,11 +298,10 @@ class MingProvider(IProvider):
                 continue
 
             value = self._cast_value(entity, key, value)
-            if value is not None:
-                try:
-                    setattr(obj,key,value)
-                except TypeError:
-                    pass
+            try:
+                setattr(obj,key,value)
+            except TypeError:
+                pass
         return obj
 
     def delete(self, entity, params):

@@ -30,6 +30,12 @@ try:
 except ImportError: #pragma: no cover
     from ming.orm.property import RelationProperty, ManyToOneJoin, OneToManyJoin
 
+try:
+    from ming.odm.property import ManyToManyListJoin
+except: #pragma: no cover
+    class ManyToManyListJoin:
+        pass
+
 class MingWidgetSelector(WidgetSelector):
 
     default_multiple_select_field_widget_type = PropertyMultipleSelectField
@@ -58,7 +64,7 @@ class MingWidgetSelector(WidgetSelector):
             join = field.join
             if isinstance(join, ManyToOneJoin):
                 return self.default_single_select_field_widget_type
-            if isinstance(join, OneToManyJoin):
+            if isinstance(join, (OneToManyJoin, ManyToManyListJoin)):
                 return self.default_multiple_select_field_widget_type
             raise NotImplementedError("Unknown join type %r" % join)	# pragma: no cover
         

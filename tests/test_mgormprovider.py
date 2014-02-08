@@ -721,18 +721,36 @@ class TestMGORMProvider(SproxTest):
         cnt, r = self.provider.query(Town, filters={'_id':'this_is_the_id'}, substring_filters=['_id'])
         eq_(r, [])
 
-    # expected failure; needs updatable RelationProperty
-    @raises(TypeError)
-    def test_update(self):
-        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'groups':[1,4], 'town':2}
+    def test_update_related(self):
+        __, cities = self.provider.query(Town)
+
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'town':cities[0]}
         new_user = self.provider.create(User, params)
+        session.flush()
+        eq_(new_user.town.name, cities[0].name)
+
+        params['town'] = cities[1]
+        params['_id'] = new_user._id
+        new_user = self.provider.update(User, params)
+        session.flush()
+        
+        q_user = User.query.find({ "_id": new_user._id }).first()
+        eq_(new_user.town.name, cities[1].name)
+        eq_(q_user.town.name, cities[1].name)
+
+    def test_update_none(self):
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com'}
+        new_user = self.provider.create(User, params)
+        session.flush()
+        
         params['email_address'] = 'asdf@asdf.commy'
-        params['created'] = '2008-3-30 12:21:21'
+        params['email_address'] = None
+        params['created'] = None
         params['_id'] = new_user._id
         new_user = self.provider.update(User, params)
         q_user = User.query.find({ "_id": new_user._id }).first()
-        eq_(new_user.email_address, 'asdf@asdf.commy')
-        eq_(q_user.email_address, 'asdf@asdf.commy')
+        eq_(new_user.email_address, None)
+        eq_(q_user.email_address, None)
 
     def test_update_simple(self):
         params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com'}
