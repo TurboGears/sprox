@@ -2,3 +2,8 @@ recursive-include sprox/widgets/tw1widgets/templates *
 recursive-include sprox/widgets/tw1widgets/static *
 recursive-include sprox/widgets/tw2widgets/templates *
 recursive-include sprox/widgets/tw2widgets/static *
+
+global-exclude __pycache__/*
+global-exclude *.pyc
+recursive-exclude tests *
+recursive-exclude sprox/test *
