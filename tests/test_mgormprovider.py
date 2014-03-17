@@ -620,12 +620,12 @@ class TestMGORMProvider(SproxTest):
         d = self.provider.dictify(None)
         eq_(d, {})
 
-    # expected failure; ming does not yet support writing into RelationProperties
+    # expected failure; groups and town relation values should be an ObjectId
     @raises(TypeError)
     def test_create(self):
-        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'groups':[1,4], 'town':2}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com',
+                  'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
-        assert q_user == new_user
 
     def test_create_blank__id(self):
         params = {'user_name':'asdf3', 'password':'asdf3', 'email_address':'email111@addy.com', '_id':''}
@@ -853,21 +853,27 @@ class TestMGORMProvider(SproxTest):
         relation_fields = self.provider.relation_fields(TGMMUser, 'groups')
         assert relation_fields == []
 
-    # expected failure; needs updatable RelationProperty
-    @raises(TypeError)
     def test_update_omit(self):
-        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'groups':[1,4], 'town':2}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com'}
         new_user = self.provider.create(User, params)
 
         params = {}
         params['email_address'] = 'asdf@asdf.commy'
         params['created'] = '2008-3-30 12:21:21'
-        params['_id'] = 2
-        new_user = self.provider.update(User, params, omit_fields=['email_address', 'groups'])
-        q_user = self.session.query(User).get(2)
+        params['_id'] = new_user._id
+        new_user = self.provider.update(User, params, omit_fields=['email_address'])
+        q_user = User.query.get(_id=new_user._id)
 
         eq_(q_user.email_address, 'email@addy.com')
-        eq_([group.group_id for group in q_user.groups], [1,4])
+        eq_(q_user.created, datetime(2008, 3, 30, 12, 21, 21))
+
+    # expected failure; related ID should be an ObjectId
+    @raises(TypeError)
+    def test_update_relationship(self):
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com'}
+        new_user = self.provider.create(User, params)
+
+        self.provider.update(User, {'_id': new_user._id, 'groups': [1, 4]})
 
     def test_get_default_values(self):
         assert {} == self.provider.get_default_values(User, {})
