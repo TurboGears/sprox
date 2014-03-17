@@ -297,10 +297,7 @@ class MingProvider(IProvider):
                 continue
 
             value = self._cast_value(entity, key, value)
-            try:
-                setattr(obj,key,value)
-            except TypeError:
-                pass
+            setattr(obj, key, value)
         return obj
 
     def delete(self, entity, params):
