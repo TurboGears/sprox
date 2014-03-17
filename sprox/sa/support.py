@@ -8,7 +8,8 @@ except ImportError:
 
 try:
     from sqlalchemy.ext.declarative.clsregistry import _class_resolver
-except ImportError as e:
+except ImportError as e:  # pragma: no cover
+    # Compatibility with SQLA < 0.9
     _class_resolver = None
 
 
