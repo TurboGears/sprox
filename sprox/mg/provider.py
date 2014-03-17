@@ -250,17 +250,16 @@ class MingProvider(IProvider):
 
     def create(self, entity, params):
         """Create an entry of type entity with the given params."""
-        obj = entity()
+        values = {}
         fields = self.get_fields(entity)
         for key, value in params.items():
             if key not in fields:
                 continue
             value = self._cast_value(entity, key, value)
             if value is not None:
-                try:
-                    setattr(obj,key,value)
-                except TypeError:
-                    pass
+                values[key] = value
+
+        obj = entity(**values)
         self.flush()
         return obj
 

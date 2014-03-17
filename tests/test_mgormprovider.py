@@ -21,7 +21,7 @@ from sprox.fillerbase import TableFiller
 from sieve.operators import assert_in_xml as assert_in_xhtml
 
 from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town, UnrelatedDocument
-from sprox.test.mg.model import Permission, TGMMUser
+from sprox.test.mg.model import Permission, TGMMUser, ModelWithRequired
 
 from bson.objectid import InvalidId
 
@@ -493,7 +493,8 @@ class TestMGORMProvider(SproxTest):
         entities = self.provider.get_entities()
         assert set(entities) == set(['Town', 'GroupPermission', 'Group', 'Permission', 'DocumentCategoryReference',
                 'SproxTestClass', 'DocumentCategoryTag', 'DocumentCategoryTagAssignment', 'User', 'File', 'TGMMUser',
-                'DocumentCategory', 'Department', 'Document', 'MappedClass', 'Example', 'UserGroup', 'UnrelatedDocument'])
+                'DocumentCategory', 'Department', 'Document', 'MappedClass', 'Example', 'UserGroup', 'UnrelatedDocument',
+                'ModelWithRequired'])
 
     @raises(KeyError)
     def test_get_entity_non_matching_engine(self):
@@ -647,6 +648,15 @@ class TestMGORMProvider(SproxTest):
         new_ratingref = self.provider.create(DocumentCategoryTag, params)
         q_ratingref = self.session.query(DocumentCategoryTag).get(1)
         assert new_ratingref == q_ratingref
+
+    def test_create_with_required(self):
+        new_doc = self.provider.create(ModelWithRequired, dict(value='Hello'))
+        q_user = self.provider.get(ModelWithRequired, {'value': 'Hello'})    
+        assert q_user is not None
+
+    @raises(S.Invalid)  # Expect failure, missing field
+    def test_create_with_missing_required(self):
+        new_doc = self.provider.create(ModelWithRequired, dict())
 
     def test_query(self):
         r = self.provider.query(User, limit=20, offset=0)

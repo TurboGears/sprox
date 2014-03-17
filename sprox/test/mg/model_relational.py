@@ -331,6 +331,13 @@ class TGMMUser(SproxTestClass):
         self._groups = [group.group_name for group in groups]
     groups = ProgrammaticRelationProperty(Group, _get_groups, _set_groups)
 
+class ModelWithRequired(SproxTestClass):
+    class __mongometa__:
+        name = 'model_with_required'
+
+    _id = FieldProperty(S.ObjectId)
+    value = FieldProperty(S.String, required=True)
+
 Mapper.compile_all()
 
 
