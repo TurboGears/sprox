@@ -269,7 +269,11 @@ class MingProvider(IProvider):
 
     def get_obj(self, entity, params, fields=None, omit_fields=None):
         if '_id' in params:
-            return entity.query.find_by(_id=ObjectId(params['_id'])).first()
+            try:
+                ObjectId(params['_id'])
+            except InvalidId:
+                return None
+            return entity.query.find_by(_id=params['_id']).first()
         return entity.query.find_by(**params).first()
 
     def get(self, entity, params, fields=None, omit_fields=None):
