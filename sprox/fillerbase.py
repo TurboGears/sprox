@@ -13,6 +13,7 @@ from .metadata import FieldsMetadata
 import inspect
 from datetime import datetime
 from sprox._compat import string_type, byte_string, unicode_text
+from markupsafe import Markup
 
 encoding = 'utf-8'
 
@@ -245,7 +246,7 @@ class TableFiller(FillerBase):
                     elif self.__provider__.is_relation(self.__entity__, field) and value is not None:
                         value = self._get_relation_value(field, value)
                     elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
-                        value = '&lt;file&gt;'
+                        value = Markup('&lt;file&gt;')
                 if isinstance(value, byte_string):
                     value = unicode_text(value, encoding='utf-8')
                 row[field] = unicode_text(value)

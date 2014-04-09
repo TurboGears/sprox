@@ -12,6 +12,8 @@ DEPENDENCIES = ['formencode>=1.3.0a1']
 
 if py_version == (3, 2):
     DEPENDENCIES += ['markupsafe<0.16']
+else:
+    DEPENDENCIES += ['markupsafe']
 
 TESTS_DEPENDENCIES = ['sqlalchemy', 'sieve']
 TEST_SUITE_DEPENDENCIES = TESTS_DEPENDENCIES + ['tw2.forms', 'genshi', 'mako']
