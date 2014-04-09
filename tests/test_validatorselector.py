@@ -34,9 +34,10 @@ class TestValidatorSelector(SproxTest):
 
 class TestSAValidatorSelector(SproxTest):
     testColumns = (
-    (BLOB,        NoneType),
+    (BLOB,        FileValidator),
     (BOOLEAN,     NoneType),
-    (Binary,      NoneType),
+    (Binary,      FileValidator),
+    (LargeBinary, FileValidator),
     (Boolean,     NoneType),
     (CHAR,        UnicodeString),
     (CLOB,        UnicodeString),

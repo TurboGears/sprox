@@ -20,7 +20,7 @@ Released under MIT license.
 """
 import inspect
 import re
-from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, Binary, MetaData, desc as _desc, func
+from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, MetaData, desc as _desc, func
 from sqlalchemy import String
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
@@ -30,7 +30,7 @@ from sqlalchemy.orm import Mapper, _mapper_registry, SynonymProperty, object_map
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.schema import Column
-from sprox.sa.support import PropertyLoader, resolve_entity
+from sprox.sa.support import PropertyLoader, resolve_entity, Binary, LargeBinary
 
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
@@ -131,7 +131,7 @@ class SAORMProvider(IProvider):
             field = self._relationship_local_side(field)[0]
         if isinstance(field, SynonymProperty):
             field = self.get_field(entity, field.name)
-        return isinstance(field.type, Binary)
+        return isinstance(field.type, (Binary, LargeBinary))
 
     def is_nullable(self, entity, name):
         field = self.get_field(entity, name)
