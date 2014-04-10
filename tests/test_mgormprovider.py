@@ -881,6 +881,14 @@ class TestMGORMProvider(SproxTest):
     def test_get(self):
         user = self.provider.get(User, params={'_id': self.asdf_user_id})
         eq_(user['user_name'], 'asdf')
+    
+    def test_get_valid_object_id(self):
+        user = self.provider.get_obj(User, params={'_id': self.asdf_user_id})
+        eq_(user['user_name'], 'asdf')
+    
+    def test_get_invalid_object_id(self):
+        user = self.provider.get_obj(User, params={'_id': "1"})
+        assert user is None
 
     def test_delete(self):
         user = self.provider.delete(User, params={'_id': self.asdf_user_id})
