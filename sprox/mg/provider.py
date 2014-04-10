@@ -268,13 +268,12 @@ class MingProvider(IProvider):
         self.session.close_all()
 
     def get_obj(self, entity, params, fields=None, omit_fields=None):
-        if '_id' in params:
-            try:
-                ObjectId(params['_id'])
-            except InvalidId:
-                return None
-            return entity.query.find_by(_id=ObjectId(params['_id'])).first()
-        return entity.query.find_by(**params).first()
+        try:
+            return entity.query.get(_id=ObjectId(params['_id']))
+        except InvalidId:
+            return None
+        except KeyError:
+            return entity.query.find_by(**params).first()
 
     def get(self, entity, params, fields=None, omit_fields=None):
         return self.dictify(self.get_obj(entity, params), fields, omit_fields)
