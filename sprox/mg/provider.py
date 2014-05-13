@@ -241,7 +241,7 @@ class MingProvider(IProvider):
                 return bson.Binary(value)
             elif field.type in (S.Int, int):
                 return int(value)
-            elif field.type is S.Bool:
+            elif field.type in (S.Bool, bool):
                 if value in ('true', 'false'):
                     return value == 'true' and True or False
                 else:

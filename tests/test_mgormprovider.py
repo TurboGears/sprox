@@ -350,6 +350,7 @@ class TestMingWidgetSelector:
     (S.Float,     TextField),
     (S.Int,       TextField),
     (S.OneOf,     PropertySingleSelectField),
+    (bool,        SproxCheckBox)
     )
 
     def setup(self):
@@ -414,6 +415,13 @@ class TestMingValidatorSelector:
 
     def test_select_with_one_relation(self):
         eq_(self.selector.select(User.town), UnicodeString)
+
+    def test_Bool_Schema_validator(self):
+        eq_(self.selector.select(UnrelatedDocument.enabled), BoolValidator)
+
+    def test_bool_validator(self):
+        eq_(self.selector.select(Example.boolean), BoolValidator)
+
 
 # tablebase tests
 
