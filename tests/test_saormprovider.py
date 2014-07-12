@@ -295,6 +295,12 @@ class TestSAORMProvider(SproxTest):
     def test_get_default_values(self):
         assert {} == self.provider.get_default_values(User, {})
 
+    def test_get_field_default(self):
+        field = self.provider.get_field(Group, 'created')
+        has_default, default_value = self.provider.get_field_default(field)
+        assert has_default == True, default_value
+        assert datetime.datetime.now().date() == default_value().date()
+
     def test_get(self):
         user = self.provider.get(User, params={'user_id':1})
         eq_(user['user_name'], 'asdf')

@@ -402,6 +402,9 @@ class SAORMProvider(IProvider):
         if isinstance(field, Column) and field.default and getattr(field.default, 'arg', None) is not None:
             if isinstance(field.default.arg, (string_type, int, float)):
                 return (True, field.default.arg)
+            elif callable(field.default.arg):
+                # SQLAlachemy wraps default so that they receive a context, but TW can't provide one
+                return (True, lambda: field.default.arg(None))
         return (False, None)
 
     def get_field_provider_specific_widget_args(self, entity, field, field_name):
