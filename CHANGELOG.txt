@@ -1,3 +1,7 @@
+0.9.4
+* Fix for MongoDB validators detection when using python types instead of ming schema classes.
+* Fix for Default value on SQLAlchemy when using a callable
+
 0.8.3
 * Support for default values in MongoDB
 * Support for callables as default values for form fields
