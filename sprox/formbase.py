@@ -20,10 +20,11 @@ except ImportError: #pragma: no cover
     class WidgetMeta(object):
         """TW2 WidgetMetaClass"""
 
+
 import inspect
 from sprox.util import name2label, is_widget, is_widget_class
 
-from sprox.widgets import SproxMethodPutHiddenField, CalendarDatePicker, CalendarDateTimePicker
+from sprox.widgets import SproxMethodPutHiddenField, CalendarBase, CalendarDatePicker, CalendarDateTimePicker
 from .viewbase import ViewBase, ViewBaseError
 from formencode import Schema, All
 from formencode import Validator
@@ -318,7 +319,8 @@ class FormBase(ViewBase):
         args['required'] = args['not_empty']
 
         widget_type = self._do_get_field_widget_type(field_name, field)
-        if widget_type and (issubclass(widget_type, CalendarDatePicker) or
+        if widget_type and (issubclass(widget_type, CalendarBase) or
+                            issubclass(widget_type, CalendarDatePicker) or
                             issubclass(widget_type, CalendarDateTimePicker)):
             widget_args = super(FormBase, self)._do_get_field_widget_args(field_name, field)
             args['format'] = widget_args.get('date_format', widget_type.date_format)
