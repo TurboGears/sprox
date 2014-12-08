@@ -250,10 +250,10 @@ class WithoutName(DeclarativeBase):
         dropdown_field_names = {'owner': ['data']}
 
     uid = Column(Integer, primary_key=True)
-    data = Column(String(100))
+    data = Column(String(100), info={'title': True})
 
     owner_id = Column(Integer, ForeignKey(WithoutNameOwner.uid))
-    owner = relation('WithoutNameOwner')
+    owner = relation('WithoutNameOwner', backref=backref('owned'))
 
 #not supporting enums for now.
 #ModelWithEnum=None

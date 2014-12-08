@@ -1,8 +1,9 @@
+from sprox.fillerbase import EditFormFiller
 from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm, Field
 from sprox.viewbase import ViewBaseError
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, \
     Example, Document, assert_in_xml, widget_children, widget_is_type, form_error_message
-from sprox.test.model import User, Group, WithoutName
+from sprox.test.model import User, Group, WithoutName, WithoutNameOwner
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
@@ -16,26 +17,31 @@ except:
 
 class MyTextField(TextField):pass
 
+
 session = None
 engine  = None
 connection = None
 user = None
+
+
 def setup():
     global session, engine, metadata, user
     session, engine, metadata = setup_database()
     user = setup_records(session)
 
+
 class UserForm(FormBase):
     __entity__ = User
 
-class TestField:
 
+class TestField:
     def setup(self):
         self.field = Field(TextField, NotEmpty)
 
     def test_create(self):
         assert self.field.widget == TextField
         assert self.field.validator == NotEmpty
+
 
 class TestsEmptyDropdownWorks:
     def setup(self):
@@ -45,6 +51,7 @@ class TestsEmptyDropdownWorks:
         rendered = self.base()
         assert 'selected="selected"' in rendered
         assert '-----------</option>' in rendered
+
 
 class TestFormBase(SproxTest):
     def setup(self):
@@ -246,6 +253,7 @@ class TestFormBase(SproxTest):
         form = RegistrationForm(session)
         assert widget_children(form.__widget__)['group_name'].validator is not None
 
+
 class TestAddRecordForm(SproxTest):
     def setup(self):
         super(TestAddRecordForm, self).setup()
@@ -309,6 +317,7 @@ class TestAddRecordForm(SproxTest):
         rendered = example_form()
         assert 'default group name' in rendered
 
+
 class TestEditableForm(SproxTest):
     def setup(self):
         super(TestEditableForm, self).setup()
@@ -329,6 +338,29 @@ class TestEditableForm(SproxTest):
         rendered = self.base()
         assert 'name="user_name"' in rendered
         assert 'User Name' in rendered
+
+    def test_required_validator_select_field(self):
+        o = session.query(WithoutNameOwner).filter_by(data='otherowner').first()
+        assert o, 'Something wrong in tests setup'
+
+        class OwnerFiller(EditFormFiller):
+            __entity__ = WithoutNameOwner
+        owner_filler = OwnerFiller(session)
+        value = owner_filler.get_value({'uid': o.uid})
+
+        class OwnerForm(EditableForm):
+            __entity__ = WithoutNameOwner
+            __require_fields__ = ['owned']
+        owner_form = OwnerForm(session)
+
+        form_html = owner_form.display(value=value)
+        selected = [row for row in form_html.split('\n') if 'selected="selected"' in row]
+        assert len(selected) == len(value['owned'])
+
+        selected_html = '\n'.join(selected)
+        for entry in value['owned']:
+            assert str(entry) in selected_html, (entry, selected_html)
+
 
 class TestDisabledForm(SproxTest):
     def setup(self):

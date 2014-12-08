@@ -7,6 +7,7 @@ Released under MIT license.
 """
 from formencode import FancyValidator, Invalid
 from formencode.validators import UnicodeString as FEUnicodeString
+from formencode.validators import NotEmpty
 
 
 class UnicodeString(FEUnicodeString):

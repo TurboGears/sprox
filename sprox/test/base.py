@@ -165,6 +165,15 @@ def setup_records(session):
     session.add(owner)
     session.add(WithoutName(data='Something', owner=owner))
 
+    # This is for tests that need entities with two digits ids.
+    otherowner = WithoutNameOwner(data='otherowner')
+    session.add(otherowner)
+    for i in range(20):
+        owned = WithoutName(data='wno_%s' % i)
+        if i >= 15:
+            owned.owner = otherowner
+        session.add(owned)
+
     #test_table.insert(values=dict(BLOB=FieldStorage('asdf', StringIO()).value)).execute()
     #user_reference_table.insert(values=dict(user_id=user.user_id)).execute()
 

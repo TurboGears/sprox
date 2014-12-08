@@ -29,7 +29,7 @@ from .viewbase import ViewBase, ViewBaseError
 from formencode import Schema, All
 from formencode import Validator
 from formencode.validators import String
-from sprox.validators import UnicodeString
+from sprox.validators import UnicodeString, NotEmpty
 
 from sprox.validators import UniqueValue
 from sprox.metadata import FieldsMetadata
@@ -301,7 +301,7 @@ class FormBase(ViewBase):
         """
         v_type = self.__field_validator_types__.get(field_name, self.__validator_selector__[field])
         if field_name in self.__require_fields__ and v_type is None:
-            v_type = UnicodeString
+            v_type = NotEmpty
         if v_type is None:
             return
         args = self._do_get_validator_args(field_name, field, v_type)
