@@ -125,6 +125,7 @@ def setup_records(session):
     user = User()
     user.user_name = 'asdf'
     user.email_address = "asdf@asdf.com"
+    user.display_name = "asdf@asdf.com"
     user.password = "asdf"
 
     arvada = Town(name='Arvada')
@@ -141,9 +142,8 @@ def setup_records(session):
 #    print user.user_id
     for i in range (5):
         group = Group(group_name=unicode_text(i))
-        UserGroup(user_id=user._id, group_id=group._id)
 
-#    user.groups.append(group)
+    user.groups = [group]
 
     session.flush()
     return user

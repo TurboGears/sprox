@@ -44,7 +44,7 @@ from sprox._compat import string_type
 class SAORMProviderError(Exception):pass
 
 class SAORMProvider(IProvider):
-
+    default_view_names = ['_name', 'name', 'description', 'title']
 
     default_widget_selector_type = SAWidgetSelector
     default_validator_selector_type = SAValidatorSelector
@@ -201,7 +201,8 @@ class SAORMProvider(IProvider):
 
     def get_dropdown_options(self, entity, field_name, view_names=None):
         if view_names is None:
-            view_names = ['_name', 'name', 'description', 'title']
+            view_names = self.default_view_names
+
         if self.session is None:
             warn('No dropdown options will be shown for %s.  '
                  'Try passing the session into the initialization '
@@ -252,9 +253,15 @@ class SAORMProvider(IProvider):
         if isinstance(property, PropertyLoader):
             return True
 
+    def _relates_many(self, entity, field_name):
+        entity = resolve_entity(entity)
+        mapper = class_mapper(entity)
+        property = mapper.get_property(field_name)
+        return property.uselist
+
     def relation_fields(self, entity, field_name):
         field = getattr(entity, field_name)
-        return [ col.name for col in self._relationship_local_side(field.property)]
+        return [col.name for col in self._relationship_local_side(field.property)]
 
     def is_query(self, entity, value):
         """determines if a field is a query instead of actual list of data"""
@@ -284,7 +291,7 @@ class SAORMProvider(IProvider):
             return list(relationship.local_columns)
         return list(relationship.local_side) #pragma: no cover
 
-    def _modify_params_for_relationships(self, entity, params, delete_first=True):
+    def _modify_params_for_relationships(self, entity, params):
         entity = resolve_entity(entity)
         mapper = class_mapper(entity)
         relations = self.get_relations(entity)
@@ -324,8 +331,7 @@ class SAORMProvider(IProvider):
                             mapper = target
                             if not isinstance(target, Mapper):
                                 mapper = class_mapper(target)
-                            if isinstance(mapper.primary_key[0].type, Integer):
-                                value = int(value)
+                            value = self._adapt_type(value, mapper.primary_key[0])
                             target_obj = [self.session.query(target).get(value)]
                     else:
                         try:
@@ -340,7 +346,11 @@ class SAORMProvider(IProvider):
                             target_obj = self.session.query(target).get(value)
                     params[relation] = target_obj
                 else:
-                    del params[relation]
+                    if prop.uselist:
+                        params[relation] = []
+                    else:
+                        params[relation] = None
+
         return params
 
     def create(self, entity, params):
@@ -348,7 +358,6 @@ class SAORMProvider(IProvider):
         params = self._modify_params_for_dates(entity, params)
         params = self._modify_params_for_relationships(entity, params)
         obj = entity()
-        
 
         relations = self.get_relations(entity)
         mapper = class_mapper(entity)
@@ -425,25 +434,90 @@ class SAORMProvider(IProvider):
         obj = self.get_obj(entity, params, fields)
         return self.dictify(obj, fields, omit_fields)
 
+    def _escape_like(self, value):
+        return value.replace('*', '**').replace('%', '*%').replace('_', '*_')
+
+    def _get_related_class(self, entity, relation):
+        entity = resolve_entity(entity)
+        mapper = class_mapper(entity)
+        prop = mapper.get_property(relation)
+
+        target = resolve_entity(prop.argument)
+        if not hasattr(target, 'class_'):
+            target = class_mapper(target)
+
+        return target.class_
+
+    def _modify_params_for_related_searches(self, entity, params, view_names=None, substrings=()):
+        if view_names is None:
+            view_names = self.default_view_names
+
+        relations = self.get_relations(entity)
+        for relation in relations:
+            if relation in params:
+                value = params[relation]
+                if not isinstance(value, string_type):
+                    # When not a string consider it the related class primary key
+                    params.update(self._modify_params_for_relationships(entity, {relation: value}))
+                    continue
+
+                if not value:
+                    # As we use ``contains``, searching for an empty text
+                    # will just lead to all results so we just remove the filter.
+                    del params[relation]
+                    continue
+
+                target_class = self._get_related_class(entity, relation)
+                view_name = self.get_view_field_name(target_class, view_names)
+                related_column = getattr(target_class, view_name)
+
+                if relation in substrings:
+                    escaped_value = self._escape_like(value.lower())
+                    filter = func.lower(related_column).contains(
+                        escaped_value, escape='*'
+                    )
+                else:
+                    filter = (func.lower(related_column) == value.lower())
+
+                params[relation] = self.session.query(target_class).filter(filter).all()
+
+        return params
+
     def query(self, entity, limit=None, offset=None, limit_fields=None,
-            order_by=None, desc=False, field_names=[], filters={},
-            substring_filters=[], **kw):
+              order_by=None, desc=False, field_names=[], filters={},
+              substring_filters=[], search_related=False, related_field_names=None,
+              **kw):
         entity = resolve_entity(entity)
         query = self.session.query(entity)
 
         filters = self._modify_params_for_dates(entity, filters)
-        filters = self._modify_params_for_relationships(entity, filters)
+
+        if search_related:
+            # Values for related fields contain the text to search
+            filters = self._modify_params_for_related_searches(entity, filters,
+                                                               view_names=related_field_names,
+                                                               substrings=substring_filters)
+        else:
+            # Values for related fields contain the primary key
+            filters = self._modify_params_for_relationships(entity, filters)
 
         for field_name, value in filters.items():
             field = getattr(entity, field_name)
             if self.is_relation(entity, field_name) and isinstance(value, list):
-                value = value[0]
-                query = query.filter(field.contains(value))
+                related_class = self._get_related_class(entity, field_name)
+                related_pk = self.get_primary_field(related_class)
+                related_pk_col = getattr(related_class, related_pk)
+                related_pk_values = (getattr(v, related_pk) for v in value)
+                if self._relates_many(entity, field_name):
+                    field_filter = field.any(related_pk_col.in_(related_pk_values))
+                else:
+                    field_filter = field.has(related_pk_col.in_(related_pk_values))
+                query = query.filter(field_filter)
             elif field_name in substring_filters and self.is_string(entity, field_name):
-                escaped_value = re.sub('[\\\\%\\[\\]_]', '\\\\\g<0>', value.lower())
-                query = query.filter(func.lower(field).contains(escaped_value, escape='\\'))
+                escaped_value = self._escape_like(value.lower())
+                query = query.filter(func.lower(field).contains(escaped_value, escape='*'))
             else:
-                query = query.filter(field==value) 
+                query = query.filter(field==value)
 
         count = query.count()
 
@@ -537,11 +611,12 @@ class SAORMProvider(IProvider):
 
             if isinstance(value, FieldStorage):
                 value = value.file.read()
+
             # this is done to cast any integer columns into ints before they are
             # sent off to the interpreter.  Oracle really needs this.
             try:
-                if key not in relations and value and isinstance(mapper.columns[key].type, Integer):
-                    value = int(value)
+                if key not in relations and value:
+                    value = self._adapt_type(value, mapper.columns[key])
             except KeyError:
                 pass
             setattr(obj, key, value)

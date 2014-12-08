@@ -501,7 +501,7 @@ class TestMGORMProvider(SproxTest):
         entities = self.provider.get_entities()
         assert set(entities) == set(['Town', 'GroupPermission', 'Group', 'Permission', 'DocumentCategoryReference',
                 'SproxTestClass', 'DocumentCategoryTag', 'DocumentCategoryTagAssignment', 'User', 'File', 'TGMMUser',
-                'DocumentCategory', 'Department', 'Document', 'MappedClass', 'Example', 'UserGroup', 'UnrelatedDocument',
+                'DocumentCategory', 'Department', 'Document', 'MappedClass', 'Example', 'UnrelatedDocument',
                 'ModelWithRequired'])
 
     @raises(KeyError)
@@ -739,6 +739,56 @@ class TestMGORMProvider(SproxTest):
         cnt, r = self.provider.query(Town, filters={'_id':'this_is_the_id'}, substring_filters=['_id'])
         eq_(r, [])
 
+    def test_query_filters_relations_search_many2one(self):
+        cnt, r = self.provider.query(User, filters={'town': 'Arvada'},
+                                     search_related=True)
+        assert cnt == 1, r
+        assert r[0].email_address == 'asdf@asdf.com', r
+
+    def test_query_filters_relations_search_many2many(self):
+        cnt, r = self.provider.query(Group, filters={'users': 'asdf@asdf.com'},
+                                     search_related=True)
+        assert cnt == 1, r
+        assert r[0].group_name == '4', r
+
+    def test_query_filters_relations_search_one2many(self):
+        cnt, r = self.provider.query(Town, filters={'users': 'asdf@asdf.com'},
+                                     search_related=True)
+        assert cnt == 1, r
+        assert r[0].name == 'Arvada', r
+
+    def test_query_filters_relations_substring_search_many2one(self):
+        cnt, r = self.provider.query(User, filters={'town': 'Arv'},
+                                     search_related=True, substring_filters=['town'])
+        assert cnt == 1, r
+        assert r[0].email_address == 'asdf@asdf.com', r
+
+    def test_query_filters_relations_substring_search_many2many(self):
+        cnt, r = self.provider.query(Group, filters={'users': 'asdf'},
+                                     search_related=True, substring_filters=['users'])
+        assert cnt == 1, r
+        assert r[0].group_name == '4', r
+
+    def test_query_filters_relations_substring_search_one2many(self):
+        cnt, r = self.provider.query(Town, filters={'users': 'asdf'},
+                                     search_related=True, substring_filters=['users'])
+        assert cnt == 1, r
+        assert r[0].name == 'Arvada', r
+
+    def test_query_filters_relations_search_nonstring(self):
+        cnt, r = self.provider.query(Town, filters={'name': 'Arvada'})
+        town = r[0]
+
+        cnt, r = self.provider.query(User, filters={'town': town._id},
+                                     search_related=True)
+        assert cnt == 1, r
+        assert r[0].email_address == 'asdf@asdf.com', r
+
+    def test_query_filters_relations_search_empty(self):
+        cnt, r = self.provider.query(Town, filters={'users': ''},
+                                     search_related=True)
+        assert cnt == 4, r
+
     def test_update_related(self):
         __, cities = self.provider.query(Town)
 
@@ -923,8 +973,8 @@ class TestMGORMProvider(SproxTest):
     def test_create_relationships_with_wacky_relation(self):
         obj = Group.query.find().first()
         user = User.query.find().first()
-        self.provider.update(Group, {'_id':obj._id, 'users':[user._id]})
-        assert user._id == obj.users[0].user_id
+        self.provider.update(Group, {'_id':obj._id, 'users': [user._id]})
+        assert user._id == obj.users[0]._id
 
     def test_create_relationships_remove_groups(self):
         obj = Group.query.find().first()

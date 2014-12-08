@@ -147,6 +147,7 @@ def setup_records(session):
 
     user = User()
     user.user_name = "asdf"
+    user.display_name = 'Asd Sdf'
     user.email_address = "asdf@asdf.com"
     user.password = "asdf"
     session.add(user)

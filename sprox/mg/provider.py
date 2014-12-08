@@ -8,6 +8,7 @@ Original Version by Jorge Vargas 2009
 Released under MIT license.
 """
 from bson.errors import InvalidId
+import itertools
 from sprox.iprovider import IProvider
 from sprox.util import timestamp
 import datetime, inspect
@@ -23,6 +24,7 @@ except ImportError: #pragma nocover
     from ming.orm.property import OneToManyJoin, ManyToOneJoin, ORMProperty
     from ming.orm.icollection import InstrumentedObj
 
+
 from ming import schema as S
 import bson
 from bson import ObjectId
@@ -34,7 +36,7 @@ from pymongo import ASCENDING, DESCENDING
 from sprox._compat import string_type
 
 class MingProvider(IProvider):
-
+    default_view_names = ['_name', 'name', 'description', 'title']
     default_widget_selector_type = MingWidgetSelector
     default_validator_selector_type = MingValidatorSelector
 
@@ -139,7 +141,7 @@ class MingProvider(IProvider):
 
         """
         if view_names is None:
-            view_names = ['_name', 'name', 'description', 'title']
+            view_names = self.default_view_names
 
         if field_name is not None:
             field = self.get_field(entity_or_field, field_name)
@@ -301,6 +303,8 @@ class MingProvider(IProvider):
 
             value = self._cast_value(entity, key, value)
             setattr(obj, key, value)
+
+        self.flush()
         return obj
 
     def delete(self, entity, params):
@@ -309,19 +313,99 @@ class MingProvider(IProvider):
         obj.delete()
         return obj
 
+    def _modify_params_for_related_searches(self, entity, params, view_names=None, substrings=()):
+        if view_names is None:
+            view_names = self.default_view_names
+
+        relations = self.get_relations(entity)
+        for relation in relations:
+            if relation in params:
+                value = params[relation]
+                if not isinstance(value, string_type):
+                    # When not a string consider it the related class primary key
+                    params.update({relation: value})
+                    continue
+
+                if not value:
+                    # As we use ``contains``, searching for an empty text
+                    # will just lead to all results so we just remove the filter.
+                    del params[relation]
+                    continue
+
+                relationship = getattr(entity, relation)
+                target_class = relationship.related
+                view_name = self.get_view_field_name(target_class, view_names)
+
+                if relation in substrings:
+                    filter = {view_name: {'$regex': re.compile(re.escape(value), re.IGNORECASE)}}
+                else:
+                    filter = {view_name: value}
+                value = target_class.query.find(filter).all()
+                params[relation] = value
+
+        return params
+
+    def _modify_params_for_relationships(self, entity, params):
+        relations = self.get_relations(entity)
+        for relation in relations:
+            if relation in params:
+                relationship = getattr(entity, relation)
+                value = params[relation]
+
+                if not isinstance(value, list):
+                    value = [value]
+
+                adapted_value = []
+                for v in value:
+                    if isinstance(v, ObjectId) or isinstance(v, string_type):
+                        obj = self.get_obj(relationship.related, dict(_id=v))
+                        if obj is not None:
+                            adapted_value.append(obj)
+                    else:
+                        adapted_value.append(v)
+                value = adapted_value
+
+                join = relationship.join
+                my_foreign_key = relationship._detect_foreign_keys(relationship.mapper,
+                                                                   join.rel_cls,
+                                                                   False)
+                rel_foreign_key = relationship._detect_foreign_keys(mapper(relationship.related),
+                                                                    join.own_cls,
+                                                                    False)
+
+                params.pop(relation)
+                if my_foreign_key:
+                    my_foreign_key = my_foreign_key[0]
+                    params[my_foreign_key.name] = {'$in': [r._id for r in value]}
+                elif rel_foreign_key:
+                    rel_foreign_key = rel_foreign_key[0]
+                    value = [getattr(r, rel_foreign_key.name) for r in value]
+                    if rel_foreign_key.uselist:
+                        value = list(itertools.chain(*value))
+                    params['_id'] = {'$in': value}
+        return params
+
     def query(self, entity, limit=None, offset=0, limit_fields=None,
               order_by=None, desc=False, filters={},
-              substring_filters=[], **kw):
-
-        for field in substring_filters:
-            if self.is_string(entity, field):
-                filters[field] = {'$regex':re.compile(re.escape(filters[field]), re.IGNORECASE)}
+              substring_filters=[], search_related=False, related_field_names=None,
+              **kw):
 
         if '_id' in filters:
             try:
                 filters['_id'] = ObjectId(filters['_id'])
             except InvalidId:
                 pass
+
+        if search_related:
+            # Values for related fields contain the text to search
+            filters = self._modify_params_for_related_searches(entity, filters,
+                                                               view_names=related_field_names,
+                                                               substrings=substring_filters)
+        filters = self._modify_params_for_relationships(entity, filters)
+
+        for field in substring_filters:
+            if self.is_string(entity, field):
+                filters[field] = {'$regex': re.compile(re.escape(filters[field]), re.IGNORECASE)}
 
         iter = entity.query.find(filters)
         if offset:

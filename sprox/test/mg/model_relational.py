@@ -67,23 +67,6 @@ class GroupPermission(SproxTestClass):
     permission = RelationProperty("Permission")
 
 
-class UserGroup(SproxTestClass):
-    """This is the association table for the many-to-many relationship between
-    groups and members - this is, the memberships.
-    """
-    class __mongometa__:
-        name = 'tg_user_group_rs'
-        unique_indexes = (
-          ('user_id', 'group_id'),
-        )
-    
-    _id = FieldProperty(S.ObjectId)
-    user_id = ForeignIdProperty("User")
-    user = RelationProperty("User")
-    group_id = ForeignIdProperty("Group")
-    group = RelationProperty("Group")
-    
-
 class Group(SproxTestClass):
     """An ultra-simple group definition. (Relational-style)
     """
@@ -98,7 +81,7 @@ class Group(SproxTestClass):
     display_name = FieldProperty(str)
     created = FieldProperty(datetime, if_missing=datetime.now)
     
-    users = RelationProperty(UserGroup)
+    users = RelationProperty('User')
 
 
 class Town(SproxTestClass):
@@ -134,7 +117,8 @@ class User(SproxTestClass):
     town_id = ForeignIdProperty(Town)
     town = RelationProperty(Town)
 
-    groups = RelationProperty(UserGroup)
+    groups = RelationProperty(Group)
+    _groups = ForeignIdProperty(Group, uselist=True)
     
     @property
     def permissions(self):

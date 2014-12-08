@@ -69,7 +69,7 @@ class User(DeclarativeBase):
     _password = Column('password', Unicode(40))
     created = Column(DateTime, default=datetime.now)
     town_id = Column(Integer, ForeignKey('town.town_id'))
-    town = relation(Town)
+    town = relation(Town, backref=backref('residents'))
 
     def __repr__(self):
         return '<User: email="%s", display name="%s">' % (

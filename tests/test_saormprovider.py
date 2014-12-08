@@ -58,7 +58,7 @@ class TestSAORMProvider(SproxTest):
 
 
     def test_get_fields_with_func(self):
-        eq_(self.provider.get_fields(lambda: Town), ['town_id', 'name', 'town_id', 'name'])
+        eq_(self.provider.get_fields(lambda: Town), ['town_id', 'name', 'town_id', 'name', 'residents'])
 
     def test_isbinary_related(self):
         assert not self.provider.is_binary(User, 'groups')
@@ -265,6 +265,53 @@ class TestSAORMProvider(SproxTest):
     def test_query_filters_substring_disabled(self):
         cnt, r = self.provider.query(Town, filters={'name':'old'}, substring_filters=[])
         eq_(r, [])
+
+    def test_query_filters_relations_search_many2one(self):
+        cnt, r = self.provider.query(User, filters={'town': 'Arvada'},
+                                     search_related=True)
+        assert cnt == 1, r
+        assert r[0].email_address == 'asdf@asdf.com', r
+
+    def test_query_filters_relations_search_many2many(self):
+        cnt, r = self.provider.query(Group, filters={'users': 'asdf@asdf.com'},
+                                     search_related=True)
+        assert cnt == 1, r
+        assert r[0].group_name == '4', r
+
+    def test_query_filters_relations_search_one2many(self):
+        cnt, r = self.provider.query(Town, filters={'residents': 'asdf@asdf.com'},
+                                     search_related=True)
+        assert cnt == 1, r
+        assert r[0].name == 'Arvada', r
+
+    def test_query_filters_relations_substring_search_many2one(self):
+        cnt, r = self.provider.query(User, filters={'town': 'Arv'},
+                                     search_related=True, substring_filters=['town'])
+        assert cnt == 1, r
+        assert r[0].email_address == 'asdf@asdf.com', r
+
+    def test_query_filters_relations_substring_search_many2many(self):
+        cnt, r = self.provider.query(Group, filters={'users': 'asdf'},
+                                     search_related=True, substring_filters=['users'])
+        assert cnt == 1, r
+        assert r[0].group_name == '4', r
+
+    def test_query_filters_relations_substring_search_one2many(self):
+        cnt, r = self.provider.query(Town, filters={'residents': 'asdf'},
+                                     search_related=True, substring_filters=['residents'])
+        assert cnt == 1, r
+        assert r[0].name == 'Arvada', r
+
+    def test_query_filters_relations_search_nonstring(self):
+        cnt, r = self.provider.query(User, filters={'groups': 5},
+                                     search_related=True)
+        assert cnt == 1, r
+        assert r[0].email_address == 'asdf@asdf.com', r
+
+    def test_query_filters_relations_search_empty(self):
+        cnt, r = self.provider.query(Town, filters={'residents': ''},
+                                     search_related=True)
+        assert cnt == 4, r
 
     def test_update(self):
         params = {'user_name': 'asdf2', 'password': 'asdf2',

@@ -201,7 +201,8 @@ class TableFiller(FillerBase):
         substring_filters = kw.pop('substring_filters', [])
         count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__,
                                               order_by, desc, substring_filters=substring_filters,
-                                              filters=kw)
+                                              filters=kw, search_related=True,
+                                              related_field_names=self.__possible_field_names__)
         self.__count__ = count
         return count, objs
 
