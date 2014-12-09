@@ -217,10 +217,13 @@ class MingProvider(IProvider):
         return ObjectId(value)
 
     def _cast_value(self, entity, key, value):
-        
-        #handles the case where an record with no id is being created
+        # handles the case where an record with no id is being created
         if key == '_id' and value == '':
             value = ObjectId()
+
+        if value is None:
+            # Let none pass as is as it actually means a "null" on mongodb
+            return value
             
         field = getattr(entity, key)
         

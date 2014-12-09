@@ -662,6 +662,12 @@ class TestMGORMProvider(SproxTest):
         q_user = self.provider.get(ModelWithRequired, {'value': 'Hello'})    
         assert q_user is not None
 
+    def test_create_none_int(self):
+        new_doc = self.provider.create(UnrelatedDocument, dict(number=None, enabled=None))
+        assert new_doc.number is None, new_doc
+        assert new_doc.enabled is None, new_doc
+        assert new_doc._id is not None, new_doc
+
     @raises(S.Invalid)  # Expect failure, missing field
     def test_create_with_missing_required(self):
         new_doc = self.provider.create(ModelWithRequired, dict())
