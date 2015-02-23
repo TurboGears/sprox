@@ -1,11 +1,11 @@
 Sprox
 ==============
 
-.. image:: https://travis-ci.org/TurboGears/sprox.png?branch=development 
+.. image:: https://travis-ci.org/TurboGears/sprox.png
     :target: https://travis-ci.org/TurboGears/sprox 
 
-.. image:: https://coveralls.io/repos/TurboGears/sprox/badge.png?branch=development
-    :target: https://coveralls.io/r/TurboGears/sprox?branch=development 
+.. image:: https://coveralls.io/repos/TurboGears/sprox/badge.png
+    :target: https://coveralls.io/r/TurboGears/sprox
 
 .. image:: https://pypip.in/v/sprox/badge.png
    :target: https://pypi.python.org/pypi/sprox
