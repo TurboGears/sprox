@@ -1,3 +1,9 @@
+0.9.5
+* Support for TW2 CalendarBase class for easier usage of custom calendar widgets
+* Fix issue with multiple selection fields marked as required receiving the wrong validator
+* Fix issue with MongoDB provider trying to cast None value instead of letting it pass as is, thus preventing the usage of "null" on mongodb
+* Sprox query is now able to search related entities by their view_names content and not only by id.
+
 0.9.4
 * Fix for MongoDB validators detection when using python types instead of ming schema classes.
 * Fix for Default value on SQLAlchemy when using a callable
