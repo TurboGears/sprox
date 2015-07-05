@@ -86,9 +86,9 @@ class SAORMProvider(IProvider):
         field_names = list(mapper.c.keys())
         for prop in mapper.iterate_properties:
             try:
-                getattr(mapper.c, prop.key)
+                mapper.c[prop.key]
                 field_names.append(prop.key)
-            except AttributeError:
+            except KeyError:
                 mapper.get_property(prop.key)
                 field_names.append(prop.key)
 
@@ -116,8 +116,8 @@ class SAORMProvider(IProvider):
         entity = resolve_entity(entity)
         mapper = class_mapper(entity)
         try:
-            return getattr(mapper.c, name)
-        except (InvalidRequestError, AttributeError):
+            return mapper.c[name]
+        except (InvalidRequestError, KeyError):
             try:
                 return mapper.get_property(name)
             except InvalidRequestError:
@@ -158,8 +158,8 @@ class SAORMProvider(IProvider):
 
         for field_name in self.get_fields(entity):
             try:
-                value = getattr(mapper.c, field_name)
-            except AttributeError:
+                value = mapper.c[field_name]
+            except KeyError:
                 # Relations won't be attributes, but can't be primary anyway.
                 continue
             if value.primary_key and not field_name in fields:
