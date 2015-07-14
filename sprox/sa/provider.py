@@ -20,7 +20,6 @@ Released under MIT license.
 """
 import inspect
 import re
-from itertools import izip_longest
 from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, MetaData, desc as _desc, func
 from sqlalchemy import String
 from sqlalchemy.engine import Engine
@@ -40,7 +39,7 @@ from warnings import warn
 
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.sa.validatorselector import SAValidatorSelector
-from sprox._compat import string_type
+from sprox._compat import string_type, zip_longest
 
 class SAORMProviderError(Exception):pass
 
@@ -529,7 +528,7 @@ class SAORMProvider(IProvider):
             if not isinstance(desc, (tuple, list)):
                 desc = [desc]
 
-            for sort_by, sort_descending in izip_longest(order_by, desc):
+            for sort_by, sort_descending in zip_longest(order_by, desc):
                 if self.is_relation(entity, sort_by):
                     mapper = class_mapper(entity)
                     class_ = None

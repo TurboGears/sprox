@@ -16,3 +16,9 @@ else:
     string_type = basestring
     unicode_text = unicode
     byte_string = str
+
+
+try:
+    from itertools import zip_longest
+except ImportError:
+    from itertools import izip_longest as zip_longest

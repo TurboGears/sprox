@@ -33,7 +33,7 @@ import re
 from .widgetselector import MingWidgetSelector
 from .validatorselector import MingValidatorSelector
 from pymongo import ASCENDING, DESCENDING
-from sprox._compat import string_type
+from sprox._compat import string_type, zip_longest
 
 class MingProvider(IProvider):
     default_view_names = ['_name', 'name', 'description', 'title']
@@ -424,7 +424,7 @@ class MingProvider(IProvider):
                 desc = [desc]
 
             sorting = [(field, DESCENDING if sort_descending else ASCENDING) for field, sort_descending in
-                       itertools.izip_longest(order_by, desc)]
+                       zip_longest(order_by, desc)]
             iter.sort(sorting)
 
         count = iter.count()
