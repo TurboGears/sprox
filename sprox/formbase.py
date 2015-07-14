@@ -203,7 +203,7 @@ class FormBase(ViewBase):
             else:
                 self.__possible_field_names__ = self.__possible_field_name_defaults__
 
-        #bring in custom declared validators
+        # bring in custom declared validators
         for attr in dir(self):
             if not attr.startswith('__'):
                 value = getattr(self, attr)
@@ -340,7 +340,7 @@ class EditableForm(FormBase):
     """
     def _do_get_disabled_fields(self):
         fields = self.__disable_fields__[:]
-        fields.append(self.__provider__.get_primary_field(self.__entity__))
+        fields.extend(self.__provider__.get_primary_fields(self.__entity__))
         return fields
 
     def _do_get_fields(self):
@@ -348,9 +348,11 @@ class EditableForm(FormBase):
 
         """
         fields = super(EditableForm, self)._do_get_fields()
-        primary_field = self.__provider__.get_primary_field(self.__entity__)
-        if primary_field not in fields:
-            fields.append(primary_field)
+
+        primary_fields = self.__provider__.get_primary_fields(self.__entity__)
+        for primary_field in primary_fields:
+            if primary_field not in fields:
+                fields.append(primary_field)
         
         if '_method' not in fields:
             fields.append('_method')
@@ -469,14 +471,19 @@ class AddRecordForm(FormBase):
     def _do_init_attrs(self):
         super(AddRecordForm, self)._do_init_attrs()
 
-        pkey = self.__provider__.get_primary_field(self.__entity__)
-        if pkey not in self.__omit_fields__:
-            self.__omit_fields__.append(pkey)
+        primary_keys = self.__provider__.get_primary_fields(self.__entity__)
+        if len(primary_keys) > 1:
+            # compound primary key, in this case we assume all must be provided by user
+            self.__require_fields__.extend(primary_keys)
+        else:
+            # Single primary key, in this case we assume it's autoincrement unless explicitly required.
+            pkey = primary_keys[0]
+            field_order = self.__field_order__ or []
+            if pkey in self.__require_fields__ and pkey not in field_order:
+                self.__field_order__ = field_order = [pkey] + field_order
 
-    def _do_get_disabled_fields(self):
-        fields = self.__disable_fields__[:]
-        fields.append(self.__provider__.get_primary_field(self.__entity__))
-        return fields
+            if pkey not in self.__omit_fields__ and pkey not in field_order:
+                self.__omit_fields__.append(pkey)
 
 
 class DisabledForm(FormBase):

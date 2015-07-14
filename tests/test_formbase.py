@@ -3,7 +3,7 @@ from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm, 
 from sprox.viewbase import ViewBaseError
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, \
     Example, Document, assert_in_xml, widget_children, widget_is_type, form_error_message
-from sprox.test.model import User, Group, WithoutName, WithoutNameOwner
+from sprox.test.model import User, Group, WithoutName, WithoutNameOwner, CompoundPrimaryKey
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
@@ -317,6 +317,41 @@ class TestAddRecordForm(SproxTest):
         rendered = example_form()
         assert 'default group name' in rendered
 
+    def test_autoincrement_single_primary_key(self):
+        class AddUserForm(AddRecordForm):
+            __entity__ = User
+
+        test_form = AddUserForm()
+        html = test_form.display()
+
+        uid_input = self.get_line_in_text('name="user_id"', html)
+        assert not uid_input, uid_input
+
+    def test_required_single_primary_key(self):
+        class AddUserForm(AddRecordForm):
+            __entity__ = User
+            __require_fields__ = ['user_id']
+
+        test_form = AddUserForm()
+        html = test_form.display()
+
+        uid_input = self.get_line_in_text('name="user_id"', html)
+        assert 'type="text"' in uid_input, html
+        assert 'disabled' not in uid_input, html
+
+    def test_compound_primary_key(self):
+        class AddCompoundPrimaryKey(AddRecordForm):
+            __entity__ = CompoundPrimaryKey
+
+        test_form = AddCompoundPrimaryKey()
+        html = test_form.display()
+
+        name_input = self.get_line_in_text('name="name"', html)
+        surname_input = self.get_line_in_text('name="surname"', html)
+        assert 'type="text"' in name_input, name_input
+        assert 'disabled' not in name_input, name_input
+        assert 'type="text"' in surname_input, surname_input
+        assert 'disabled' not in surname_input, surname_input
 
 class TestEditableForm(SproxTest):
     def setup(self):
@@ -360,6 +395,43 @@ class TestEditableForm(SproxTest):
         selected_html = '\n'.join(selected)
         for entry in value['owned']:
             assert str(entry) in selected_html, (entry, selected_html)
+
+    def test_autoincrement_single_primary_key(self):
+        class EditUserForm(EditableForm):
+            __entity__ = User
+
+        test_form = EditUserForm()
+        html = test_form.display()
+
+        uid_input = self.get_line_in_text('name="user_id"', html)
+        assert 'type="text"' in uid_input, html
+        assert 'disabled' in uid_input, html
+
+    def test_required_single_primary_key(self):
+        class EditUserForm(EditableForm):
+            __entity__ = User
+            __require_fields__ = ['user_id']
+
+        test_form = EditUserForm()
+        html = test_form.display()
+
+        uid_input = self.get_line_in_text('name="user_id"', html)
+        assert 'type="text"' in uid_input, html
+        assert 'disabled' in uid_input, html
+
+    def test_compound_primary_key(self):
+        class EditCompoundPrimaryKey(EditableForm):
+            __entity__ = CompoundPrimaryKey
+
+        test_form = EditCompoundPrimaryKey()
+        html = test_form.display()
+
+        name_input = self.get_line_in_text('name="name"', html)
+        surname_input = self.get_line_in_text('name="surname"', html)
+        assert 'type="text"' in name_input, name_input
+        assert 'disabled' in name_input, name_input
+        assert 'type="text"' in surname_input, surname_input
+        assert 'disabled' in surname_input, surname_input
 
 
 class TestDisabledForm(SproxTest):

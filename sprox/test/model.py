@@ -255,6 +255,13 @@ class WithoutName(DeclarativeBase):
     owner_id = Column(Integer, ForeignKey(WithoutNameOwner.uid))
     owner = relation('WithoutNameOwner', backref=backref('owned'))
 
+class CompoundPrimaryKey(DeclarativeBase):
+    __tablename__ = 'withoutname_compound'
+
+    name = Column(String(100), primary_key=True)
+    surname = Column(String(100), primary_key=True)
+    age = Column(Integer)
+
 #not supporting enums for now.
 #ModelWithEnum=None
 #if sa.__version__ >='0.6':

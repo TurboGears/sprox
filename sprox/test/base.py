@@ -247,5 +247,11 @@ class SproxTest(object):
     def teardown(self):
         self.session.rollback()
 
+    def get_line_in_text(self, line_content, text):
+        for line in text.split('\n'):
+            if line_content in line:
+                return line.strip()
+        return ''
+
 if __name__ == '__main__':
     setupDatabase()
