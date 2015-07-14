@@ -51,7 +51,9 @@ class TestSAORMProvider(SproxTest):
         session.add(DocumentCategory(document_category_id=1, department_id=1, name='Brochure'))
         session.add(DocumentCategory(document_category_id=2, department_id=1, name='Flyer'))
         session.add(DocumentCategory(document_category_id=3, department_id=2, name='Balance Sheet'))
-
+        session.add(Document(document_category_id=1, owner=1))
+        session.add(Document(document_category_id=2, owner=1))
+        session.add(Document(document_category_id=1, owner=2))
         session.add(Permission(permission_name='perm'))
         #session.add(DocumentRating(user_id=1, document_id=1, rating=5))
         self.provider.flush()
@@ -224,12 +226,25 @@ class TestSAORMProvider(SproxTest):
         assert new_ratingref == q_ratingref
 
     def test_query(self):
-        r = self.provider.query(User, limit=20, offset=0)
-        eq_(len(r), 2)
+        c, r = self.provider.query(User, limit=20, offset=0)
+        eq_(len(r), c)
+        eq_(len(r), 1)
 
     def test_query_order_by(self):
-        r = self.provider.query(Document, limit=20, offset=0, order_by='category')
-        eq_(len(r), 2)
+        c, r = self.provider.query(Document, limit=20, offset=0, order_by='category')
+        assert c > 1, r
+        categories = [x.document_category_id for x in r]
+        assert categories == list(sorted(categories))
+
+    def test_query_order_by_multiple(self):
+        c, r = self.provider.query(Document, limit=20, offset=0, order_by=['category', 'owner'])
+        assert c > 1, r
+        categories = [(x.document_category_id, x.owner) for x in r]
+        assert categories == list(sorted(categories))
+
+        c, r = self.provider.query(Document, limit=20, offset=0, order_by=['owner', 'category'])
+        categories = [(x.owner, x.document_category_id) for x in r]
+        assert categories == list(sorted(categories)), (categories, list(sorted(categories)))
 
     def test_query_filters(self):
         cnt, r = self.provider.query(Town, filters={'name':'Golden'})

@@ -465,7 +465,7 @@ class TestMGORMProvider(SproxTest):
         eq_(self.provider.get_field_widget_args(User, 'groups', User.groups), {'nullable': True, 'provider':self.provider})
 
     def test_get_fields_with_func(self):
-        eq_(self.provider.get_fields(lambda: Town), ['_id', 'users', 'name'])
+        eq_(self.provider.get_fields(lambda: Town), ['country', '_id', 'users', 'name'])
 
     def test_isbinary_related(self):
         assert not self.provider.is_binary(User, 'groups')
@@ -694,11 +694,25 @@ class TestMGORMProvider(SproxTest):
 
     def test_query_sort_asc(self):
         cnt, r = self.provider.query(Town, order_by="name")
-        eq_([t.name for t in r], ['Arvada', 'Boulder', 'Denver', 'Golden'])
+        eq_([t.name for t in r], ['Arvada', 'Boulder', 'Denver', 'Golden', 'Torino'])
 
     def test_query_sort_desc(self):
         cnt, r = self.provider.query(Town, order_by="name", desc=True)
-        eq_([t.name for t in r], ['Golden', 'Denver', 'Boulder', 'Arvada'])
+        eq_([t.name for t in r], ['Torino', 'Golden', 'Denver', 'Boulder', 'Arvada'])
+
+    def test_query_sort_multi_asc(self):
+        cnt, r = self.provider.query(Town, order_by=["name", 'country'])
+        eq_([t.name for t in r], ['Arvada', 'Boulder', 'Denver', 'Golden', 'Torino'])
+
+        cnt, r = self.provider.query(Town, order_by=['country', "name"])
+        eq_([t.name for t in r], ['Torino', 'Arvada', 'Boulder', 'Denver', 'Golden'])
+
+    def test_query_sort_multi_desc(self):
+        cnt, r = self.provider.query(Town, order_by=["name", 'country'], desc=True)
+        eq_([t.name for t in r], ['Torino', 'Golden', 'Denver', 'Boulder', 'Arvada'])
+
+        cnt, r = self.provider.query(Town, order_by=['country', "name"], desc=[True, False])
+        eq_([t.name for t in r], ['Arvada', 'Boulder', 'Denver', 'Golden', 'Torino'])
 
     def test_query_filters(self):
         cnt, r = self.provider.query(Town, filters={'name':'Golden'})
@@ -793,7 +807,7 @@ class TestMGORMProvider(SproxTest):
     def test_query_filters_relations_search_empty(self):
         cnt, r = self.provider.query(Town, filters={'users': ''},
                                      search_related=True)
-        assert cnt == 4, r
+        assert cnt == 5, r
 
     def test_update_related(self):
         __, cities = self.provider.query(Town)

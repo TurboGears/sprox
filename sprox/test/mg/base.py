@@ -128,13 +128,14 @@ def setup_records(session):
     user.display_name = "asdf@asdf.com"
     user.password = "asdf"
 
-    arvada = Town(name='Arvada')
+    arvada = Town(name='Arvada', country='USA')
     session.flush()
     user.town_id = arvada._id
 
-    Town(name='Denver')
-    Town(name='Golden')
-    Town(name='Boulder')
+    Town(name='Denver', country='USA')
+    Town(name='Golden', country='USA')
+    Town(name='Boulder', country='USA')
+    Town(name='Torino', country='Italy')
 
     #test_table.insert(values=dict(BLOB=FieldStorage('asdf', StringIO()).value)).execute()
     #user_reference_table.insert(values=dict(user_id=user.user_id)).execute()

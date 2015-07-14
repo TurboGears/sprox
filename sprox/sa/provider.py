@@ -20,6 +20,7 @@ Released under MIT license.
 """
 import inspect
 import re
+from itertools import izip_longest
 from sqlalchemy import and_, or_, DateTime, Date, Interval, Integer, MetaData, desc as _desc, func
 from sqlalchemy import String
 from sqlalchemy.engine import Engine
@@ -522,23 +523,30 @@ class SAORMProvider(IProvider):
         count = query.count()
 
         if order_by is not None:
-            if self.is_relation(entity, order_by):
-                mapper = class_mapper(entity)
-                class_ = None
-                for prop in mapper.iterate_properties:
-                    try:
-                        class_ = prop.mapper.class_
-                    except (AttributeError, KeyError):
-                        pass
-                query = self.session.query(entity).join(order_by)
-                f = self.get_view_field_name(class_, field_names)
-                field = self.get_field(class_, f)
-            else:
-                field = self.get_field(entity, order_by)
+            if not isinstance(order_by, (tuple, list)):
+                order_by = [order_by]
 
-            if desc:
-                field = _desc(field)
-            query = query.order_by(field)
+            if not isinstance(desc, (tuple, list)):
+                desc = [desc]
+
+            for sort_by, sort_descending in izip_longest(order_by, desc):
+                if self.is_relation(entity, sort_by):
+                    mapper = class_mapper(entity)
+                    class_ = None
+                    for prop in mapper.iterate_properties:
+                        try:
+                            class_ = prop.mapper.class_
+                        except (AttributeError, KeyError):
+                            pass
+                    query = query.join(sort_by)
+                    f = self.get_view_field_name(class_, field_names)
+                    field = self.get_field(class_, f)
+                else:
+                    field = self.get_field(entity, sort_by)
+
+                if sort_descending:
+                    field = _desc(field)
+                query = query.order_by(field)
 
         if offset is not None:
             query = query.offset(offset)

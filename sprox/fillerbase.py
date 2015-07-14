@@ -216,7 +216,7 @@ class TableFiller(FillerBase):
          limit
           number of records to return
          order_by
-          name of the column to the return values ordered by
+          name or list of names of the columns to the return values ordered by
          desc
           order the columns in descending order
 

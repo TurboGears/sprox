@@ -243,6 +243,7 @@ class SproxTest(object):
             self.user = setup_records(session)
         except:
             self.session.rollback()
+
     def teardown(self):
         self.session.rollback()
 

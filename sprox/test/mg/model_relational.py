@@ -90,6 +90,7 @@ class Town(SproxTestClass):
     
     _id = FieldProperty(S.ObjectId)
     name = FieldProperty(str)
+    country = FieldProperty(str)
 
     users = RelationProperty('User')
 

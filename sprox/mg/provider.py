@@ -415,12 +415,18 @@ class MingProvider(IProvider):
             iter = iter.skip(int(offset))
         if limit is not None:
             iter = iter.limit(int(limit))
+
         if order_by is not None:
-            if desc:
-                dir = DESCENDING
-            else:
-                dir = ASCENDING
-            iter.sort(order_by, dir)
+            if not isinstance(order_by, (tuple, list)):
+                order_by = [order_by]
+
+            if not isinstance(desc, (tuple, list)):
+                desc = [desc]
+
+            sorting = [(field, DESCENDING if sort_descending else ASCENDING) for field, sort_descending in
+                       itertools.izip_longest(order_by, desc)]
+            iter.sort(sorting)
+
         count = iter.count()
         return count, iter.all()
 
