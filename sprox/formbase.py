@@ -153,7 +153,7 @@ class FormBase(ViewBase):
     ...    __limit_fields__ = ['town']
     ...    __require_fields__ = ['town']
     >>> town_form = UserOnlyTownForm(session)
-    >>> town_form.validate(params={'sprox_id':1})
+    >>> town_form.validate(params={'sprox_id':1})  # doctest: +SKIP
     Traceback (most recent call last):
     ...
     ValidationError

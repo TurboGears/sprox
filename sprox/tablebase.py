@@ -63,6 +63,7 @@ class TableBase(ViewBase):
                     <th  class="col_0">actions</th>
                     <th  class="col_1">town_id</th>
                     <th  class="col_2">name</th>
+                    <th  class="col_3">residents</th>
             </tr>
         </thead>
         <tbody>
@@ -88,41 +89,51 @@ class TableBase(ViewBase):
             <tr>
                     <th class="col_0">town_id</th>
                     <th class="col_1">name</th>
+                    <th  class="col_2">residents</th>
             </tr>
         </thead>
         <tbody>
-            <tr class="even">
-                <td class="col_0">
-                        1
-                </td>
-                <td class="col_1">
-                        Arvada
-                </td>
-            </tr>
-            <tr class="odd">
-                <td class="col_0">
-                        2
-                </td>
-                <td class="col_1">
-                        Denver
-                </td>
-            </tr>
-            <tr class="even">
-                <td class="col_0">
-                        3
-                </td>
-                <td class="col_1">
-                        Golden
-                </td>
-            </tr>
-            <tr class="odd">
-                <td class="col_0">
-                        4
-                </td>
-                <td class="col_1">
-                        Boulder
-                </td>
-            </tr>
+                <tr class="even">
+                    <td class="col_0">
+                            1
+                    </td>
+                    <td class="col_1">
+                            Arvada
+                    </td>
+                    <td class="col_2">
+                            asdf@asdf.com
+                    </td>
+                </tr>
+                <tr class="odd">
+                    <td class="col_0">
+                            2
+                    </td>
+                    <td class="col_1">
+                            Denver
+                    </td>
+                    <td class="col_2">
+                    </td>
+                </tr>
+                <tr class="even">
+                    <td class="col_0">
+                            3
+                    </td>
+                    <td class="col_1">
+                            Golden
+                    </td>
+                    <td class="col_2">
+                    </td>
+                </tr>
+                <tr class="odd">
+                    <td class="col_0">
+                            4
+                    </td>
+                    <td class="col_1">
+                            Boulder
+                    </td>
+                    <td class="col_2">
+                    </td>
+                </tr>
         </tbody>
     </table>
     </div>
@@ -141,6 +152,7 @@ class TableBase(ViewBase):
             <tr>
                     <th  class="col_0">town_id</th>
                     <th  class="col_1">name</th>
+                    <th  class="col_2">residents</th>
             </tr>
         </thead>
         <tbody>
@@ -151,6 +163,9 @@ class TableBase(ViewBase):
                     <td class="col_1">
                             Arvada
                     </td>
+                    <td class="col_2">
+                            asdf@asdf.com
+                    </td>
                 </tr>
                 <tr class="odd">
                     <td class="col_0">
@@ -158,6 +173,8 @@ class TableBase(ViewBase):
                     </td>
                     <td class="col_1">
                             Denver
+                    </td>
+                    <td class="col_2">
                     </td>
                 </tr>
                 <tr class="even">
@@ -167,6 +184,8 @@ class TableBase(ViewBase):
                     <td class="col_1">
                             Golden
                     </td>
+                    <td class="col_2">
+                    </td>
                 </tr>
                 <tr class="odd">
                     <td class="col_0">
@@ -175,10 +194,13 @@ class TableBase(ViewBase):
                     <td class="col_1">
                             Boulder
                     </td>
+                    <td class="col_2">
+                    </td>
                 </tr>
         </tbody>
     </table>
     </div>
+
 
     """
 

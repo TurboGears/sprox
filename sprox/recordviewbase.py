@@ -59,7 +59,7 @@ class RecordViewBase(ViewBase):
         <td>
             <b>display_name</b>
         </td>
-        <td>
+        <td> Asd Sdf
         </td>
     </tr>
     <tr class="recordfieldwidget" id="sx_town_id">

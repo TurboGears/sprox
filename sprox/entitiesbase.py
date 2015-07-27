@@ -122,6 +122,9 @@ class EntitiesBase(ViewBase):
     >>> base = MyEntitiesBase(session, metadata=metadata)
     >>> print(base())
     <div class="containerwidget">
+        <div class="entitylabelwidget" id="sx_CompoundPrimaryKey">
+        <a href="CompoundPrimaryKey/">CompoundPrimaryKey</a>
+    </div>
         <div class="entitylabelwidget" id="sx_Department">
         <a href="Department/">Department</a>
     </div>

@@ -81,4 +81,6 @@ def test_doctests():
         suite.addTest(doctest.DocTestSuite(dojo_formbase, globs={'session':session, 'User': User, 'Town':Town, 'metadata':metadata}, setUp=setUp, tearDown=tearDown))
 
     runner = unittest.TextTestRunner(verbosity=10)
-    runner.run(suite)
+    result = runner.run(suite)
+    assert not result.failures, '%s Failues in DOCTESTS' % len(result.failures)
+    assert not result.errors, '%s Errors in DOCTESTS' % len(result.errors)
