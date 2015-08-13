@@ -8,10 +8,12 @@ Original Version by Christopher Perkins 2008
 Released under MIT license.
 """
 
-from configbase import ConfigBase, ConfigBaseError
-from metadata import FieldsMetadata
+from .configbase import ConfigBase, ConfigBaseError
+from .metadata import FieldsMetadata
 import inspect
 from datetime import datetime
+from sprox._compat import string_type, byte_string, unicode_text
+from markupsafe import Markup
 
 encoding = 'utf-8'
 
@@ -146,9 +148,9 @@ class TableFiller(FillerBase):
             view_names = self.__possible_field_name_defaults__
 
         for value in values:
-            if not isinstance(value, basestring):
+            if not isinstance(value, string_type):
                 name = self.__provider__.get_view_field_name(value.__class__, view_names, value)
-                l.append(unicode(getattr(value, name)))
+                l.append(unicode_text(getattr(value, name)))
             else:
                 #this is needed for postgres to see array values
                 return values
@@ -199,7 +201,8 @@ class TableFiller(FillerBase):
         substring_filters = kw.pop('substring_filters', [])
         count, objs = self.__provider__.query(self.__entity__, limit, offset, self.__limit_fields__,
                                               order_by, desc, substring_filters=substring_filters,
-                                              filters=kw)
+                                              filters=kw, search_related=True,
+                                              related_field_names=self.__possible_field_names__)
         self.__count__ = count
         return count, objs
 
@@ -213,7 +216,7 @@ class TableFiller(FillerBase):
          limit
           number of records to return
          order_by
-          name of the column to the return values ordered by
+          name or list of names of the columns to the return values ordered by
          desc
           order the columns in descending order
 
@@ -244,10 +247,10 @@ class TableFiller(FillerBase):
                     elif self.__provider__.is_relation(self.__entity__, field) and value is not None:
                         value = self._get_relation_value(field, value)
                     elif self.__provider__.is_binary(self.__entity__, field) and value is not None:
-                        value = '&lt;file&gt;'
-                if isinstance(value, str):
-                    value = unicode(value, encoding='utf-8')
-                row[field] = unicode(value)
+                        value = Markup('&lt;file&gt;')
+                if isinstance(value, byte_string):
+                    value = unicode_text(value, encoding='utf-8')
+                row[field] = unicode_text(value)
             rows.append(row)
         return rows
 

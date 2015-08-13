@@ -39,4 +39,4 @@ try:
         <button class="shuttle" id="groups_AllLeftButton">&lt;&lt;</button>
     </div>""" in rendered, rendered
 except ImportError:
-    print 'Dojo Tests disabled with ToscaWidgets2'
+    print('Dojo Tests disabled with ToscaWidgets2')

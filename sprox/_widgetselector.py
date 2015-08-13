@@ -25,7 +25,7 @@ Released under MIT license.
 try: #pragma: no cover
     from tw2.core import Widget
     from tw2.forms.widgets import *
-except ImportError, e: #pragma: no cover
+except ImportError as e: #pragma: no cover
     from tw.api import Widget
     from tw.forms.fields import *
 

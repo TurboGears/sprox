@@ -20,14 +20,16 @@ except ImportError: #pragma: no cover
     class WidgetMeta(object):
         """TW2 WidgetMetaClass"""
 
+
 import inspect
 from sprox.util import name2label, is_widget, is_widget_class
 
-from sprox.widgets import SproxMethodPutHiddenField, CalendarDatePicker, CalendarDateTimePicker
-from viewbase import ViewBase, ViewBaseError
+from sprox.widgets import SproxMethodPutHiddenField, CalendarBase, CalendarDatePicker, CalendarDateTimePicker
+from .viewbase import ViewBase, ViewBaseError
 from formencode import Schema, All
 from formencode import Validator
-from formencode.validators import UnicodeString, String
+from formencode.validators import String
+from sprox.validators import UnicodeString, NotEmpty
 
 from sprox.validators import UniqueValue
 from sprox.metadata import FieldsMetadata
@@ -120,12 +122,12 @@ class FormBase(ViewBase):
     >>>
     >>> town_form = UserOnlyTownForm(session)
     >>>
-    >>> print town_form() # doctest: +XML
+    >>> print(town_form()) # doctest: +XML
     <form enctype="multipart/form-data" method="post">
          <span class="error"></span>
         <table >
         <tr class="odd"  id="sx_town:container">
-            <th>Town</th>
+            <th><label for="sx_town">Town</label></th>
             <td >
                 <select name="town" id="sx_town">
              <option value="1">Arvada</option>
@@ -151,7 +153,7 @@ class FormBase(ViewBase):
     ...    __limit_fields__ = ['town']
     ...    __require_fields__ = ['town']
     >>> town_form = UserOnlyTownForm(session)
-    >>> town_form.validate(params={'sprox_id':1})
+    >>> town_form.validate(params={'sprox_id':1})  # doctest: +SKIP
     Traceback (most recent call last):
     ...
     ValidationError
@@ -201,7 +203,7 @@ class FormBase(ViewBase):
             else:
                 self.__possible_field_names__ = self.__possible_field_name_defaults__
 
-        #bring in custom declared validators
+        # bring in custom declared validators
         for attr in dir(self):
             if not attr.startswith('__'):
                 value = getattr(self, attr)
@@ -279,7 +281,7 @@ class FormBase(ViewBase):
         fields = super(FormBase, self)._do_get_fields()
         provider = self.__provider__
         field_order = self.__field_order__ or []
-        add_fields = self.__add_fields__.keys()
+        add_fields = list(self.__add_fields__.keys())
         for relation in provider.get_relations(self.__entity__):
             # do not remove field if it is listed in field_order
             for rel in provider.relation_fields(self.__entity__, relation):
@@ -299,7 +301,7 @@ class FormBase(ViewBase):
         """
         v_type = self.__field_validator_types__.get(field_name, self.__validator_selector__[field])
         if field_name in self.__require_fields__ and v_type is None:
-            v_type = String
+            v_type = NotEmpty
         if v_type is None:
             return
         args = self._do_get_validator_args(field_name, field, v_type)
@@ -317,7 +319,8 @@ class FormBase(ViewBase):
         args['required'] = args['not_empty']
 
         widget_type = self._do_get_field_widget_type(field_name, field)
-        if widget_type and (issubclass(widget_type, CalendarDatePicker) or
+        if widget_type and (issubclass(widget_type, CalendarBase) or
+                            issubclass(widget_type, CalendarDatePicker) or
                             issubclass(widget_type, CalendarDateTimePicker)):
             widget_args = super(FormBase, self)._do_get_field_widget_args(field_name, field)
             args['format'] = widget_args.get('date_format', widget_type.date_format)
@@ -337,7 +340,7 @@ class EditableForm(FormBase):
     """
     def _do_get_disabled_fields(self):
         fields = self.__disable_fields__[:]
-        fields.append(self.__provider__.get_primary_field(self.__entity__))
+        fields.extend(self.__provider__.get_primary_fields(self.__entity__))
         return fields
 
     def _do_get_fields(self):
@@ -345,9 +348,11 @@ class EditableForm(FormBase):
 
         """
         fields = super(EditableForm, self)._do_get_fields()
-        primary_field = self.__provider__.get_primary_field(self.__entity__)
-        if primary_field not in fields:
-            fields.append(primary_field)
+
+        primary_fields = self.__provider__.get_primary_fields(self.__entity__)
+        for primary_field in primary_fields:
+            if primary_field not in fields:
+                fields.append(primary_field)
         
         if '_method' not in fields:
             fields.append('_method')
@@ -356,7 +361,8 @@ class EditableForm(FormBase):
 
     def _do_get_field_widgets(self, fields):
         widgets = super(EditableForm, self)._do_get_field_widgets(fields)
-        widgets['_method'] = SproxMethodPutHiddenField(id='sprox_method', validator=String(if_missing=None))
+        widgets['_method'] = SproxMethodPutHiddenField(id='sprox_method',
+                                                       validator=UnicodeString(if_missing=None))
         return widgets
 
     __check_if_unique__ = False
@@ -394,40 +400,40 @@ class AddRecordForm(FormBase):
     ...     display_name           = TextField
     ...     verify_password        = PasswordField('verify_password')
     >>> registration_form = RegistrationForm()
-    >>> print registration_form() # doctest: +XML
+    >>> print(registration_form()) # doctest: +XML
     <form enctype="multipart/form-data" method="post">
          <span class="error"></span>
         <table >
-        <tr class="odd"  id="sx_user_name:container">
-            <th>User Name</th>
+        <tr class="odd required"  id="sx_user_name:container">
+            <th><label for="sx_user_name">User Name</label></th>
             <td >
                 <input name="user_name" type="text" id="sx_user_name" value=""/>
                 <span id="sx_user_name:error"></span>
             </td>
         </tr>
-        <tr class="even"  id="sx_email_address:container">
-            <th>Email Address</th>
+        <tr class="even required"  id="sx_email_address:container">
+            <th><label for="sx_email_address">Email Address</label></th>
             <td >
                 <input name="email_address" type="text" id="sx_email_address"/>
                 <span id="sx_email_address:error"></span>
             </td>
         </tr>
         <tr class="odd"  id="sx_display_name:container">
-            <th>Display Name</th>
+            <th><label for="sx_display_name">Display Name</label></th>
             <td >
                 <input name="display_name" type="text" id="sx_display_name" value=""/>
                 <span id="sx_display_name:error"></span>
             </td>
         </tr>
-        <tr class="even"  id="sx_password:container">
-            <th>Password</th>
+        <tr class="even required"  id="sx_password:container">
+            <th><label for="sx_password">Password</label></th>
             <td >
                 <input type="password" name="password" id="sx_password"/>
                 <span id="sx_password:error"></span>
             </td>
         </tr>
         <tr class="odd"  id="verify_password:container">
-            <th>Verify Password</th>
+            <th><label for="verify_password">Verify Password</label></th>
             <td >
                 <input type="password" name="verify_password" id="verify_password"/>
                 <span id="verify_password:error"></span>
@@ -451,7 +457,7 @@ class AddRecordForm(FormBase):
     ...     __entity__ = User
     ...     __limit_fields__ = ['user_name']
     >>> user_form = AddUserForm(session)
-    >>> user_form.validate(params={'sprox_id':'asdf', 'user_name':u'asdf'}) # doctest: +SKIP
+    >>> user_form.validate(params={'sprox_id':'asdf', 'user_name':'asdf'}) # doctest: +SKIP
     Traceback (most recent call last):
     ...
     Invalid: user_name: That value already exists
@@ -465,14 +471,19 @@ class AddRecordForm(FormBase):
     def _do_init_attrs(self):
         super(AddRecordForm, self)._do_init_attrs()
 
-        pkey = self.__provider__.get_primary_field(self.__entity__)
-        if pkey not in self.__omit_fields__:
-            self.__omit_fields__.append(pkey)
+        primary_keys = self.__provider__.get_primary_fields(self.__entity__)
+        if len(primary_keys) > 1:
+            # compound primary key, in this case we assume all must be provided by user
+            self.__require_fields__.extend(primary_keys)
+        else:
+            # Single primary key, in this case we assume it's autoincrement unless explicitly required.
+            pkey = primary_keys[0]
+            field_order = self.__field_order__ or []
+            if pkey in self.__require_fields__ and pkey not in field_order:
+                self.__field_order__ = field_order = [pkey] + field_order
 
-    def _do_get_disabled_fields(self):
-        fields = self.__disable_fields__[:]
-        fields.append(self.__provider__.get_primary_field(self.__entity__))
-        return fields
+            if pkey not in self.__omit_fields__ and pkey not in field_order:
+                self.__omit_fields__.append(pkey)
 
 
 class DisabledForm(FormBase):
@@ -491,19 +502,19 @@ class DisabledForm(FormBase):
     ...     __model__ = User
     ...     __limit_fields__ = ['user_name', 'email_address']
     >>> disabled_user_form = DisabledUserForm()
-    >>> print disabled_user_form(values=dict(user_name='percious', email='chris@percious.com'))  # doctest: +XML
+    >>> print(disabled_user_form(values=dict(user_name='percious', email='chris@percious.com')))  # doctest: +XML
     <form enctype="multipart/form-data" method="post">
          <span class="error"></span>
         <table >
         <tr class="odd"  id="sx_user_name:container">
-            <th>User Name</th>
+            <th><label for="sx_user_name">User Name</label></th>
             <td >
                 <input name="user_name" value="" disabled="disabled" type="text" id="sx_user_name"/>
                 <span id="sx_user_name:error"></span>
             </td>
         </tr>
         <tr class="even"  id="sx_email_address:container">
-            <th>Email Address</th>
+            <th><label for="sx_email_address">Email Address</label></th>
             <td >
                 <textarea disabled="disabled" name="email_address" id="sx_email_address"></textarea>
                 <span id="sx_email_address:error"></span>

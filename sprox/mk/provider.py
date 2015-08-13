@@ -13,8 +13,8 @@ from mongokit.pylons.document import MongoDocument
 from pymongo.binary import Binary
 import datetime
 
-from widgetselector import MongoKitWidgetSelector
-from validatorselector import MongoKitValidatorSelector
+from .widgetselector import MongoKitWidgetSelector
+from .validatorselector import MongoKitValidatorSelector
 
 class MongoKitProvider(IProvider):
     
@@ -30,7 +30,7 @@ class MongoKitProvider(IProvider):
 
     def get_fields(self, entity):
         """Get all of the fields for a given entity."""
-        return entity.structure.keys()
+        return list(entity.structure.keys())
 
     def get_entity(self, name):
         """Get an entity with the given name."""
@@ -132,7 +132,7 @@ class MongoKitProvider(IProvider):
     def create(self, entity, params):
         """Create an entry of type entity with the given params."""
         obj = entity()
-        for key,value in params.iteritems():
+        for key,value in params.items():
             if key not in entity.structure:
                 continue;
             value = self._cast_value(entity, key, value)
@@ -155,7 +155,7 @@ class MongoKitProvider(IProvider):
         params.pop('_id')
         params.pop('sprox_id')
         params.pop('_method')
-        for key, value in params.iteritems():
+        for key, value in params.items():
             if key not in entity.structure:
                 continue;
             value = self._cast_value(entity, key, value)

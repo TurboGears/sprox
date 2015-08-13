@@ -49,7 +49,7 @@ class MingValidatorSelector(ValidatorSelector):
     s.Binary: None,
     s.Value: None,
     s.ObjectId: None,
-    s.String: UnicodeString,
+    s.String: UnicodeString
     }
 
     def select(self, field):
@@ -58,21 +58,26 @@ class MingValidatorSelector(ValidatorSelector):
         if isinstance(field, o.RelationProperty):
             return UnicodeString
 
+        schema_type = getattr(field, 'schema', None)
         field_type = getattr(field, 'field_type', None)
         if field_type is None:
             f = getattr(field, 'field', None)
             if f is not None:
                 field = field.field
                 field_type = field.type
+                schema_type = field.schema
 
         if hasattr(field, 'schema') and isinstance(field.schema, (s.Array, s.Object)):
             return None
 
         type_ = s.String
-        for t in self.default_validators.keys():
+        for t in list(self.default_validators.keys()):
             if isinstance(field_type, s.OneOf):
                 break
             if inspect.isclass(field_type) and issubclass(field_type, t):
+                type_ = t
+                break
+            if schema_type is not None and isinstance(schema_type, t):
                 type_ = t
                 break
 

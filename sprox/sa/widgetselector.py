@@ -25,8 +25,8 @@ from sqlalchemy.types import *
 from sprox.widgets import *
 
 from sqlalchemy.schema import Column
-from sqlalchemy.orm import PropertyLoader, SynonymProperty
-
+from sqlalchemy.orm import SynonymProperty
+from sprox.sa.support import PropertyLoader, Binary, LargeBinary
 from sprox._widgetselector import WidgetSelector
 
 text_field_limit=100
@@ -42,6 +42,7 @@ class SAWidgetSelector(WidgetSelector):
     Date:     SproxCalendarDatePicker,
     Time:     SproxTimePicker,
     Binary:   FileField,
+    LargeBinary: FileField,
     BLOB:   FileField,
     PickleType: TextField,
     Boolean: SproxCheckBox,
@@ -78,7 +79,7 @@ class SAWidgetSelector(WidgetSelector):
             return self.default_single_select_field_widget_type
 
         type_ = String
-        for t in self.default_widgets.keys():
+        for t in list(self.default_widgets.keys()):
             if isinstance(field.type, t):
                 type_ = t
                 break

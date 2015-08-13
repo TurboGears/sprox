@@ -6,7 +6,7 @@ from sprox.test.model import User
 from sprox.sa.widgetselector import SAWidgetSelector
 from nose.tools import raises, eq_
 
-from strainer.operators import in_xhtml
+from sieve.operators import in_xml as in_xhtml
 
 from sprox.widgets import TextField, HiddenField, Widget
 

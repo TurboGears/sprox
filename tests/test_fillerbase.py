@@ -37,13 +37,13 @@ class TestTableFiller(SproxTest):
         value = self.filler.get_value()
         eq_(len(value), 1)
         value = value[0]
-        eq_(value['groups'], u'4')
+        eq_(value['groups'], '4')
         eq_(value['town'], 'Arvada')
 
     def test_get_value_with_binary_field(self):
         class ExampleFiller(TableFiller):
             __entity__ = Example
-        example = Example(binary='datadatadata')
+        example = Example(binary=b'datadatadata')
         session.add(example)
 
         filler = ExampleFiller(session)

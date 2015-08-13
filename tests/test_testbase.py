@@ -6,7 +6,7 @@ def test_fix_xml():
         </form>"""
     e = """<form action="" class="required tableform" method="post"><div /></form>"""
     r =fix_xml(s)
-    assert r == e, r
+    assert r == e, (r, s)
 
 def test_fix_xml_with_escapes():
     s = """<form action="" method="post" class="required tableform">

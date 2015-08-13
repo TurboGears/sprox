@@ -13,18 +13,19 @@ def setup():
     global session, engine, connect, trans
     session, engine, connect = setup_database()
 
+
 def teardown():
     global session, trans
 
-class TestUniqueValue(SproxTest):
 
+class TestUniqueValue(SproxTest):
     def setup(self):
         super(TestUniqueValue, self).setup()
         self.validator = UniqueValue(SAORMProvider(session), User, 'user_name')
 
     @raises(Invalid)
     def test_to_python_invalid(self):
-        self.validator.to_python(u'asdf', None)
+        self.validator.to_python('asdf', None)
 
     def test_to_python_valid(self):
-        self.validator.to_python(u'asdf1234', None)
+        self.validator.to_python('asdf1234', None)

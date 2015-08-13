@@ -1,3 +1,17 @@
+0.9.7
+* Support for ordering on multiple columns, passing a list as order_by and desc parameters in Fillers and Providers will now sort for all provided columns
+* Basic support for Compound Primary Keys in forms, they should now work even though the primary key cannot be changed after objects are created
+
+0.9.5
+* Support for TW2 CalendarBase class for easier usage of custom calendar widgets
+* Fix issue with multiple selection fields marked as required receiving the wrong validator
+* Fix issue with MongoDB provider trying to cast None value instead of letting it pass as is, thus preventing the usage of "null" on mongodb
+* Sprox query is now able to search related entities by their view_names content and not only by id.
+
+0.9.4
+* Fix for MongoDB validators detection when using python types instead of ming schema classes.
+* Fix for Default value on SQLAlchemy when using a callable
+
 0.8.3
 * Support for default values in MongoDB
 * Support for callables as default values for form fields

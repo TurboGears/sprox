@@ -11,9 +11,9 @@ except ImportError: #pragma: no cover
     class WidgetMeta(object):
         """TW2 WidgetMetaClass"""
 
-from configbase import ConfigBase, ConfigBaseError
+from .configbase import ConfigBase, ConfigBaseError
 
-from widgetselector import WidgetSelector
+from .widgetselector import WidgetSelector
 
 #sa 0.5 support
 try:  #pragma:no cover
@@ -214,7 +214,7 @@ class ViewBase(ConfigBase):
 
     def _do_get_field_widgets(self, fields):
 
-        metadata_keys = self.__metadata__.keys()
+        metadata_keys = list(self.__metadata__.keys())
         widgets = {}
         for field_name in fields:
             if field_name in self.__field_widgets__:

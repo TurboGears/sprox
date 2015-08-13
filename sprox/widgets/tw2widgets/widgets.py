@@ -1,4 +1,3 @@
-from formencode.validators import StringBool
 from formencode import Invalid
 from tw2.core import Widget, Param, DisplayOnlyWidget, ValidationError
 from tw2.forms import (CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid,
@@ -6,10 +5,12 @@ from tw2.forms import (CalendarDatePicker, CalendarDateTimePicker, TableForm, Da
                        TextField, FileField, CheckBox, PasswordField, TextArea,
                        GridLayout)
 from tw2.forms import Label as tw2Label
+from sprox._compat import unicode_text
+
 
 class Label(tw2Label):
     def prepare(self):
-        self.text = unicode(self.value)
+        self.text = unicode_text(self.value)
         super(Label, self).prepare()
 
 class SproxMethodPutHiddenField(HiddenField):
@@ -97,14 +98,14 @@ class PropertySingleSelectField(SingleSelectField):
         entity = self.__class__.entity
 
         options = self.provider.get_dropdown_options(entity, self.field_name, self.dropdown_field_names)
-        self.options = [(unicode(k), unicode(v)) for k,v in options]
+        self.options = [(unicode_text(k), unicode_text(v)) for k,v in options]
         if self.nullable:
             self.options.append(['', "-----------"])
 
         if not self.value:
             self.value = ''
 
-        self.value = unicode(self.value)
+        self.value = unicode_text(self.value)
         super(PropertySingleSelectField, self).prepare()
 
 
@@ -138,12 +139,12 @@ class PropertyMultipleSelectField(MultipleSelectField):
         entity = self.__class__.entity
 
         options = self.provider.get_dropdown_options(entity, self.field_name, self.dropdown_field_names)
-        self.options = [(unicode(k), unicode(v)) for k,v in options]
+        self.options = [(unicode_text(k), unicode_text(v)) for k,v in options]
 
         if not self.value:
             self.value = []
 
-        self.value = [unicode(v) for v in self.value]
+        self.value = [unicode_text(v) for v in self.value]
         super(PropertyMultipleSelectField, self).prepare()
 
 

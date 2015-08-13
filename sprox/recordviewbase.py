@@ -1,7 +1,7 @@
-from viewbase import ViewBase
-from metadata import FieldsMetadata
-from widgetselector import RecordViewWidgetSelector
-from widgets import RecordViewWidget
+from .viewbase import ViewBase
+from .metadata import FieldsMetadata
+from .widgetselector import RecordViewWidgetSelector
+from .widgets import RecordViewWidget
 
 class RecordViewBase(ViewBase):
     """This class allows you to create a view for a single record.
@@ -24,7 +24,7 @@ class RecordViewBase(ViewBase):
     ...     __model__ = User
     >>> user_filler = UserRecordFiller(session)
     >>> value = user_filler.get_value({'user_id':1})
-    >>> print user_view(value=value)
+    >>> print(user_view(value=value))
     <table>
     <tr><th>Name</th><th>Value</th></tr>
     <tr class="recordfieldwidget" id="sx__password">
@@ -59,7 +59,7 @@ class RecordViewBase(ViewBase):
         <td>
             <b>display_name</b>
         </td>
-        <td>
+        <td> Asd Sdf
         </td>
     </tr>
     <tr class="recordfieldwidget" id="sx_town_id">

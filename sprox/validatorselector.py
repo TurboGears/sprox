@@ -25,7 +25,7 @@ from sprox._validatorselector import ValidatorSelector
 import warnings
 
 try:
-    from sa.validatorselector import SAValidatorSelector as _SAValidatorSelector
+    from .sa.validatorselector import SAValidatorSelector as _SAValidatorSelector
 
     class SAValidatorSelector(_SAValidatorSelector):
         def __init__(self, *args, **kw):

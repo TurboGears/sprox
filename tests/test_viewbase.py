@@ -119,7 +119,7 @@ class TestViewBase:
 
         user_view = UserView()
         widget = user_view.__widget__
-        assert 'password' not in  widget_children(widget).keys()
+        assert 'password' not in  list(widget_children(widget).keys())
 
     def test_bad_fieldname_in_limit(self):
         class UserView(ViewBase):
@@ -130,7 +130,7 @@ class TestViewBase:
 
         user_view = UserView()
         widget = user_view.__widget__
-        assert 'junk' not in  widget_children(widget).keys()
+        assert 'junk' not in  list(widget_children(widget).keys())
 
     def test_widget_attrs(self):
         class UserView(ViewBase):

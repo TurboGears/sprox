@@ -23,4 +23,4 @@ try:
             assert base.view is not None
             assert base.filler is not None
 except ImportError:
-    print 'Dojo Tests disabled with ToscaWidgets2'
+    print('Dojo Tests disabled with ToscaWidgets2')

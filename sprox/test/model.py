@@ -69,7 +69,7 @@ class User(DeclarativeBase):
     _password = Column('password', Unicode(40))
     created = Column(DateTime, default=datetime.now)
     town_id = Column(Integer, ForeignKey('town.town_id'))
-    town = relation(Town)
+    town = relation(Town, backref=backref('residents'))
 
     def __repr__(self):
         return '<User: email="%s", display name="%s">' % (
@@ -81,21 +81,6 @@ class User(DeclarativeBase):
         for g in self.groups:
             perms = perms | set(g.permissions)
         return perms
-
-    @classmethod
-    def by_email_address(cls, email):
-        """A class method that can be used to search users
-        based on their email addresses since it is unique.
-        """
-        return DBSession.query(cls).filter(cls.email_address==email).first()
-
-    @classmethod
-    def by_user_name(cls, username):
-        """A class method that permits to search users
-        based on their user_name attribute.
-        """
-        return DBSession.query(cls).filter(cls.user_name==username).first()
-
 
     def _set_password(self, password):
         """encrypts password on the fly using the encryption
@@ -111,45 +96,6 @@ class User(DeclarativeBase):
 
     password = synonym('_password', descriptor=property(_get_password,
                                                        _set_password))
-
-    def _encrypt_password(self, algorithm, password):
-        """Hash the given password with the specified algorithm. Valid values
-        for algorithm are 'md5' and 'sha1'. All other algorithm values will
-        be essentially a no-op."""
-        hashed_password = password
-
-        if isinstance(password, unicode):
-            password_8bit = password.encode('UTF-8')
-        else:
-            password_8bit = password
-
-        #creates a salted sha password
-        salt = sha1()
-        salt.update(os.urandom(60))
-        hash = sha1()
-        hash.update(password_8bit + salt.hexdigest())
-        hashed_password = salt.hexdigest() + hash.hexdigest()
-
-        # make sure the hased password is an UTF-8 object at the end of the
-        # process because SQLAlchemy _wants_ a unicode object for Unicode columns
-        if not isinstance(hashed_password, unicode):
-            hashed_password = hashed_password.decode('UTF-8')
-
-        return hashed_password
-
-    def validate_password(self, password):
-        """Check the password against existing credentials.
-        this method _MUST_ return a boolean.
-
-        @param password: the password that was provided by the user to
-        try and authenticate. This is the clear text version that we will
-        need to match against the (possibly) encrypted one in the database.
-        @type password: unicode object
-        """
-        hashed_pass = sha1()
-        hashed_pass.update(password + self.password[:40])
-
-        return self.password[40:] == hashed_pass.hexdigest()
 
 
 class Permission(DeclarativeBase):
@@ -304,10 +250,17 @@ class WithoutName(DeclarativeBase):
         dropdown_field_names = {'owner': ['data']}
 
     uid = Column(Integer, primary_key=True)
-    data = Column(String(100))
+    data = Column(String(100), info={'title': True})
 
     owner_id = Column(Integer, ForeignKey(WithoutNameOwner.uid))
-    owner = relation('WithoutNameOwner')
+    owner = relation('WithoutNameOwner', backref=backref('owned'))
+
+class CompoundPrimaryKey(DeclarativeBase):
+    __tablename__ = 'withoutname_compound'
+
+    name = Column(String(100), primary_key=True)
+    surname = Column(String(100), primary_key=True)
+    age = Column(Integer)
 
 #not supporting enums for now.
 #ModelWithEnum=None

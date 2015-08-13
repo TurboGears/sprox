@@ -21,12 +21,12 @@ Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
 
-from providerselector import SAORMSelector
-from formbase import FormBase, AddRecordForm, EditableForm
-from tablebase import TableBase
-from entitiesbase import EntitiesBase, EntityDefBase
+from .providerselector import SAORMSelector
+from .formbase import FormBase, AddRecordForm, EditableForm
+from .tablebase import TableBase
+from .entitiesbase import EntitiesBase, EntityDefBase
 
-from fillerbase import ModelsFiller, ModelDefFiller, EditFormFiller, AddFormFiller, FormFiller, TableFiller
+from .fillerbase import ModelsFiller, ModelDefFiller, EditFormFiller, AddFormFiller, FormFiller, TableFiller
 
 class ConfigCacheError(Exception): pass
 

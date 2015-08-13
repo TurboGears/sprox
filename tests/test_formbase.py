@@ -1,8 +1,9 @@
+from sprox.fillerbase import EditFormFiller
 from sprox.formbase import FormBase, AddRecordForm, DisabledForm, EditableForm, Field
 from sprox.viewbase import ViewBaseError
 from sprox.test.base import setup_database, sorted_user_columns, SproxTest, setup_records, \
     Example, Document, assert_in_xml, widget_children, widget_is_type, form_error_message
-from sprox.test.model import User, Group, WithoutName
+from sprox.test.model import User, Group, WithoutName, WithoutNameOwner, CompoundPrimaryKey
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
@@ -16,26 +17,31 @@ except:
 
 class MyTextField(TextField):pass
 
+
 session = None
 engine  = None
 connection = None
 user = None
+
+
 def setup():
     global session, engine, metadata, user
     session, engine, metadata = setup_database()
     user = setup_records(session)
 
+
 class UserForm(FormBase):
     __entity__ = User
 
-class TestField:
 
+class TestField:
     def setup(self):
         self.field = Field(TextField, NotEmpty)
 
     def test_create(self):
         assert self.field.widget == TextField
         assert self.field.validator == NotEmpty
+
 
 class TestsEmptyDropdownWorks:
     def setup(self):
@@ -45,6 +51,7 @@ class TestsEmptyDropdownWorks:
         rendered = self.base()
         assert 'selected="selected"' in rendered
         assert '-----------</option>' in rendered
+
 
 class TestFormBase(SproxTest):
     def setup(self):
@@ -62,9 +69,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something', 'created':''})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_validator_instance(self):
         class UserForm(FormBase):
@@ -74,9 +81,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something', 'created':''})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_instance(self):
         class UserForm(FormBase):
@@ -86,9 +93,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something', 'created':''})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_validator_class(self):
         class UserForm(FormBase):
@@ -98,9 +105,9 @@ class TestFormBase(SproxTest):
         widget = user_form.__widget__
         try:
             widget.validate({'user_name':'something', 'created':''})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test_formbase_with_field_widget_class(self):
         class UserForm(FormBase):
@@ -109,7 +116,6 @@ class TestFormBase(SproxTest):
         user_form = UserForm(session)
         widget = user_form.__widget__
 
-        print widget_children(widget)['user_name']
         assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
 
     def test_formbase_with_field_widget_instance(self):
@@ -138,9 +144,9 @@ class TestFormBase(SproxTest):
         assert widget_is_type(widget_children(widget)['user_name'], MyTextField)
         try:
             widget.validate({'user_name':'something', 'created':''})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
-            assert u'"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+            assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
 
     def test__fields__(self):
         eq_(sorted_user_columns, sorted(self.base.__fields__))
@@ -247,6 +253,7 @@ class TestFormBase(SproxTest):
         form = RegistrationForm(session)
         assert widget_children(form.__widget__)['group_name'].validator is not None
 
+
 class TestAddRecordForm(SproxTest):
     def setup(self):
         super(TestAddRecordForm, self).setup()
@@ -299,7 +306,7 @@ class TestAddRecordForm(SproxTest):
         registration_form = RegistrationForm()
         try:
             registration_form.validate(params={'password':'blah', 'verify_password':'not_blah'})
-        except Invalid, e:
+        except Invalid as e:
             msg = form_error_message(e)
             assert 'Passwords do not match' in msg, msg
 
@@ -309,6 +316,42 @@ class TestAddRecordForm(SproxTest):
         example_form = AddGroupForm()
         rendered = example_form()
         assert 'default group name' in rendered
+
+    def test_autoincrement_single_primary_key(self):
+        class AddUserForm(AddRecordForm):
+            __entity__ = User
+
+        test_form = AddUserForm()
+        html = test_form.display()
+
+        uid_input = self.get_line_in_text('name="user_id"', html)
+        assert not uid_input, uid_input
+
+    def test_required_single_primary_key(self):
+        class AddUserForm(AddRecordForm):
+            __entity__ = User
+            __require_fields__ = ['user_id']
+
+        test_form = AddUserForm()
+        html = test_form.display()
+
+        uid_input = self.get_line_in_text('name="user_id"', html)
+        assert 'type="text"' in uid_input, html
+        assert 'disabled' not in uid_input, html
+
+    def test_compound_primary_key(self):
+        class AddCompoundPrimaryKey(AddRecordForm):
+            __entity__ = CompoundPrimaryKey
+
+        test_form = AddCompoundPrimaryKey()
+        html = test_form.display()
+
+        name_input = self.get_line_in_text('name="name"', html)
+        surname_input = self.get_line_in_text('name="surname"', html)
+        assert 'type="text"' in name_input, name_input
+        assert 'disabled' not in name_input, name_input
+        assert 'type="text"' in surname_input, surname_input
+        assert 'disabled' not in surname_input, surname_input
 
 class TestEditableForm(SproxTest):
     def setup(self):
@@ -330,6 +373,66 @@ class TestEditableForm(SproxTest):
         rendered = self.base()
         assert 'name="user_name"' in rendered
         assert 'User Name' in rendered
+
+    def test_required_validator_select_field(self):
+        o = session.query(WithoutNameOwner).filter_by(data='otherowner').first()
+        assert o, 'Something wrong in tests setup'
+
+        class OwnerFiller(EditFormFiller):
+            __entity__ = WithoutNameOwner
+        owner_filler = OwnerFiller(session)
+        value = owner_filler.get_value({'uid': o.uid})
+
+        class OwnerForm(EditableForm):
+            __entity__ = WithoutNameOwner
+            __require_fields__ = ['owned']
+        owner_form = OwnerForm(session)
+
+        form_html = owner_form.display(value=value)
+        selected = [row for row in form_html.split('\n') if 'selected="selected"' in row]
+        assert len(selected) == len(value['owned'])
+
+        selected_html = '\n'.join(selected)
+        for entry in value['owned']:
+            assert str(entry) in selected_html, (entry, selected_html)
+
+    def test_autoincrement_single_primary_key(self):
+        class EditUserForm(EditableForm):
+            __entity__ = User
+
+        test_form = EditUserForm()
+        html = test_form.display()
+
+        uid_input = self.get_line_in_text('name="user_id"', html)
+        assert 'type="text"' in uid_input, html
+        assert 'disabled' in uid_input, html
+
+    def test_required_single_primary_key(self):
+        class EditUserForm(EditableForm):
+            __entity__ = User
+            __require_fields__ = ['user_id']
+
+        test_form = EditUserForm()
+        html = test_form.display()
+
+        uid_input = self.get_line_in_text('name="user_id"', html)
+        assert 'type="text"' in uid_input, html
+        assert 'disabled' in uid_input, html
+
+    def test_compound_primary_key(self):
+        class EditCompoundPrimaryKey(EditableForm):
+            __entity__ = CompoundPrimaryKey
+
+        test_form = EditCompoundPrimaryKey()
+        html = test_form.display()
+
+        name_input = self.get_line_in_text('name="name"', html)
+        surname_input = self.get_line_in_text('name="surname"', html)
+        assert 'type="text"' in name_input, name_input
+        assert 'disabled' in name_input, name_input
+        assert 'type="text"' in surname_input, surname_input
+        assert 'disabled' in surname_input, surname_input
+
 
 class TestDisabledForm(SproxTest):
     def setup(self):

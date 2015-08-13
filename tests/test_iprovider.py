@@ -104,12 +104,12 @@ class TestSAORMProvider:
 
     @raises(NotImplementedError)
     def test_create(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.create(User, params)
 
     @raises(NotImplementedError)
     def test_update(self):
-        params = {'user_name':u'asdf2', 'password':u'asdf2', 'email_address':u'email@addy.com', 'groups':[1,4], 'town':2}
+        params = {'user_name':'asdf2', 'password':'asdf2', 'email_address':'email@addy.com', 'groups':[1,4], 'town':2}
         new_user = self.provider.update(User, params)
 
     @raises(NotImplementedError)

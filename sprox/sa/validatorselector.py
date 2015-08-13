@@ -27,8 +27,8 @@ from sqlalchemy.types import String as StringType
 from formencode.compound import All
 from formencode import Invalid
 from formencode.validators import StringBool, Number, UnicodeString as FEUnicodeString, Email, Int
-from sqlalchemy.orm import PropertyLoader, SynonymProperty
-
+from sqlalchemy.orm import SynonymProperty
+from sprox.sa.support import PropertyLoader, Binary, LargeBinary
 from sprox._validatorselector import ValidatorSelector
 
 try: #pragma: no cover
@@ -40,6 +40,13 @@ except ImportError: #pragma: no cover
     from tw.forms.validators import *
     DateTimeValidator = DateValidator
 
+
+try:
+    import tw2.forms
+    from tw2.forms import FileValidator
+except ImportError:  # pragma: no cover
+    from formencode.validators import FieldStorageUploadConverter as FileValidator
+
 class SAValidatorSelector(ValidatorSelector):
 
     default_validators = {
@@ -49,7 +56,8 @@ class SAValidatorSelector(ValidatorSelector):
     DateTime: DateTimeValidator,
     Date:     DateValidator,
     Time:     DateTimeValidator,
-#    Binary:   UnicodeString,
+    Binary:   FileValidator,
+    LargeBinary: FileValidator,
     PickleType: UnicodeString,
 #    Boolean: UnicodeString,
 #    NullType: TextField
@@ -69,14 +77,14 @@ class SAValidatorSelector(ValidatorSelector):
             return
 
         #do not validate boolean or binary arguments
-        if isinstance(field.type, (Boolean, Binary, LargeBinary)):
+        if isinstance(field.type, (Boolean, )):
             return None
 
         if field.name in self.name_based_validators:
             return self.name_based_validators[field.name]
 
         type_ = StringType
-        for t in self.default_validators.keys():
+        for t in list(self.default_validators.keys()):
             if isinstance(field.type, t):
                 type_ = t
                 break

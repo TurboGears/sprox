@@ -20,7 +20,7 @@ Original Version by Christopher Perkins 2007
 Released under MIT license.
 """
 
-from sa.provider import SAORMProvider as _SAORMProvider, SAORMProviderError as _SAORMProviderError
+from .sa.provider import SAORMProvider as _SAORMProvider, SAORMProviderError as _SAORMProviderError
 import warnings
 
 class SAORMProviderError(_SAORMProviderError):

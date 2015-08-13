@@ -36,7 +36,7 @@ class ProgrammaticRelationProperty(RelationProperty):
 
     def __set__(self, instance, value):
         if not self.setter:
-            raise TypeError, 'read-only property'
+            raise TypeError('read-only property')
         else:
             self.setter(instance, value)
 
@@ -67,23 +67,6 @@ class GroupPermission(SproxTestClass):
     permission = RelationProperty("Permission")
 
 
-class UserGroup(SproxTestClass):
-    """This is the association table for the many-to-many relationship between
-    groups and members - this is, the memberships.
-    """
-    class __mongometa__:
-        name = 'tg_user_group_rs'
-        unique_indexes = (
-          ('user_id', 'group_id'),
-        )
-    
-    _id = FieldProperty(S.ObjectId)
-    user_id = ForeignIdProperty("User")
-    user = RelationProperty("User")
-    group_id = ForeignIdProperty("Group")
-    group = RelationProperty("Group")
-    
-
 class Group(SproxTestClass):
     """An ultra-simple group definition. (Relational-style)
     """
@@ -98,7 +81,7 @@ class Group(SproxTestClass):
     display_name = FieldProperty(str)
     created = FieldProperty(datetime, if_missing=datetime.now)
     
-    users = RelationProperty(UserGroup)
+    users = RelationProperty('User')
 
 
 class Town(SproxTestClass):
@@ -107,6 +90,7 @@ class Town(SproxTestClass):
     
     _id = FieldProperty(S.ObjectId)
     name = FieldProperty(str)
+    country = FieldProperty(str)
 
     users = RelationProperty('User')
 
@@ -134,7 +118,8 @@ class User(SproxTestClass):
     town_id = ForeignIdProperty(Town)
     town = RelationProperty(Town)
 
-    groups = RelationProperty(UserGroup)
+    groups = RelationProperty(Group)
+    _groups = ForeignIdProperty(Group, uselist=True)
     
     @property
     def permissions(self):
@@ -171,45 +156,6 @@ class User(SproxTestClass):
         return self._password
 
     password = property(_get_password, _set_password)
-
-    def _encrypt_password(self, algorithm, password):
-        """Hash the given password with the specified algorithm. Valid values
-        for algorithm are 'md5' and 'sha1'. All other algorithm values will
-        be essentially a no-op."""
-        hashed_password = password
-
-        if isinstance(password, str):
-            password_8bit = password.encode('UTF-8')
-        else:
-            password_8bit = password
-
-        #creates a salted sha password
-        salt = sha1()
-        salt.update(os.urandom(60))
-        hash = sha1()
-        hash.update(password_8bit + salt.hexdigest())
-        hashed_password = salt.hexdigest() + hash.hexdigest()
-
-        # make sure the hased password is an UTF-8 object at the end of the
-        # process because SQLAlchemy _wants_ a unicode object for Unicode columns
-        if not isinstance(hashed_password, unicode):
-            hashed_password = hashed_password.decode('UTF-8')
-
-        return hashed_password
-
-    def validate_password(self, password):
-        """Check the password against existing credentials.
-        this method _MUST_ return a boolean.
-
-        @param password: the password that was provided by the user to
-        try and authenticate. This is the clear text version that we will
-        need to match against the (possibly) encrypted one in the database.
-        @type password: unicode object
-        """
-        hashed_pass = sha1()
-        hashed_pass.update(password + self.password[:40])
-
-        return self.password[40:] == hashed_pass.hexdigest()
 
 
 class Permission(SproxTestClass):
@@ -369,6 +315,13 @@ class TGMMUser(SproxTestClass):
     def _set_groups(self, groups):
         self._groups = [group.group_name for group in groups]
     groups = ProgrammaticRelationProperty(Group, _get_groups, _set_groups)
+
+class ModelWithRequired(SproxTestClass):
+    class __mongometa__:
+        name = 'model_with_required'
+
+    _id = FieldProperty(S.ObjectId)
+    value = FieldProperty(S.String, required=True)
 
 Mapper.compile_all()
 

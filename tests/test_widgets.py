@@ -1,7 +1,7 @@
-from sprox.widgets import SproxCheckBox, PropertyMultipleSelectField
-from nose.tools import raises, eq_
+from sprox.widgets import SproxCheckBox, PropertyMultipleSelectField, SproxMethodPutHiddenField
 from nose import SkipTest
 from formencode.validators import Int as IntValidator
+
 
 class TestSproxCheckbox:
     def setup(self):
@@ -9,6 +9,18 @@ class TestSproxCheckbox:
 
     def test_checkbox_invalid_data(self):
         self.widget.display(value = 'asdf')
+
+
+class TestSproxMethodPUT:
+    def setup(self):
+        self.widget = SproxMethodPutHiddenField()
+
+    def test_value(self):
+        assert 'value="PUT"' in self.widget.display()
+
+    def test_name(self):
+        assert 'name="_method"' in self.widget.display()
+
 
 class TestMultipleSelection:
     def setup(self):

@@ -94,13 +94,13 @@ class ConfigBase(object):
         if self.__limit_fields__ is not None:
             fields.extend(self.__limit_fields__)
             fields.extend(self.__hide_fields__)
-            fields.extend(self.__add_fields__.keys())
+            fields.extend(list(self.__add_fields__.keys()))
             fields = self.__remove_duplicates(fields)
             return fields
         else:
-            fields = self.__metadata__.keys()
+            fields = list(self.__metadata__.keys())
 
-        fields.extend(self.__add_fields__.keys())
+        fields.extend(list(self.__add_fields__.keys()))
         fields.extend(self.__hide_fields__)
 
         if self.__field_order__ is not None:
@@ -157,6 +157,6 @@ class ConfigBase(object):
         """
         sprox_meta = getattr(self.__entity__, '__sprox__', None)
         if sprox_meta:
-            for attr, value in vars(sprox_meta).items():
+            for attr, value in list(vars(sprox_meta).items()):
                 if not attr.startswith('_'):
                     setattr(self, '__'+attr+'__', copy.deepcopy(value))

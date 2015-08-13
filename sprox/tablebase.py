@@ -55,7 +55,7 @@ class TableBase(ViewBase):
     >>> class TownTable(TableBase):
     ...    __model__ = Town
     >>> town_table = TownTable(session)
-    >>> print town_table() #doctest: +XML
+    >>> print(town_table()) #doctest: +XML
     <div>
     <table class="grid">
         <thead>
@@ -63,6 +63,7 @@ class TableBase(ViewBase):
                     <th  class="col_0">actions</th>
                     <th  class="col_1">town_id</th>
                     <th  class="col_2">name</th>
+                    <th  class="col_3">residents</th>
             </tr>
         </thead>
         <tbody>
@@ -79,7 +80,7 @@ class TableBase(ViewBase):
     ...     __model__ = Town
     >>> town_filler = TownFiller(session)
     >>> value = town_filler.get_value()
-    >>> print town_table(value=value) #doctest: +SKIP
+    >>> print(town_table(value=value)) #doctest: +SKIP
     <div xmlns="http://www.w3.org/1999/xhtml">
     <div>
     <table
@@ -88,41 +89,51 @@ class TableBase(ViewBase):
             <tr>
                     <th class="col_0">town_id</th>
                     <th class="col_1">name</th>
+                    <th  class="col_2">residents</th>
             </tr>
         </thead>
         <tbody>
-            <tr class="even">
-                <td class="col_0">
-                        1
-                </td>
-                <td class="col_1">
-                        Arvada
-                </td>
-            </tr>
-            <tr class="odd">
-                <td class="col_0">
-                        2
-                </td>
-                <td class="col_1">
-                        Denver
-                </td>
-            </tr>
-            <tr class="even">
-                <td class="col_0">
-                        3
-                </td>
-                <td class="col_1">
-                        Golden
-                </td>
-            </tr>
-            <tr class="odd">
-                <td class="col_0">
-                        4
-                </td>
-                <td class="col_1">
-                        Boulder
-                </td>
-            </tr>
+                <tr class="even">
+                    <td class="col_0">
+                            1
+                    </td>
+                    <td class="col_1">
+                            Arvada
+                    </td>
+                    <td class="col_2">
+                            asdf@asdf.com
+                    </td>
+                </tr>
+                <tr class="odd">
+                    <td class="col_0">
+                            2
+                    </td>
+                    <td class="col_1">
+                            Denver
+                    </td>
+                    <td class="col_2">
+                    </td>
+                </tr>
+                <tr class="even">
+                    <td class="col_0">
+                            3
+                    </td>
+                    <td class="col_1">
+                            Golden
+                    </td>
+                    <td class="col_2">
+                    </td>
+                </tr>
+                <tr class="odd">
+                    <td class="col_0">
+                            4
+                    </td>
+                    <td class="col_1">
+                            Boulder
+                    </td>
+                    <td class="col_2">
+                    </td>
+                </tr>
         </tbody>
     </table>
     </div>
@@ -134,13 +145,14 @@ class TableBase(ViewBase):
     ...     __model__ = Town
     ...     __omit_fields__ = ['__actions__']
     >>> town_table = TownTable(session)
-    >>> print town_table(value=value) #doctest: +XML
+    >>> print(town_table(value=value)) #doctest: +XML
     <div>
     <table class="grid">
         <thead>
             <tr>
                     <th  class="col_0">town_id</th>
                     <th  class="col_1">name</th>
+                    <th  class="col_2">residents</th>
             </tr>
         </thead>
         <tbody>
@@ -151,6 +163,9 @@ class TableBase(ViewBase):
                     <td class="col_1">
                             Arvada
                     </td>
+                    <td class="col_2">
+                            asdf@asdf.com
+                    </td>
                 </tr>
                 <tr class="odd">
                     <td class="col_0">
@@ -158,6 +173,8 @@ class TableBase(ViewBase):
                     </td>
                     <td class="col_1">
                             Denver
+                    </td>
+                    <td class="col_2">
                     </td>
                 </tr>
                 <tr class="even">
@@ -167,6 +184,8 @@ class TableBase(ViewBase):
                     <td class="col_1">
                             Golden
                     </td>
+                    <td class="col_2">
+                    </td>
                 </tr>
                 <tr class="odd">
                     <td class="col_0">
@@ -175,10 +194,13 @@ class TableBase(ViewBase):
                     <td class="col_1">
                             Boulder
                     </td>
+                    <td class="col_2">
+                    </td>
                 </tr>
         </tbody>
     </table>
     </div>
+
 
     """
 

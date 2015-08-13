@@ -3,7 +3,21 @@ import os
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
-execfile(os.path.join(here, 'sprox', 'release.py'))
+exec(compile(open(os.path.join(here, 'sprox', 'release.py')).read(), 'release.py', 'exec'), globals(), locals())
+
+import sys
+py_version = sys.version_info[:2]
+
+DEPENDENCIES = ['formencode>=1.3.0a1']
+
+if py_version == (3, 2):
+    DEPENDENCIES += ['markupsafe<0.16']
+else:
+    DEPENDENCIES += ['markupsafe']
+
+TESTS_DEPENDENCIES = ['sqlalchemy', 'sieve']
+TEST_SUITE_DEPENDENCIES = TESTS_DEPENDENCIES + ['tw2.forms', 'genshi', 'mako']
+MONGODB_TEST_SUITE_DEPENDENCIES = TEST_SUITE_DEPENDENCIES + ['ming']
 
 setup(
   name="sprox",
@@ -15,9 +29,14 @@ setup(
   author_email="chris@percious.com",
   license="MIT",
   url="http://www.sprox.org",
-  install_requires=['formencode>=1.2.2',
-                    ],
-  tests_require=['sqlalchemy'],
+  install_requires=DEPENDENCIES,
+  tests_require=TESTS_DEPENDENCIES,
+  extras_require={
+       # Used by Travis and Coverage due to setup.py nosetests
+       # causing a coredump when used with coverage
+       'testing': TEST_SUITE_DEPENDENCIES,
+       'testing_mongodb': MONGODB_TEST_SUITE_DEPENDENCIES
+  },
   packages = find_packages(),
   classifiers=[
         "Development Status :: 4 - Beta",

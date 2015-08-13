@@ -45,6 +45,7 @@ class TestSAWidgetSelector:
     (BLOB,        FileField),
     (BOOLEAN,     SproxCheckBox),
     (Binary,      FileField),
+    (LargeBinary, FileField),
     (Boolean,     SproxCheckBox),
     (CHAR(100),   TextField),
     (CLOB,        TextArea),
