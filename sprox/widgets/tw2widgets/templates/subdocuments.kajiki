@@ -1,0 +1,10 @@
+<div py:attrs="w.attrs" py:with="num=len(w.children)">
+    <a href="#" class="subdocuments-add" onclick="return (function(btn) { var el=btn.parentNode.lastChild; while(el.nodeType !== 1) { el = el.previousSibling; } el.style.display = 'block'; return false; })(this)">Add</a>
+    <py:for each="i,c in enumerate(w.children)">
+        <py:if test="i != (num-1)">
+          <a href="#" class="subdocuments-delete" onclick="return (function(btn) { var el=btn.nextSibling; while(el.nodeType !== 1) { el = el.nextSibling; } if (el) { el.remove(); btn.remove(); } return false; })(this)"></a>
+        </py:if>
+        ${c.display()}
+        <py:if test="w.separator and i != (num-1)">${w.separator}</py:if>
+    </py:for>
+</div>

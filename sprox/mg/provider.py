@@ -215,17 +215,25 @@ class MingProvider(IProvider):
                 else:
                     field_type = schema
 
-                children = []
+                widget_args = {'children': []}
                 if isinstance(field_type, S.Object):
-                    for subfield_name, subfield_type in field_type.fields.items():
-                        widget = self.default_widget_selector_type().select(subfield_type)
-                        children.append(widget(label=subfield_name, id=subfield_name,
-                                               key=subfield_name))
-                    return {'children': children}
+                    subfields = [FieldProperty(n, t) for n, t in field_type.fields.items()]
                 else:
-                    widget = self.default_widget_selector_type().select(field_type)
-                    widget = widget(label=None, id='', children_non_hidden=[])
-                    return {'child': widget}
+                    subfields = [FieldProperty(field.name, field_type)]
+                    widget_args['direct'] = True
+
+                for subfield in subfields:
+                    widget = self.default_widget_selector_type().select(subfield)
+                    validator = self.default_validator_selector_type().select(subfield)
+                    subfield_id = '_'.join(('sprox', subfield.name))
+                    if widget_args.get('direct', False):
+                        subfield_label = subfield.name
+                    else:
+                        subfield_label = None
+                    widget_args['children'].append(widget(label=subfield_label, id=subfield_id,
+                                                          key=subfield.name,
+                                                          validator=validator() if validator else None))
+                return widget_args
 
         return {}
 
@@ -237,6 +245,33 @@ class MingProvider(IProvider):
             return value._id
         return ObjectId(value)
 
+    def _cast_value_for_type(self, type, value):
+        if value is None:
+            return None
+
+        if type in (S.DateTime, datetime.datetime):
+            if isinstance(value, string_type):
+                return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+            else:
+                return value
+        elif type is S.Binary:
+            return bson.Binary(value)
+        elif type in (S.Int, int):
+            return int(value)
+        elif type in (S.Bool, bool):
+            if value in ('true', 'false'):
+                return value == 'true' and True or False
+            else:
+                return bool(value)
+        elif isinstance(type, (S.Object, dict)):
+            return dict((k, self._cast_value_for_type(type[k], v)) for k, v in value.items())
+        elif isinstance(type, (S.Array, list)):
+            if not isinstance(value, (list, tuple)):
+                value = [value]
+            return [self._cast_value_for_type(type[0], v) for v in value]
+        else:
+            return value
+
     def _cast_value(self, entity, key, value):
         # handles the case where an record with no id is being created
         if key == '_id' and value == '':
@@ -245,9 +280,9 @@ class MingProvider(IProvider):
         if value is None:
             # Let none pass as is as it actually means a "null" on mongodb
             return value
-            
+
         field = getattr(entity, key)
-        
+
         relations = self.get_relations(entity)
         if key in relations:
             related = field.related
@@ -258,20 +293,8 @@ class MingProvider(IProvider):
 
         field = getattr(field, 'field', None)
         if field is not None:
-            if field.type is S.DateTime or field.type is datetime.datetime:
-                if isinstance(value, string_type):
-                    return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
-                else:
-                    return value
-            elif field.type is S.Binary:
-                return bson.Binary(value)
-            elif field.type in (S.Int, int):
-                return int(value)
-            elif field.type in (S.Bool, bool):
-                if value in ('true', 'false'):
-                    return value == 'true' and True or False
-                else:
-                    return bool(value)
+            value = self._cast_value_for_type(field.type, value)
+
         return value
 
     def create(self, entity, params):
