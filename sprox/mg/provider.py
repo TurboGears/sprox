@@ -226,7 +226,7 @@ class MingProvider(IProvider):
                     widget = self.default_widget_selector_type().select(subfield)
                     validator = self.default_validator_selector_type().select(subfield)
                     subfield_id = '_'.join(('sprox', subfield.name))
-                    if widget_args.get('direct', False):
+                    if not widget_args.get('direct', False):
                         subfield_label = subfield.name
                     else:
                         subfield_label = None
