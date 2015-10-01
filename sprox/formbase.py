@@ -272,7 +272,13 @@ class FormBase(ViewBase):
             elif isinstance(self.__possible_field_names__, list):
                 args['dropdown_field_names'] = self.__possible_field_names__
         if v:
-            args['validator'] = v
+            widget_type = self._do_get_field_widget_type(field_name, field)
+            if hasattr(widget_type, 'item_validator'):
+                # Some TW2 widgets that accept multiple values use item_validator instead
+                # of validator to validate the values
+                args['item_validator'] = v
+            else:
+                args['validator'] = v
         return args
 
     def _do_get_fields(self):

@@ -8,7 +8,7 @@ from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.metadata import FieldsMetadata
 from nose.tools import raises, eq_
 from formencode import Invalid, Schema
-from formencode.validators import FieldsMatch, NotEmpty, OpenId
+from formencode.validators import FieldsMatch, NotEmpty, OpenId, Int as IntValidator
 
 try:
     from tw2.forms import PasswordField, TextField
@@ -108,6 +108,19 @@ class TestFormBase(SproxTest):
         except Invalid as e:
             msg = form_error_message(e)
             assert '"something" is not a valid OpenId (it is neither an URL nor an XRI)' in msg, msg
+
+    def test_formbase_with_field_validator_many2many(self):
+        class UserForm(FormBase):
+            __entity__ = User
+            groups = Field(validator=IntValidator())
+        user_form = UserForm(session)
+        widget = user_form.__widget__
+
+        data = widget.validate({'groups': ['1', '2']})
+        assert data['groups'] == [1, 2], data
+
+        data = widget.validate({'groups': ['a', 'b']})
+        assert data['groups'] == [], data
 
     def test_formbase_with_field_widget_class(self):
         class UserForm(FormBase):
