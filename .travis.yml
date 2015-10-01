@@ -9,7 +9,6 @@ services:
   - mongodb
 
 install:
-  - "pip install coverage"
   - "pip install nose"
   - "pip install coveralls"
   - "pip install git+https://github.com/toscawidgets/tw2.core.git@develop#egg=tw2.core"

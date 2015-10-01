@@ -9,13 +9,16 @@ import sys
 py_version = sys.version_info[:2]
 
 DEPENDENCIES = ['formencode>=1.3.0a1']
+TESTS_DEPENDENCIES = ['sqlalchemy', 'sieve']
 
 if py_version == (3, 2):
     DEPENDENCIES += ['markupsafe<0.16']
+    TESTS_DEPENDENCIES.append('coverage < 4.0')
 else:
     DEPENDENCIES += ['markupsafe']
+    TESTS_DEPENDENCIES.append('coverage')
 
-TESTS_DEPENDENCIES = ['sqlalchemy', 'sieve']
+
 TEST_SUITE_DEPENDENCIES = TESTS_DEPENDENCIES + ['tw2.forms', 'genshi', 'mako']
 MONGODB_TEST_SUITE_DEPENDENCIES = TEST_SUITE_DEPENDENCIES + ['ming']
 
