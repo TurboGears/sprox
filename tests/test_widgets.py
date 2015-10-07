@@ -25,7 +25,8 @@ class TestSproxMethodPUT:
 class TestMultipleSelection:
     def setup(self):
         self.widget = PropertyMultipleSelectField(options=[('1', 'a'), ('2', 'b')],
-                                                  validator=IntValidator())
+                                                  validator=_ListOrIntValidator(),
+                                                  item_validator=IntValidator())
 
     def test_multiple_selection_single_entry(self):
         if not hasattr(self.widget, 'req'):
@@ -36,3 +37,10 @@ class TestMultipleSelection:
         if not hasattr(self.widget, 'req'):
             raise SkipTest('Test for TW2')
         self.widget.req()._validate(['a', 'b']) == []
+
+
+class _ListOrIntValidator(IntValidator):
+    def _convert_to_python(self, value, state):
+        if isinstance(value, list):
+            return value
+        super(_ListOrIntValidator, self)._convert_to_python(value)

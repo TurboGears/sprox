@@ -118,25 +118,33 @@ class PropertyMultipleSelectField(MultipleSelectField):
     nullable = Param('nullable', attribute=False, default=False)
     disabled = Param('disabled', attribute=False, default=False)
 
-    def _safe_validate(self, validator, value, state=None):
+    def _safe_from_validate(self, validator, value, state=None):
         try:
-            value = validator.to_python(value, state=state)
-            validator.validate_python(value, state=state)
-            return value
+            return validator.from_python(value, state=state)
+        except Invalid:
+            return Invalid
+
+    def _safe_to_validate(self, validator, value, state=None):
+        try:
+            return validator.to_python(value, state=state)
         except Invalid:
             return Invalid
 
     def _validate(self, value, state=None):
+        # Work around a bug in tw2.core <= 2.2.2 where twc.safe_validate
+        # doesn't work with formencode validators.
         value = value or []
         if not isinstance(value, (list, tuple)):
             value = [value]
         if self.validator:
-            value = [self._safe_validate(self.validator, v) for v in value]
+            self.validator.to_python(value, state)
+        if self.item_validator:
+            value = [self._safe_to_validate(self.item_validator, v) for v in value]
         self.value = [v for v in value if v is not Invalid]
         return self.value
 
     def prepare(self):
-        #This is required for ming
+        # This is required for ming
         entity = self.__class__.entity
 
         options = self.provider.get_dropdown_options(entity, self.field_name, self.dropdown_field_names)
@@ -145,7 +153,10 @@ class PropertyMultipleSelectField(MultipleSelectField):
         if not self.value:
             self.value = []
 
-        self.value = [unicode_text(v) for v in self.value]
+        if not hasattr(self, '_validated') and self.item_validator:
+            self.value = [self._safe_from_validate(self.item_validator, v) for v in self.value]
+
+        self.value = [unicode_text(v) for v in self.value if v is not Invalid]
         super(PropertyMultipleSelectField, self).prepare()
 
 
