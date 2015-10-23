@@ -172,10 +172,17 @@ class SubDocument(ListLayout):
             cls.css_class += ' subdocument'
 
         for c in getattr(cls, 'children', []):
-            for name, value in cls.children_attrs.items():
-                setattr(c, name, value)
+            if issubclass(c, (SubDocument, SubDocumentsList)):
+                c.children_attrs = cls.children_attrs
+            else:
+                for name, value in cls.children_attrs.items():
+                    setattr(c, name, value)
+
             if cls.direct:
                 c.compound_key = ':'.join(c.compound_key.split(':')[:-1])
+
+        if not hasattr(cls, 'children'):
+            cls.children = []
 
     @tw2v.catch_errors
     def _validate(self, value, state=None):

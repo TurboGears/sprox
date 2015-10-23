@@ -146,7 +146,7 @@ class ViewBase(ConfigBase):
     def _do_get_field_widget_args(self, field_name, field):
         # toscawidgets does not like ids that have '.' in them.  This does not
         # work for databases with schemas.
-        field_name = field_name.replace('.', '_')
+        field_name = field_name.replace(':', '-').replace('.', '_')
         args = {}
 
         #this is sort of a hack around TW evaluating _some_ params that are classes.
@@ -157,12 +157,15 @@ class ViewBase(ConfigBase):
         if hasattr(Widget, 'req'):
             args.update({'id':'sx_'+field_name, 'key':field_name})
         else: #pragma: no cover
-            args.update({'id':field_name})
+            args.update({'id':field_name, 'name': field_name})
 
-        args.update({'name':field_name,
-                'identity':self.__entity__.__name__+'_'+field_name,
-                'entity':entity, 'provider':self.__provider__,
-                'label':name2label(field_name), 'label_text':name2label(field_name)})
+        args.update({
+            'identity':self.__entity__.__name__+'_'+field_name,
+            'entity':entity,
+            'provider':self.__provider__,
+            'label':name2label(field_name),
+            'label_text':name2label(field_name)
+        })
         field_default_value = self.__provider__.get_field_default(entity)
         if field_default_value[0]:
             if hasattr(Widget, 'req'):
@@ -173,14 +176,14 @@ class ViewBase(ConfigBase):
             else: #pragma: no cover
                 args['default'] = field_default_value[1]
 
-        #enum support works completely differently.
-        #if isinstance(entity, Column) and isinstance(entity.type, Enum):
-        #    args['options'] = entity.type.enums
-
         if field_name in self.__field_attrs__:
             args['attrs'] = self.__field_attrs__[field_name]
 
-        provider_widget_args = self.__provider__.get_field_provider_specific_widget_args(self.__entity__, field, field_name)
+        if hasattr(Widget, 'req'):
+            # SubFields are only supported on TW2
+            args.update(self.__provider__._build_subfields(self, field))
+
+        provider_widget_args = self.__provider__.get_field_provider_specific_widget_args(self, field, field_name)
         if provider_widget_args:
             args.update(provider_widget_args)
 
@@ -212,8 +215,29 @@ class ViewBase(ConfigBase):
     # This was a typo once, keeping it around for backwards compatibility
     _do_get_field_wiget_type = _do_get_field_widget_type
 
-    def _do_get_field_widgets(self, fields):
+    def _do_get_field_widget(self, field_name, field):
+        field_widget_type = self._do_get_field_widget_type(field_name, field)
+        field_widget_args = self._do_get_field_widget_args(field_name, field)
 
+        if field_name in self._do_get_disabled_fields():
+            # in this case, we display the current field, disabling it, and also add
+            # a hidden field into th emix
+            field_widget_args['disabled'] = True
+            field_widget_args['attrs'] = {'disabled':True}
+
+            if hasattr(Widget, 'req'):
+                hidden_id='disabled_' + field_name.replace('.','_')
+            else: #pragma: no cover
+                hidden_id=field_name.replace('.','_')
+
+            return (HiddenField(id=hidden_id, key=field_name,
+                                name=field_name,
+                                identifier=field_name),
+                    field_widget_type(**field_widget_args))
+        else:
+            return field_widget_type(**field_widget_args)
+
+    def _do_get_field_widgets(self, fields):
         metadata_keys = list(self.__metadata__.keys())
         widgets = {}
         for field_name in fields:
@@ -234,26 +258,7 @@ class ViewBase(ConfigBase):
                 continue
 
             field = self.__metadata__[field_name]
-            field_widget_type = self._do_get_field_widget_type(field_name, field)
-            field_widget_args = self._do_get_field_widget_args(field_name, field)
-
-            if field_name in self._do_get_disabled_fields():
-                # in this case, we display the current field, disabling it, and also add
-                # a hidden field into th emix
-                field_widget_args['disabled'] = True
-                field_widget_args['attrs'] = {'disabled':True}
-
-                if hasattr(Widget, 'req'):
-                    hidden_id='disabled_' + field_name.replace('.','_')
-                else: #pragma: no cover
-                    hidden_id=field_name.replace('.','_')
-
-                widgets[field_name] = (HiddenField(id=hidden_id, key=field_name,
-                                                   name=field_name,
-                                                   identifier=field_name),
-                                       field_widget_type(**field_widget_args))
-            else:
-                widgets[field_name] = field_widget_type(**field_widget_args)
+            widgets[field_name] = self._do_get_field_widget(field_name, field)
 
         widgets.update(self.__create_hidden_fields())
         return widgets

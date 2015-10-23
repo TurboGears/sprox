@@ -45,6 +45,23 @@ class MingProvider(IProvider):
 
     def get_field(self, entity, name):
         """Get a field with the given field name."""
+        if ':' in name:
+            # Nested field
+            path = name.split(':')
+            name = path.pop(0)
+            field = mapper(entity).property_index[name]
+            while path:
+                name = path.pop(0)
+                field_schema = field.field.schema
+
+                field_type = field_schema
+                if isinstance(field_schema, S.Array):
+                    field_type = field_schema.field_type
+                if isinstance(field_type, S.Object):
+                    field_type = field_type.fields.get(name)
+                field = FieldProperty(name, field_type)
+            return field
+
         return mapper(entity).property_index[name]
 
     def get_fields(self, entity):
@@ -195,7 +212,10 @@ class MingProvider(IProvider):
         if isinstance(fld, RelationProperty):
             # check the required attribute on the corresponding foreign key field
             fld = fld.join.prop
-        return not getattr(fld, 'kwargs', {}).get("required", False)
+
+        fld = fld.field
+        schema = fld.schema
+        return not getattr(schema, 'required', False)
 
     def get_field_default(self, field):
         field = getattr(field, 'field', None)
@@ -205,37 +225,46 @@ class MingProvider(IProvider):
                 return (True, if_missing)
         return (False, None)
 
-    def get_field_provider_specific_widget_args(self, entity, field, field_name):
+    def get_field_provider_specific_widget_args(self, viewbase, field, field_name):
+        widget_args = {}
+        return widget_args
+
+    def _build_subfields(self, viewbase, field):
+        subfields_widget_args = {}
+
         field = getattr(field, 'field', None)
-        if field is not None:
-            schema = getattr(field, 'schema', None)
-            if isinstance(schema, (S.Array, S.Object)):
-                if isinstance(schema, S.Array):
-                    field_type = schema.field_type
+        if field is None:
+            return subfields_widget_args
+
+        schema = getattr(field, 'schema', None)
+        if isinstance(schema, (S.Array, S.Object)):
+            if isinstance(schema, S.Array):
+                field_type = schema.field_type
+            else:
+                field_type = schema
+
+            if isinstance(field_type, S.Object):
+                subfields = [FieldProperty(':'.join((field.name, n)), t) for n, t in field_type.fields.items()]
+                direct = False
+            else:
+                subfields = [FieldProperty(field.name, field_type)]
+                direct = True
+
+            subfields_widget_args = {'children': [],
+                                     'direct': direct}
+
+            for subfield in subfields:
+                widget = viewbase._do_get_field_widget(subfield.name, subfield)
+                subfield_key = subfield.name.rsplit(':', 1)[-1]
+                subfield_id = '_'.join(('sprox', subfield.name)).replace(':', '_')
+                if not subfields_widget_args.get('direct', False):
+                    subfield_label = subfield_key
                 else:
-                    field_type = schema
+                    subfield_label = None
 
-                widget_args = {'children': []}
-                if isinstance(field_type, S.Object):
-                    subfields = [FieldProperty(n, t) for n, t in field_type.fields.items()]
-                else:
-                    subfields = [FieldProperty(field.name, field_type)]
-                    widget_args['direct'] = True
-
-                for subfield in subfields:
-                    widget = self.default_widget_selector_type().select(subfield)
-                    validator = self.default_validator_selector_type().select(subfield)
-                    subfield_id = '_'.join(('sprox', subfield.name))
-                    if not widget_args.get('direct', False):
-                        subfield_label = subfield.name
-                    else:
-                        subfield_label = None
-                    widget_args['children'].append(widget(label=subfield_label, id=subfield_id,
-                                                          key=subfield.name,
-                                                          validator=validator() if validator else None))
-                return widget_args
-
-        return {}
+                subfields_widget_args['children'].append(widget(label=subfield_label, id=subfield_id,
+                                                                key=subfield_key))
+        return subfields_widget_args
 
     def get_default_values(self, entity, params):
         return params
