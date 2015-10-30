@@ -45,13 +45,17 @@ class MingProvider(IProvider):
 
     def get_field(self, entity, name):
         """Get a field with the given field name."""
-        if ':' in name:
+        if '.' in name:
             # Nested field
-            path = name.split(':')
+            path = name.split('.')
             name = path.pop(0)
             field = mapper(entity).property_index[name]
             while path:
                 name = path.pop(0)
+                if name == '$':
+                    # Array element, the real entry was the parent
+                    continue
+
                 field_schema = field.field.schema
 
                 field_type = field_schema
@@ -244,10 +248,10 @@ class MingProvider(IProvider):
                 field_type = schema
 
             if isinstance(field_type, S.Object):
-                subfields = [FieldProperty(':'.join((field.name, n)), t) for n, t in field_type.fields.items()]
+                subfields = [FieldProperty('.'.join((field.name, n)), t) for n, t in field_type.fields.items()]
                 direct = False
             else:
-                subfields = [FieldProperty(field.name, field_type)]
+                subfields = [FieldProperty('.'.join((field.name, '$')), field_type)]
                 direct = True
 
             subfields_widget_args = {'children': [],
@@ -255,8 +259,8 @@ class MingProvider(IProvider):
 
             for subfield in subfields:
                 widget = viewbase._do_get_field_widget(subfield.name, subfield)
-                subfield_key = subfield.name.rsplit(':', 1)[-1]
-                subfield_id = '_'.join(('sprox', subfield.name)).replace(':', '_')
+                subfield_key = subfield.name.rsplit('.', 1)[-1]
+                subfield_id = subfield.name.replace('$', '-').replace('.', '_')
                 if not subfields_widget_args.get('direct', False):
                     subfield_label = subfield_key
                 else:

@@ -271,6 +271,7 @@ class FormBase(ViewBase):
                 args['dropdown_field_names'] = view_names
             elif isinstance(self.__possible_field_names__, list):
                 args['dropdown_field_names'] = self.__possible_field_names__
+
         if v:
             widget_type = self._do_get_field_widget_type(field_name, field)
             if hasattr(widget_type, 'item_validator'):
@@ -279,6 +280,7 @@ class FormBase(ViewBase):
                 args['item_validator'] = v
             else:
                 args['validator'] = v
+
         return args
 
     def _do_get_fields(self):

@@ -146,7 +146,7 @@ class ViewBase(ConfigBase):
     def _do_get_field_widget_args(self, field_name, field):
         # toscawidgets does not like ids that have '.' in them.  This does not
         # work for databases with schemas.
-        field_name = field_name.replace(':', '-').replace('.', '_')
+        field_name = field_name.replace('$', '-').replace('.', '_')
         args = {}
 
         #this is sort of a hack around TW evaluating _some_ params that are classes.

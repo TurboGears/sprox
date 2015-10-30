@@ -172,13 +172,20 @@ class SubDocument(ListLayout):
             cls.css_class += ' subdocument'
 
         for c in getattr(cls, 'children', []):
-            if issubclass(c, (SubDocument, SubDocumentsList)):
+            # SubDocument always propagates its template to nested subdocuments
+            if issubclass(c, SubDocument):
                 c.children_attrs = cls.children_attrs
+                c.template = cls.template
+            elif issubclass(c, SubDocumentsList):
+                c.children_attrs = cls.children_attrs
+                c.child = c.child(template=cls.template)
             else:
                 for name, value in cls.children_attrs.items():
                     setattr(c, name, value)
 
             if cls.direct:
+                # In direct mode we just act as a proxy to the real field
+                # so we set the field key equal to our own
                 c.compound_key = ':'.join(c.compound_key.split(':')[:-1])
 
         if not hasattr(cls, 'children'):
@@ -187,13 +194,19 @@ class SubDocument(ListLayout):
     @tw2v.catch_errors
     def _validate(self, value, state=None):
         if self.direct:
+            # In direct mode we just act as a proxy to the real field
+            # so we directly validate the field
             return self.children[0]._validate(value, state)
         else:
             return super(SubDocument, self)._validate(value, state)
 
     def prepare(self):
         if self.direct:
+            # In direct mode we just act as a proxy to the real field
+            # so we provide the value to the field and throw away error messages
+            # to avoid duplicating them (one for us and one for the field).
             self.children[0].value = self.value
+            self.error_msg = ''
         super(SubDocument, self).prepare()
 
 
