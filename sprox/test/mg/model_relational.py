@@ -323,6 +323,37 @@ class ModelWithRequired(SproxTestClass):
     _id = FieldProperty(S.ObjectId)
     value = FieldProperty(S.String, required=True)
 
+
+class NestedModel(SproxTestClass):
+    class __mongometa__:
+        name = 'nested_model'
+
+    _id = FieldProperty(S.ObjectId)
+    group_name = FieldProperty(S.String)
+    display_name = FieldProperty(S.String)
+    number = FieldProperty(S.Int)
+    author = FieldProperty({
+        'name': S.String,
+        'surname': S.String,
+        'age': S.Int(required=False, if_missing=21),
+        'extra': {
+            'key': S.String,
+            'val': S.String
+        },
+        'interests': [S.String],
+        'other': [{
+            'key': S.String(required=False, if_missing=''),
+            'val': S.String,
+            'meta': [S.String]
+        }]
+    }) 
+    contributors = FieldProperty([{ 
+        'name': S.String,
+        'surname': S.String,
+        'age': S.Int
+    }])
+    groups = FieldProperty([S.String]) 
+
 Mapper.compile_all()
 
 

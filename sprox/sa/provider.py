@@ -634,11 +634,11 @@ class SAORMProvider(IProvider):
         self.session.flush()
         return obj
 
-    #this is hard to test because of some kind of rollback issue in the test framework
-    def delete(self, entity, params):
-        obj = self._get_obj(entity, params)  # pragma: no cover
-        self.session.delete(obj)  # pragma: no cover
-        return obj  # pragma: no cover
+    # This is hard to test because of some kind of rollback issue in the test framework
+    def delete(self, entity, params):  # pragma: no cover
+        obj = self._get_obj(entity, params)
+        self.session.delete(obj)
+        return obj
 
     def get_field_widget_args(self, entity, field_name, field):
         args = {}

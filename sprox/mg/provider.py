@@ -282,25 +282,32 @@ class MingProvider(IProvider):
         if value is None:
             return None
 
-        if type in (S.DateTime, datetime.datetime):
+        def _check(*types):
+            return type in types or isinstance(type, types)
+
+        if _check(S.DateTime, datetime.datetime):
             if isinstance(value, string_type):
                 return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
             else:
                 return value
-        elif type is S.Binary:
+        elif _check(S.Binary):
             return bson.Binary(value)
-        elif type in (S.Int, int):
+        elif _check(S.Int, int):
             return int(value)
-        elif type in (S.Bool, bool):
+        elif _check(S.Bool, bool):
             if value in ('true', 'false'):
                 return value == 'true' and True or False
             else:
                 return bool(value)
-        elif isinstance(type, (S.Object, dict)):
+        elif _check(S.Object, dict):
+            if isinstance(type, S.Object):
+                type = type.fields
             return dict((k, self._cast_value_for_type(type[k], v)) for k, v in value.items())
-        elif isinstance(type, (S.Array, list)):
+        elif _check(S.Array, list):
             if not isinstance(value, (list, tuple)):
                 value = [value]
+            if isinstance(type, S.Array):
+                type = [type.field_type]
             return [self._cast_value_for_type(type[0], v) for v in value]
         else:
             return value

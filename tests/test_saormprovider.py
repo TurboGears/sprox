@@ -236,6 +236,12 @@ class TestSAORMProvider(SproxTest):
         categories = [x.document_category_id for x in r]
         assert categories == list(sorted(categories))
 
+    def test_query_order_by_desc(self):
+        c, r = self.provider.query(Document, limit=20, offset=0, order_by='category', desc=1)
+        assert c > 1, r
+        categories = [x.document_category_id for x in r]
+        assert categories == list(sorted(categories, reverse=True))
+
     def test_query_order_by_multiple(self):
         c, r = self.provider.query(Document, limit=20, offset=0, order_by=['category', 'owner'])
         assert c > 1, r

@@ -87,6 +87,15 @@ class TestTableFiller(SproxTest):
         value = filler.get_value()
         eq_(value[0]['groups'], '4')
 
+    def test_get_value_multiargs_method(self):
+        class FillerWithMethod(TableFiller):
+            __entity__ = User
+            def town(self, obj, town):
+                return 'City of ' + town
+        filler = FillerWithMethod(session)
+        value = filler.get_value(values={'user_id':1}, town='Arvada')
+        assert value[0]['town'] == 'City of Arvada', value[0]
+
 class TestEditFormFiller(SproxTest):
     def setup(self):
         super(TestEditFormFiller, self).setup()
@@ -109,6 +118,15 @@ class TestEditFormFiller(SproxTest):
         filler = FillerWithMethod(session)
         value = filler.get_value(values={'user_id':1})
         assert value['town']== 'Unionville', value['town']
+
+    def test_get_value_multiargs_method(self):
+        class FillerWithMethod(EditFormFiller):
+            __entity__ = User
+            def town(self, obj, city):
+                return city
+        filler = FillerWithMethod(session)
+        value = filler.get_value(values={'user_id':1}, city='Rome')
+        assert value['town'] == 'Rome', value['town']
 
 
 class TestAddFormFiller(SproxTest):
