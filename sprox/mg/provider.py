@@ -259,15 +259,15 @@ class MingProvider(IProvider):
 
             for subfield in subfields:
                 widget = viewbase._do_get_field_widget(subfield.name, subfield)
-                subfield_key = subfield.name.rsplit('.', 1)[-1]
-                subfield_id = subfield.name.replace('$', '-').replace('.', '_')
-                if not subfields_widget_args.get('direct', False):
-                    subfield_label = subfield_key
-                else:
-                    subfield_label = None
+                widget_args = {
+                    'key': subfield.name.rsplit('.', 1)[-1],
+                    'id': 'sx_' + subfield.name.replace('$', '-').replace('.', '_'),
+                }
+                if subfields_widget_args.get('direct', False):
+                    widget_args['label'] = None
 
-                subfields_widget_args['children'].append(widget(label=subfield_label, id=subfield_id,
-                                                                key=subfield_key))
+                subfields_widget_args['children'].append(widget(**widget_args))
+
         return subfields_widget_args
 
     def get_default_values(self, entity, params):

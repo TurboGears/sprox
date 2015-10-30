@@ -146,7 +146,7 @@ class ViewBase(ConfigBase):
     def _do_get_field_widget_args(self, field_name, field):
         # toscawidgets does not like ids that have '.' in them.  This does not
         # work for databases with schemas.
-        field_name = field_name.replace('$', '-').replace('.', '_')
+        norm_field_name = field_name.replace('$', '-').replace('.', '_')
         args = {}
 
         #this is sort of a hack around TW evaluating _some_ params that are classes.
@@ -155,16 +155,16 @@ class ViewBase(ConfigBase):
             entity = ClassViewer(field)
 
         if hasattr(Widget, 'req'):
-            args.update({'id':'sx_'+field_name, 'key':field_name})
+            args.update({'id': 'sx_'+norm_field_name, 'key': norm_field_name})
         else: #pragma: no cover
-            args.update({'id':field_name, 'name': field_name})
+            args.update({'id': norm_field_name, 'name': norm_field_name})
 
         args.update({
-            'identity':self.__entity__.__name__+'_'+field_name,
-            'entity':entity,
-            'provider':self.__provider__,
-            'label':name2label(field_name),
-            'label_text':name2label(field_name)
+            'identity':self.__entity__.__name__+'_'+norm_field_name,
+            'entity': entity,
+            'provider': self.__provider__,
+            'label': name2label(field_name),
+            'label_text': name2label(field_name)
         })
         field_default_value = self.__provider__.get_field_default(entity)
         if field_default_value[0]:
