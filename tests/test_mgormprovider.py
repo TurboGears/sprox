@@ -292,17 +292,17 @@ class TestFormBase(SproxTest):
         owner_form = NestedModelForm(session)
         try:
             owner_form.validate(
-                {'author:other:0:meta:2': u'', 'author:surname': u'ciao', 'author:other:0:meta:0': u'ja@ja.it',
-                 'number': u'1', 'group_name': u'prot', 'contributors:2:name': u'', 'author:interests:0': u'',
-                 'contributors:2:age': u'', 'author:other:0:key': u'lol', 'author:other:2:key': u'',
-                 'display_name': u'Prova', 'contributors:0:name': u'cont', 'author:other:1:key': u'aldo',
-                 'author:other:1:meta:0': u'123', 'author:other:1:meta:1': u'', 'contributors:2:surname': u'',
-                 'sprox_id': u'', 'author:extra:key': u'lol', 'author:other:0:val': u'lol', 'contributors:0:age': u'21',
-                 'contributors:1:age': u'11', 'author:other:2:meta:0': u'', 'author:other:1:val': u'b',
-                 'author:age': u'asd', 'contributors:1:name': u'cont2', 'author:other:2:val': u'',
-                 'groups:2': u'asd3', 'groups:3': u'', 'groups:0': u'asd',
-                 'groups:1': u'asd2', 'author:extra:val': u'lol', 'author:other:0:meta:1': u'ja@ja.it',
-                 'contributors:1:surname': u'cont2', 'author:name': u'prova', 'contributors:0:surname': u'cont'}
+                {'author:other:0:meta:2': '', 'author:surname': 'ciao', 'author:other:0:meta:0': 'ja@ja.it',
+                 'number': '1', 'group_name': 'prot', 'contributors:2:name': '', 'author:interests:0': '',
+                 'contributors:2:age': '', 'author:other:0:key': 'lol', 'author:other:2:key': '',
+                 'display_name': 'Prova', 'contributors:0:name': 'cont', 'author:other:1:key': 'aldo',
+                 'author:other:1:meta:0': '123', 'author:other:1:meta:1': '', 'contributors:2:surname': '',
+                 'sprox_id': '', 'author:extra:key': 'lol', 'author:other:0:val': 'lol', 'contributors:0:age': '21',
+                 'contributors:1:age': '11', 'author:other:2:meta:0': '', 'author:other:1:val': 'b',
+                 'author:age': 'asd', 'contributors:1:name': 'cont2', 'author:other:2:val': '',
+                 'groups:2': 'asd3', 'groups:3': '', 'groups:0': 'asd',
+                 'groups:1': 'asd2', 'author:extra:val': 'lol', 'author:other:0:meta:1': 'ja@ja.it',
+                 'contributors:1:surname': 'cont2', 'author:name': 'prova', 'contributors:0:surname': 'cont'}
             )
         except ValidationError as e:
             res = e.widget.display()
