@@ -540,7 +540,7 @@ class TestMGORMProvider(SproxTest):
         eq_(self.provider.get_field_widget_args(User, 'groups', User.groups), {'nullable': True, 'provider':self.provider})
 
     def test_get_fields_with_func(self):
-        eq_(self.provider.get_fields(lambda: Town), ['country', '_id', 'users', 'name'])
+        eq_(sorted(self.provider.get_fields(lambda: Town)), sorted(['country', '_id', 'users', 'name']))
 
     def test_isbinary_related(self):
         assert not self.provider.is_binary(User, 'groups')
@@ -552,14 +552,14 @@ class TestMGORMProvider(SproxTest):
         assert self.provider.is_query(File, None) == False
 
     def test_binary_create(self):
-        fs = "fake_content"
+        fs = b"fake_content"
 
         values = {'data':fs}
         self.provider.create(File, values)
         session.flush()
 
     def test_binary_update(self):
-        fs = "fake_content"
+        fs = b"fake_content"
 
         values = {'data':fs}
         entity = self.provider.create(File, values)
