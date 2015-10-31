@@ -681,7 +681,7 @@ class TestMGORMProvider(SproxTest):
 
     def test_get_relations(self):
         relations = self.provider.get_relations(User)
-        eq_(relations, ['town', 'groups'])
+        eq_(sorted(relations), sorted(['town', 'groups']))
 
     def test_dictify(self):
         d = self.provider.dictify(self.user)
