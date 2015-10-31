@@ -313,6 +313,19 @@ class TestFormBase(SproxTest):
         else:
             raise Exception('Should have raised a validation error!')
 
+    def test_subfields_widgets_childrenargs(self):
+        class NestedModelForm(FormBase):
+            __entity__ = NestedModel
+            __field_widget_args__ = {
+                'author': {'children_attrs': {'css_class': 'childrenclass'}}
+            }
+
+        owner_form = NestedModelForm(session)
+        res = owner_form.display()
+
+        # Check children_attrs propagates to nested subfields
+        assert res.count('childrenclass') == res.count('name="author:'), (res.count('childrenclass'), res)
+
 
 class TestAddRecordForm(SproxTest):
     def setup(self):
