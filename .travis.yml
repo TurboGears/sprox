@@ -11,6 +11,7 @@ services:
 install:
   - "pip install nose"
   - "pip install coveralls"
+  - "pip install git+http://git.code.sf.net/p/merciless/code#egg=ming"
   - "pip install git+https://github.com/toscawidgets/tw2.core.git@develop#egg=tw2.core"
   - "pip install git+https://github.com/toscawidgets/tw2.forms.git@develop#egg=tw2.forms"
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install -e .[testing_mongodb]; fi
