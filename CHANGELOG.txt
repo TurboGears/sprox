@@ -1,3 +1,10 @@
+0.10.0
+* MongoDB subdocuments and arrays editing support.
+* Dojo and MongoKit support got removed, they have been unmaintained for a long time.
+
+0.9.8
+* Fixed issue with MultipleSelectionField that lead to empty selection on MongoDB
+
 0.9.7
 * Support for ordering on multiple columns, passing a list as order_by and desc parameters in Fillers and Providers will now sort for all provided columns
 * Basic support for Compound Primary Keys in forms, they should now work even though the primary key cannot be changed after objects are created
