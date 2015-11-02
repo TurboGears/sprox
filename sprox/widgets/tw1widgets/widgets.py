@@ -113,3 +113,5 @@ class PropertyMultipleSelectField(MultipleSelectField, PropertyMixin):
         MultipleSelectField.update_params(self, d)
         return d
 
+class SubDocument(TextField):
+    pass

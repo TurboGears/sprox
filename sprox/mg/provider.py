@@ -45,6 +45,27 @@ class MingProvider(IProvider):
 
     def get_field(self, entity, name):
         """Get a field with the given field name."""
+        if '.' in name:
+            # Nested field
+            path = name.split('.')
+            name = path.pop(0)
+            field = mapper(entity).property_index[name]
+            while path:
+                name = path.pop(0)
+                if name == '$':
+                    # Array element, the real entry was the parent
+                    continue
+
+                field_schema = field.field.schema
+
+                field_type = field_schema
+                if isinstance(field_schema, S.Array):
+                    field_type = field_schema.field_type
+                if isinstance(field_type, S.Object):
+                    field_type = field_type.fields.get(name)
+                field = FieldProperty(name, field_type)
+            return field
+
         return mapper(entity).property_index[name]
 
     def get_fields(self, entity):
@@ -195,7 +216,10 @@ class MingProvider(IProvider):
         if isinstance(fld, RelationProperty):
             # check the required attribute on the corresponding foreign key field
             fld = fld.join.prop
-        return not getattr(fld, 'kwargs', {}).get("required", False)
+
+        fld = fld.field
+        schema = fld.schema
+        return not getattr(schema, 'required', False)
 
     def get_field_default(self, field):
         field = getattr(field, 'field', None)
@@ -205,8 +229,46 @@ class MingProvider(IProvider):
                 return (True, if_missing)
         return (False, None)
 
-    def get_field_provider_specific_widget_args(self, entity, field, field_name):
-        return {}
+    def get_field_provider_specific_widget_args(self, viewbase, field, field_name):
+        widget_args = {}
+        return widget_args
+
+    def _build_subfields(self, viewbase, field):
+        subfields_widget_args = {}
+
+        field = getattr(field, 'field', None)
+        if field is None:
+            return subfields_widget_args
+
+        schema = getattr(field, 'schema', None)
+        if isinstance(schema, (S.Array, S.Object)):
+            if isinstance(schema, S.Array):
+                field_type = schema.field_type
+            else:
+                field_type = schema
+
+            if isinstance(field_type, S.Object):
+                subfields = [FieldProperty('.'.join((field.name, n)), t) for n, t in field_type.fields.items()]
+                direct = False
+            else:
+                subfields = [FieldProperty('.'.join((field.name, '$')), field_type)]
+                direct = True
+
+            subfields_widget_args = {'children': [],
+                                     'direct': direct}
+
+            for subfield in subfields:
+                widget = viewbase._do_get_field_widget(subfield.name, subfield)
+                widget_args = {
+                    'key': subfield.name.rsplit('.', 1)[-1],
+                    'id': 'sx_' + subfield.name.replace('$', '-').replace('.', '_'),
+                }
+                if subfields_widget_args.get('direct', False):
+                    widget_args['label'] = None
+
+                subfields_widget_args['children'].append(widget(**widget_args))
+
+        return subfields_widget_args
 
     def get_default_values(self, entity, params):
         return params
@@ -216,6 +278,40 @@ class MingProvider(IProvider):
             return value._id
         return ObjectId(value)
 
+    def _cast_value_for_type(self, type, value):
+        if value is None:
+            return None
+
+        def _check(*types):
+            return type in types or isinstance(type, types)
+
+        if _check(S.DateTime, datetime.datetime):
+            if isinstance(value, string_type):
+                return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+            else:
+                return value
+        elif _check(S.Binary):
+            return bson.Binary(value)
+        elif _check(S.Int, int):
+            return int(value)
+        elif _check(S.Bool, bool):
+            if value in ('true', 'false'):
+                return value == 'true' and True or False
+            else:
+                return bool(value)
+        elif _check(S.Object, dict):
+            if isinstance(type, S.Object):
+                type = type.fields
+            return dict((k, self._cast_value_for_type(type[k], v)) for k, v in value.items())
+        elif _check(S.Array, list):
+            if not isinstance(value, (list, tuple)):
+                value = [value]
+            if isinstance(type, S.Array):
+                type = [type.field_type]
+            return [self._cast_value_for_type(type[0], v) for v in value]
+        else:
+            return value
+
     def _cast_value(self, entity, key, value):
         # handles the case where an record with no id is being created
         if key == '_id' and value == '':
@@ -224,9 +320,9 @@ class MingProvider(IProvider):
         if value is None:
             # Let none pass as is as it actually means a "null" on mongodb
             return value
-            
+
         field = getattr(entity, key)
-        
+
         relations = self.get_relations(entity)
         if key in relations:
             related = field.related
@@ -237,20 +333,8 @@ class MingProvider(IProvider):
 
         field = getattr(field, 'field', None)
         if field is not None:
-            if field.type is S.DateTime or field.type is datetime.datetime:
-                if isinstance(value, string_type):
-                    return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
-                else:
-                    return value
-            elif field.type is S.Binary:
-                return bson.Binary(value)
-            elif field.type in (S.Int, int):
-                return int(value)
-            elif field.type in (S.Bool, bool):
-                if value in ('true', 'false'):
-                    return value == 'true' and True or False
-                else:
-                    return bool(value)
+            value = self._cast_value_for_type(field.type, value)
+
         return value
 
     def create(self, entity, params):

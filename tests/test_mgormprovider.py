@@ -20,7 +20,7 @@ from sprox.tablebase import TableBase
 from sprox.fillerbase import TableFiller
 from sieve.operators import assert_in_xml as assert_in_xhtml
 
-from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town, UnrelatedDocument
+from sprox.test.mg.model import User, Group, Department, DocumentCategory, File, DocumentCategoryTag, DocumentCategoryReference, Town, UnrelatedDocument, NestedModel
 from sprox.test.mg.model import Permission, TGMMUser, ModelWithRequired
 
 from bson.objectid import InvalidId
@@ -243,7 +243,6 @@ class TestFormBase(SproxTest):
 </select>
             </td>""", rendered)
 
-
     def test_require_field(self):
         class RegistrationForm(FormBase):
             __entity__ = User
@@ -251,6 +250,82 @@ class TestFormBase(SproxTest):
 
         form = RegistrationForm(session)
         eq_(widget_children(form.__widget__)['user_name'].validator.not_empty, True)
+
+    def test_subfields_widgets(self):
+        class NestedModelForm(FormBase):
+            __entity__ = NestedModel
+
+        owner_form = NestedModelForm(session)
+        res = owner_form.display()
+
+        assert res.count('subdocuments-add') == 5, res.count('subdocuments-add')
+
+        assert 'id="sx_groups" class=" subdocuments"' in res, res
+        assert 'name="groups:0"' in res, res
+
+        assert 'id="sx_contributors" class=" subdocuments"' in res, res
+        assert '>Age</label>' in res, res
+        assert 'name="contributors:0:age"' in res, res
+        assert '>Surname</label>' in res, res
+        assert 'name="contributors:0:surname"' in res, res
+        assert '>Name</label>' in res, res
+        assert 'name="contributors:0:name"' in res, res
+
+        assert 'id="sx_author:sx_author_interests" class=" subdocuments"' in res, res
+        assert 'name="author:interests:0"' in res, res
+        assert 'name="author:surname"' in res, res
+        assert 'name="author:name"' in res, res
+        assert 'name="author:extra:key"' in res, res
+        assert 'name="author:extra:val"' in res, res
+        assert 'name="author:age"' in res, res
+        assert 'name="author:other:0:meta:0"' in res, res
+        assert 'name="author:other:0:key"' in res, res
+        assert 'name="author:other:0:val"' in res, res
+
+    def test_subfields_widgets_validation(self):
+        class NestedModelForm(FormBase):
+            __entity__ = NestedModel
+            __field_validator_types__ = {
+                'author.other.meta.$': EmailValidator
+            }
+
+        owner_form = NestedModelForm(session)
+        try:
+            owner_form.validate(
+                {'author:other:0:meta:2': '', 'author:surname': 'ciao', 'author:other:0:meta:0': 'ja@ja.it',
+                 'number': '1', 'group_name': 'prot', 'contributors:2:name': '', 'author:interests:0': '',
+                 'contributors:2:age': '', 'author:other:0:key': 'lol', 'author:other:2:key': '',
+                 'display_name': 'Prova', 'contributors:0:name': 'cont', 'author:other:1:key': 'aldo',
+                 'author:other:1:meta:0': '123', 'author:other:1:meta:1': '', 'contributors:2:surname': '',
+                 'sprox_id': '', 'author:extra:key': 'lol', 'author:other:0:val': 'lol', 'contributors:0:age': '21',
+                 'contributors:1:age': '11', 'author:other:2:meta:0': '', 'author:other:1:val': 'b',
+                 'author:age': 'asd', 'contributors:1:name': 'cont2', 'author:other:2:val': '',
+                 'groups:2': 'asd3', 'groups:3': '', 'groups:0': 'asd',
+                 'groups:1': 'asd2', 'author:extra:val': 'lol', 'author:other:0:meta:1': 'ja@ja.it',
+                 'contributors:1:surname': 'cont2', 'author:name': 'prova', 'contributors:0:surname': 'cont'}
+            )
+        except ValidationError as e:
+            res = e.widget.display()
+
+            assert res.count('subdocuments-add') == 7, res.count('subdocuments-add')
+            assert 'Must be a valid email address' in res, res
+            assert 'Please enter an integer value' in res, res
+        else:
+            raise Exception('Should have raised a validation error!')
+
+    def test_subfields_widgets_childrenargs(self):
+        class NestedModelForm(FormBase):
+            __entity__ = NestedModel
+            __field_widget_args__ = {
+                'author': {'children_attrs': {'css_class': 'childrenclass'}}
+            }
+
+        owner_form = NestedModelForm(session)
+        res = owner_form.display()
+
+        # Check children_attrs propagates to nested subfields
+        assert res.count('childrenclass') == res.count('name="author:'), (res.count('childrenclass'), res)
+
 
 class TestAddRecordForm(SproxTest):
     def setup(self):
@@ -465,7 +540,7 @@ class TestMGORMProvider(SproxTest):
         eq_(self.provider.get_field_widget_args(User, 'groups', User.groups), {'nullable': True, 'provider':self.provider})
 
     def test_get_fields_with_func(self):
-        eq_(self.provider.get_fields(lambda: Town), ['country', '_id', 'users', 'name'])
+        eq_(sorted(self.provider.get_fields(lambda: Town)), sorted(['country', '_id', 'users', 'name']))
 
     def test_isbinary_related(self):
         assert not self.provider.is_binary(User, 'groups')
@@ -477,14 +552,14 @@ class TestMGORMProvider(SproxTest):
         assert self.provider.is_query(File, None) == False
 
     def test_binary_create(self):
-        fs = "fake_content"
+        fs = b"fake_content"
 
         values = {'data':fs}
         self.provider.create(File, values)
         session.flush()
 
     def test_binary_update(self):
-        fs = "fake_content"
+        fs = b"fake_content"
 
         values = {'data':fs}
         entity = self.provider.create(File, values)
@@ -498,16 +573,15 @@ class TestMGORMProvider(SproxTest):
         assert entity == User, entity
 
     def test_get_entities(self):
-        entities = self.provider.get_entities()
+        entities = list(self.provider.get_entities())
         assert set(entities) == set(['Town', 'GroupPermission', 'Group', 'Permission', 'DocumentCategoryReference',
                 'SproxTestClass', 'DocumentCategoryTag', 'DocumentCategoryTagAssignment', 'User', 'File', 'TGMMUser',
                 'DocumentCategory', 'Department', 'Document', 'MappedClass', 'Example', 'UnrelatedDocument',
-                'ModelWithRequired'])
+                'ModelWithRequired', 'NestedModel']), entities
 
     @raises(KeyError)
     def test_get_entity_non_matching_engine(self):
         entity = self.provider.get_entity('OtherClass')
-
 
     def test_get_primary_fields(self):
         fields = self.provider.get_primary_fields(User)
@@ -607,7 +681,7 @@ class TestMGORMProvider(SproxTest):
 
     def test_get_relations(self):
         relations = self.provider.get_relations(User)
-        eq_(relations, ['town', 'groups'])
+        eq_(sorted(relations), sorted(['town', 'groups']))
 
     def test_dictify(self):
         d = self.provider.dictify(self.user)
@@ -967,10 +1041,23 @@ class TestMGORMProvider(SproxTest):
     def test_get_object_id_casting(self):
         user = self.provider.get_obj(User, params={'_id': str(self.asdf_user_id)})
         eq_(user['user_name'], 'asdf')
- 
+
     def test_get_invalid_object_id(self):
         user = self.provider.get_obj(User, params={'_id': "1"})
         assert user is None
+
+    def test_get_values_casting(self):
+        val = self.provider._cast_value_for_type(S.Int, None)
+        assert val is None
+
+        val = self.provider._cast_value_for_type(S.Array(S.Int), '1234')
+        assert val == [1234], val
+
+        val = self.provider._cast_value_for_type(S.Object({'num': S.Int}), {'num': '1234'})
+        assert val == {'num': 1234}, val
+
+        val = self.provider._cast_value_for_type(S.Array(S.Object(dict(value=s.Int))), [{'value':'1234'}])
+        assert val == [{'value': 1234}], val
 
     def test_delete(self):
         user = self.provider.delete(User, params={'_id': self.asdf_user_id})

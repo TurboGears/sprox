@@ -123,8 +123,6 @@ class SAORMProvider(IProvider):
             except InvalidRequestError:
                 raise AttributeError
 
-
-
     def is_binary(self, entity, name):
         field = self.get_field(entity, name)
         if isinstance(field, PropertyLoader):
@@ -416,12 +414,16 @@ class SAORMProvider(IProvider):
                 return (True, lambda: field.default.arg(None))
         return (False, None)
 
-    def get_field_provider_specific_widget_args(self, entity, field, field_name):
+    def get_field_provider_specific_widget_args(self, viewbase, field, field_name):
         args = {}
         if isinstance(field, PropertyLoader):
             args['provider'] = self
-            args['nullable'] = self.is_nullable(entity, field_name)
+            args['nullable'] = self.is_nullable(viewbase.__entity__, field_name)
         return args
+
+    def _build_subfields(self, viewbase, field):
+        # SQLAlchemy does not support subfields
+        return {}
 
     def get_default_values(self, entity, params):
         return params
@@ -632,11 +634,11 @@ class SAORMProvider(IProvider):
         self.session.flush()
         return obj
 
-    #this is hard to test because of some kind of rollback issue in the test framework
-    def delete(self, entity, params):
-        obj = self._get_obj(entity, params)  # pragma: no cover
-        self.session.delete(obj)  # pragma: no cover
-        return obj  # pragma: no cover
+    # This is hard to test because of some kind of rollback issue in the test framework
+    def delete(self, entity, params):  # pragma: no cover
+        obj = self._get_obj(entity, params)
+        self.session.delete(obj)
+        return obj
 
     def get_field_widget_args(self, entity, field_name, field):
         args = {}

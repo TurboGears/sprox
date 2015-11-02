@@ -42,14 +42,14 @@ except ImportError: #pragma: no cover
 class MingValidatorSelector(ValidatorSelector):
 
     default_validators = {
-    s.Bool: BoolValidator,
-    s.Int: Int,
-    s.Float: Number,
-    s.DateTime: DateTimeValidator,
-    s.Binary: None,
-    s.Value: None,
-    s.ObjectId: None,
-    s.String: UnicodeString
+        s.Bool: BoolValidator,
+        s.Int: Int,
+        s.Float: Number,
+        s.DateTime: DateTimeValidator,
+        s.Binary: None,
+        s.Value: None,
+        s.ObjectId: None,
+        s.String: UnicodeString
     }
 
     def select(self, field):
@@ -66,6 +66,9 @@ class MingValidatorSelector(ValidatorSelector):
                 field = field.field
                 field_type = field.type
                 schema_type = field.schema
+
+        if hasattr(field, 'schema') and isinstance(field.schema, (s.Array, s.Object)):
+            return None
 
         type_ = s.String
         for t in list(self.default_validators.keys()):

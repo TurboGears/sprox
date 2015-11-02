@@ -43,15 +43,16 @@ class MingWidgetSelector(WidgetSelector):
     default_name_based_widgets = {}
 
     default_widgets = {
-    S.Bool: SproxCheckBox,
-    S.Int: TextField,
-    S.Float: TextField,
-    S.String: TextField,
-    S.DateTime: SproxCalendarDateTimePicker,
-    S.Binary: FileField,
-    S.Value: Label,
-    S.ObjectId: TextField
+        S.Bool: SproxCheckBox,
+        S.Int: TextField,
+        S.Float: TextField,
+        S.String: TextField,
+        S.DateTime: SproxCalendarDateTimePicker,
+        S.Binary: FileField,
+        S.Value: Label,
+        S.ObjectId: TextField
     }
+
     def select(self,field):
         if hasattr(field, 'name') and field.name:
             if field.name in self.default_name_based_widgets:
@@ -76,13 +77,19 @@ class MingWidgetSelector(WidgetSelector):
         else:
             return TextField 
 
-        #i don't think this works in the latest ming
+        # I don't think this works in the latest ming
         sprox_meta = getattr(field, "sprox_meta", {})
         if sprox_meta.get("narrative"):
             return TextArea
         sprox_meta = getattr(field, 'sprox_meta', None)
         if sprox_meta and 'password' in sprox_meta:
             return PasswordField
-        
+
+        if isinstance(schemaitem, S.Object):
+            return SubDocument
+
+        if isinstance(schemaitem, S.Array):
+            return SubDocumentsList
+
         return self.default_widgets.get(schemaitem.__class__, TextField)
 

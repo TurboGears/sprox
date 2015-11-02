@@ -1,9 +1,11 @@
 from formencode import Invalid
-from tw2.core import Widget, Param, DisplayOnlyWidget, ValidationError
+from tw2.core import Widget, Param, DisplayOnlyWidget, ValidationError, RepeatingWidget
 from tw2.forms import (CalendarDatePicker, CalendarDateTimePicker, TableForm, DataGrid,
                        SingleSelectField, MultipleSelectField, InputField, HiddenField,
-                       TextField, FileField, CheckBox, PasswordField, TextArea)
+                       TextField, FileField, CheckBox, PasswordField, TextArea, ListLayout,
+                       StripBlanks)
 from tw2.forms import Label as tw2Label
+from tw2.core import validation as tw2v
 from sprox._compat import unicode_text
 
 
@@ -82,6 +84,7 @@ class SproxCheckBox(CheckBox):
         super(SproxCheckBox, self).prepare()
         self.attrs['value'] = 'true'
 
+
 class PropertySingleSelectField(SingleSelectField):
     entity = Param('entity', attribute=False, default=None)
     provider = Param('provider', attribute=False, default=None)
@@ -155,3 +158,82 @@ class PropertyMultipleSelectField(MultipleSelectField):
 
         self.value = [unicode_text(v) for v in self.value if v is not Invalid]
         super(PropertyMultipleSelectField, self).prepare()
+
+
+class SubDocument(ListLayout):
+    direct = Param('direct', attribute=False, default=False)
+    children_attrs = Param('children_attrs', attribute=False, default={})
+
+    @classmethod
+    def post_define(cls):
+        if not cls.css_class:
+            cls.css_class = ''
+        if 'subdocument' not in cls.css_class:
+            cls.css_class += ' subdocument'
+
+        for c in getattr(cls, 'children', []):
+            # SubDocument always propagates its template to nested subdocuments
+            if issubclass(c, SubDocument):
+                c.children_attrs = cls.children_attrs
+                c.template = cls.template
+            elif issubclass(c, SubDocumentsList):
+                c.children_attrs = cls.children_attrs
+                c.child = c.child(template=cls.template)
+            else:
+                for name, value in cls.children_attrs.items():
+                    setattr(c, name, value)
+
+            if cls.direct:
+                # In direct mode we just act as a proxy to the real field
+                # so we set the field key equal to our own
+                c.compound_key = ':'.join(c.compound_key.split(':')[:-1])
+
+        if not hasattr(cls, 'children'):
+            cls.children = []
+
+    @tw2v.catch_errors
+    def _validate(self, value, state=None):
+        if self.direct:
+            # In direct mode we just act as a proxy to the real field
+            # so we directly validate the field
+            return self.children[0]._validate(value, state)
+        else:
+            return super(SubDocument, self)._validate(value, state)
+
+    def prepare(self):
+        if self.direct:
+            # In direct mode we just act as a proxy to the real field
+            # so we provide the value to the field and throw away error messages
+            # to avoid duplicating them (one for us and one for the field).
+            self.children[0].value = self.value
+            self.error_msg = ''
+        super(SubDocument, self).prepare()
+
+
+class SubDocumentsList(RepeatingWidget):
+    template = 'sprox.widgets.tw2widgets.templates.subdocuments'
+    child = SubDocument
+    children_attrs = Param('children_attrs', attribute=False, default={})
+    direct = Param('direct', attribute=False, default=False)
+    extra_reps = 1
+
+    @classmethod
+    def post_define(cls):
+        if not cls.css_class:
+            cls.css_class = ''
+        if 'subdocuments' not in cls.css_class:
+            cls.css_class += ' subdocuments'
+
+        cls.child.children_attrs = cls.children_attrs
+        if cls.direct:
+            cls.child.direct = True
+
+    def prepare(self):
+        super(SubDocumentsList, self).prepare()
+        # Hide the last element, used to add new entries
+        self.children[len(self.children)-1].attrs['style'] = 'display: none'
+
+    def _validate(self, value, state=None):
+        return super(SubDocumentsList, self)._validate(
+            StripBlanks().to_python(value, state), state
+        )
