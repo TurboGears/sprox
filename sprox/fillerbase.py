@@ -137,7 +137,16 @@ class TableFiller(FillerBase):
 
     def _get_list_data_value(self, field, values):
         l = []
+        for value in values:
+            if self.__provider__.is_entity(value.__class__):
+                l.append(unicode_text(self._get_relation_value(field, value)))
+            elif self.__provider__.is_subdocument(value):
+                l.append(unicode_text(self._get_relation_value(field, value)))
+            else:
+                l.append(unicode_text(value))
+        return ', '.join(l)
 
+    def _get_relation_value(self, field, value):
         if isinstance(self.__possible_field_names__, dict) and field in self.__possible_field_names__:
             view_names = self.__possible_field_names__[field]
             if not isinstance(view_names, list):
@@ -147,20 +156,7 @@ class TableFiller(FillerBase):
         else:
             view_names = self.__possible_field_name_defaults__
 
-        for value in values:
-            if not isinstance(value, string_type):
-                name = self.__provider__.get_view_field_name(value.__class__, view_names, value)
-                l.append(unicode_text(getattr(value, name)))
-            else:
-                #this is needed for postgres to see array values
-                return values
-        return ', '.join(l)
-
-    def _get_relation_value(self, field, value):
-        #this may be needed for catwalk, but I am not sure what conditions cause it to be needed
-        #if value is None:
-        #    return None
-        name = self.__provider__.get_view_field_name(value.__class__, self.__possible_field_names__)
+        name = self.__provider__.get_view_field_name(value.__class__, view_names, item=value)
         return getattr(value, name)
 
     def get_count(self):

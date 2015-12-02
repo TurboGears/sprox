@@ -12,6 +12,7 @@ def setup():
 
 class UserFiller(TableFiller):
     __entity__ = User
+    __possible_field_names__ = TableFiller.__possible_field_name_defaults__ + ['group_name']
 
 class TestFillerBase(SproxTest):
     def setup(self):
@@ -37,7 +38,7 @@ class TestTableFiller(SproxTest):
         value = self.filler.get_value()
         eq_(len(value), 1)
         value = value[0]
-        eq_(value['groups'], '4')
+        eq_(value['groups'], 'Group 4')
         eq_(value['town'], 'Arvada')
 
     def test_get_value_with_binary_field(self):
@@ -51,8 +52,14 @@ class TestTableFiller(SproxTest):
         eq_(value[0]['binary'], '&lt;file&gt;')
 
     def test_get_list_data_value_array_values(self):
-        r = self.filler._get_list_data_value(User, ['something', 'something else'])
-        assert r == ['something', 'something else'], r
+        r = self.filler._get_list_data_value('groups', ['something', 'something else'])
+        assert r == 'something, something else', r
+
+    def test_get_list_data_value_related_values(self):
+        c, u = self.filler.__provider__.query(User, limit=1)
+        u = u[0]
+        r = self.filler._get_list_data_value('groups', u.groups)
+        assert r == 'Group 4', r
 
     @raises(ConfigBaseError)
     def test_count_without_get(self):
@@ -69,7 +76,7 @@ class TestTableFiller(SproxTest):
             __possible_field_names__ = {'groups': 'group_name'}
         filler = UserFiller(session)
         value = filler.get_value()
-        eq_(value[0]['groups'], '4')
+        eq_(value[0]['groups'], 'Group 4')
 
     def test_possible_field_name_list(self):
         class UserFiller(TableFiller):
@@ -77,7 +84,7 @@ class TestTableFiller(SproxTest):
             __possible_field_names__ = ['_name']
         filler = UserFiller(session)
         value = filler.get_value()
-        eq_(value[0]['groups'], '4')
+        eq_(value[0]['groups'], 'Group 4')
 
     def test_possible_field_name_default(self):
         class UserFiller(TableFiller):
@@ -85,7 +92,7 @@ class TestTableFiller(SproxTest):
             __possible_field_names__ = {}
         filler = UserFiller(session)
         value = filler.get_value()
-        eq_(value[0]['groups'], '4')
+        eq_(value[0]['groups'], 'Group 4')
 
     def test_get_value_multiargs_method(self):
         class FillerWithMethod(TableFiller):

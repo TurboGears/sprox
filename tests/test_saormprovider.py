@@ -162,7 +162,7 @@ class TestSAORMProvider(SproxTest):
 
     def test_get_dropdown_options_join(self):
         options = self.provider.get_dropdown_options(User, 'groups')
-        eq_(options, [(1, '0'), (2, '1'), (3, '2'), (4, '3'), (5, '4')])
+        eq_(options, [(1, 'Group 0'), (2, 'Group 1'), (3, 'Group 2'), (4, 'Group 3'), (5, 'Group 4')])
 
     def test_get_dropdown_options_join_2(self):
         options = self.provider.get_dropdown_options(Group, 'users')
@@ -297,7 +297,7 @@ class TestSAORMProvider(SproxTest):
         cnt, r = self.provider.query(Group, filters={'users': 'asdf@asdf.com'},
                                      search_related=True)
         assert cnt == 1, r
-        assert r[0].group_name == '4', r
+        assert r[0].group_name == 'Group 4', r
 
     def test_query_filters_relations_search_one2many(self):
         cnt, r = self.provider.query(Town, filters={'residents': 'asdf@asdf.com'},
@@ -315,7 +315,7 @@ class TestSAORMProvider(SproxTest):
         cnt, r = self.provider.query(Group, filters={'users': 'asdf'},
                                      search_related=True, substring_filters=['users'])
         assert cnt == 1, r
-        assert r[0].group_name == '4', r
+        assert r[0].group_name == 'Group 4', r
 
     def test_query_filters_relations_substring_search_one2many(self):
         cnt, r = self.provider.query(Town, filters={'residents': 'asdf'},

@@ -239,6 +239,16 @@ class SAORMProvider(IProvider):
         mapper = class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, PropertyLoader)]
 
+    def is_entity(self, entity):
+        try:
+            return bool(self.get_fields(entity))
+        except:
+            return False
+
+    def is_subdocument(self, entity):
+        # SQLA has no support for subdocuments
+        return False
+
     def is_relation(self, entity, field_name):
         entity = resolve_entity(entity)
         mapper = class_mapper(entity)

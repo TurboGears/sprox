@@ -624,7 +624,7 @@ class TestMGORMProvider(SproxTest):
         tf = DocumentsFiller(self.provider.session)
 
         names = tf._get_list_data_value(Document, doc.metadata)
-        assert names == 'author, year'
+        assert names == 'author, year', names
 
     def test_get_view_field_name_for_unknown_objects(self):
         first_list_value = {'name': 'author', 'value': 'Philip K Dick'}

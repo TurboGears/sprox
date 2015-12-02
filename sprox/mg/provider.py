@@ -201,6 +201,15 @@ class MingProvider(IProvider):
         """Get all of the field names in an enity which are related to other entities."""
         return [prop.name for prop in mapper(entity).properties if isinstance(prop, RelationProperty)]
 
+    def is_entity(self, entity):
+        try:
+            return bool(self.get_fields(entity))
+        except:
+            return False
+
+    def is_subdocument(self, entity):
+        return isinstance(entity, InstrumentedObj)
+
     def is_relation(self, entity, field_name):
         """Determine if a field is related to a field in another entity."""
         return isinstance(self.get_field(entity, field_name), RelationProperty)

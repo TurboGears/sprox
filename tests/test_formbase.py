@@ -189,8 +189,9 @@ class TestFormBase(SproxTest):
         form = UserFormFieldNames(session)
         rendered = form()
 
-        entries = ['<option value="1">0</option>', '<option value="2">1</option>', '<option value="3">2</option>',
-                   '<option value="4">3</option>', '<option value="5">4</option>']
+        entries = ['<option value="1">Group 0</option>', '<option value="2">Group 1</option>',
+                   '<option value="3">Group 2</option>',
+                   '<option value="4">Group 3</option>', '<option value="5">Group 4</option>']
 
         for e in entries:
             assert e in rendered
@@ -202,8 +203,9 @@ class TestFormBase(SproxTest):
         form = UserFormFieldNames(session)
         rendered = form()
 
-        entries = ['<option value="1">0</option>', '<option value="2">1</option>', '<option value="3">2</option>',
-                   '<option value="4">3</option>', '<option value="5">4</option>']
+        entries = ['<option value="1">Group 0</option>', '<option value="2">Group 1</option>',
+                   '<option value="3">Group 2</option>',
+                   '<option value="4">Group 3</option>', '<option value="5">Group 4</option>']
 
         for e in entries:
             assert e in rendered
@@ -244,8 +246,9 @@ class TestFormBase(SproxTest):
         form = UserFormFieldNames(session)
         rendered = form()
 
-        entries = ['<option value="1">0</option>', '<option value="2">1</option>', '<option value="3">2</option>',
-                   '<option value="4">3</option>', '<option value="5">4</option>']
+        entries = ['<option value="1">Group 0</option>', '<option value="2">Group 1</option>',
+                   '<option value="3">Group 2</option>',
+                   '<option value="4">Group 3</option>', '<option value="5">Group 4</option>']
 
         for e in entries:
             assert e in rendered

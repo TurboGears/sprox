@@ -179,7 +179,7 @@ def setup_records(session):
 
 #    print user.user_id
     for i in range (5):
-        group = Group(group_name=unicode_text(i))
+        group = Group(group_name=unicode_text('Group %s' % i))
         session.add(group)
 
     user.groups.append(group)
