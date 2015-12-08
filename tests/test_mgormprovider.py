@@ -260,10 +260,12 @@ class TestFormBase(SproxTest):
 
         assert res.count('subdocuments-add') == 5, res.count('subdocuments-add')
 
-        assert 'id="sx_groups" class=" subdocuments"' in res, res
+        assert ('id="sx_groups" class=" subdocuments"' in res or
+                'class=" subdocuments" id="sx_groups"'), res
         assert 'name="groups:0"' in res, res
 
-        assert 'id="sx_contributors" class=" subdocuments"' in res, res
+        assert ('id="sx_contributors" class=" subdocuments"' in res or
+                'class=" subdocuments" id="sx_contributors"'), res
         assert '>Age</label>' in res, res
         assert 'name="contributors:0:age"' in res, res
         assert '>Surname</label>' in res, res
@@ -271,7 +273,8 @@ class TestFormBase(SproxTest):
         assert '>Name</label>' in res, res
         assert 'name="contributors:0:name"' in res, res
 
-        assert 'id="sx_author:sx_author_interests" class=" subdocuments"' in res, res
+        assert ('id="sx_author:sx_author_interests" class=" subdocuments"' in res or
+                'class=" subdocuments" id="sx_author:sx_author_interests"'), res
         assert 'name="author:interests:0"' in res, res
         assert 'name="author:surname"' in res, res
         assert 'name="author:name"' in res, res
