@@ -21,7 +21,7 @@ class UniqueValue(FancyValidator):
         self.field_name    = field_name
         FancyValidator.__init__(self, *args, **kw)
 
-    def _to_python(self, value, state):
+    def _convert_to_python(self, value, state):
         if not self.provider.is_unique(self.entity, self.field_name, value):
             raise Invalid(
                 'That value already exists',
