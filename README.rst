@@ -7,11 +7,17 @@ Sprox
 .. image:: https://coveralls.io/repos/TurboGears/sprox/badge.png
     :target: https://coveralls.io/r/TurboGears/sprox
 
-.. image:: https://pypip.in/v/sprox/badge.png
+.. image:: https://img.shields.io/pypi/v/sprox.svg
    :target: https://pypi.python.org/pypi/sprox
 
-.. image:: https://pypip.in/d/sprox/badge.png
-   :target: https://pypi.python.org/pypi/sprox
+.. image:: https://img.shields.io/pypi/pyversions/sprox.svg
+    :target: https://pypi.python.org/pypi/sprox
+
+.. image:: https://img.shields.io/pypi/l/sprox.svg
+    :target: https://pypi.python.org/pypi/sprox
+
+.. image:: https://img.shields.io/twitter/follow/turbogearsorg.svg?style=social&label=Follow
+    :target: https://twitter.com/turbogearsorg
 
 Form Generation from database schema for ToscaWidgets with support for various database backends
 
