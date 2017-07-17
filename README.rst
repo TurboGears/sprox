@@ -10,9 +10,6 @@ Sprox
 .. image:: https://img.shields.io/pypi/v/sprox.svg
    :target: https://pypi.python.org/pypi/sprox
 
-.. image:: https://img.shields.io/pypi/pyversions/sprox.svg
-    :target: https://pypi.python.org/pypi/sprox
-
 .. image:: https://img.shields.io/pypi/l/sprox.svg
     :target: https://pypi.python.org/pypi/sprox
 
