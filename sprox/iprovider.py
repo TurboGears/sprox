@@ -155,7 +155,7 @@ class IProvider:
         raise NotImplementedError
 
     def delete(self, entity, params):
-        """Delete an entry of typeentity which matches the params."""
+        """Delete an entry of type entity which matches the params."""
         raise NotImplementedError
 
     def query(self,entity,limit=None,offset=None,limit_fields=None,order_by=None,desc=False):

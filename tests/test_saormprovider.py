@@ -374,12 +374,18 @@ class TestSAORMProvider(SproxTest):
         eq_(user['user_name'], 'asdf')
 
     def test_delete(self):
-        #causes some kind of persistence error in SA 0.7 (rollback not working)
+        # causes some kind of persistence error in SA 0.7 (rollback not working)
+        # everything seems ok with SA 1.1.14, maybe it has been fixed
 
-        if sqlalchemy.__version__ > '0.6.6':
+        sa_version = sqlalchemy.__version__
+        if sa_version > '0.6.6' and sa_version < '1.1.14':
             raise SkipTest
 
-        user = self.provider.delete(User, params={'user_id':1})
+        self.provider.delete(User, params={'user_id': 1})
+        users = self.session.query(User).all()
+        assert len(users) == 0
+        # Tests twice for idempotence
+        self.provider.delete(User, params={'user_id': 1})
         users = self.session.query(User).all()
         assert len(users) == 0
 
