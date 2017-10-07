@@ -647,10 +647,8 @@ class SAORMProvider(IProvider):
     # This is hard to test because of some kind of rollback issue in the test framework
     def delete(self, entity, params):  # pragma: no cover
         obj = self._get_obj(entity, params)
-        try:
+        if obj is not None:
             self.session.delete(obj)
-        except UnmappedInstanceError:
-            pass
         return obj
 
     def get_field_widget_args(self, entity, field_name, field):
