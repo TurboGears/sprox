@@ -1063,7 +1063,12 @@ class TestMGORMProvider(SproxTest):
         assert val == [{'value': 1234}], val
 
     def test_delete(self):
-        user = self.provider.delete(User, params={'_id': self.asdf_user_id})
+        self.provider.delete(User, params={'_id': self.asdf_user_id})
+        session.flush()
+        users = User.query.find().all()
+        assert len(users) == 0
+        # Tests twice for idempotence
+        self.provider.delete(User, params={'_id': self.asdf_user_id})
         session.flush()
         users = User.query.find().all()
         assert len(users) == 0

@@ -406,7 +406,8 @@ class MingProvider(IProvider):
     def delete(self, entity, params):
         """Delete an entry of typeentity which matches the params."""
         obj = self.get_obj(entity, params)
-        obj.delete()
+        if obj is not None:
+            obj.delete()
         return obj
 
     def _modify_params_for_related_searches(self, entity, params, view_names=None, substrings=()):
