@@ -20,11 +20,13 @@ else:
 
 if py_version == (2, 6):
     TESTS_DEPENDENCIES.append('sqlalchemy < 1.2')
+    TESTS_DEPENDENCIES.append('ming < 0.5.6')
 else:
     TESTS_DEPENDENCIES.append('sqlalchemy')
+    TESTS_DEPENDENCIES.append('ming')
+
 
 TEST_SUITE_DEPENDENCIES = TESTS_DEPENDENCIES + ['tw2.forms', 'genshi', 'mako']
-MONGODB_TEST_SUITE_DEPENDENCIES = TEST_SUITE_DEPENDENCIES + ['ming']
 
 setup(
   name="sprox",
@@ -42,7 +44,6 @@ setup(
        # Used by Travis and Coverage due to setup.py nosetests
        # causing a coredump when used with coverage
        'testing': TEST_SUITE_DEPENDENCIES,
-       'testing_mongodb': MONGODB_TEST_SUITE_DEPENDENCIES
   },
   packages = find_packages(),
   classifiers=[
