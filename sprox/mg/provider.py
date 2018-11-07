@@ -7,6 +7,8 @@ Copyright &copy 2009 Jorge Vargas
 Original Version by Jorge Vargas 2009
 Released under MIT license.
 """
+import uuid
+from bson.son import SON
 from bson.errors import InvalidId
 import itertools
 from sprox.iprovider import IProvider
@@ -18,12 +20,13 @@ try:
     from ming.odm.declarative import MappedClass
     from ming.odm.property import OneToManyJoin, ManyToOneJoin, ORMProperty
     from ming.odm.icollection import InstrumentedObj
+    from ming.odm.odmsession import ODMCursor
 except ImportError: #pragma nocover
     from ming.orm import mapper, ForeignIdProperty, FieldProperty, RelationProperty
     from ming.orm.declarative import MappedClass
     from ming.orm.property import OneToManyJoin, ManyToOneJoin, ORMProperty
     from ming.orm.icollection import InstrumentedObj
-
+    from ming.odm.ormsession import ORMCursor as ODMCursor
 
 from ming import schema as S
 import bson
@@ -504,12 +507,11 @@ class MingProvider(IProvider):
             if self.is_string(entity, field):
                 filters[field] = {'$regex': re.compile(re.escape(filters[field]), re.IGNORECASE)}
 
-        iter = entity.query.find(filters)
-        if offset:
-            iter = iter.skip(int(offset))
-        if limit is not None:
-            iter = iter.limit(int(limit))
+        count = entity.query.find(filters).count()
 
+        pipeline = [{'$match': filters}]
+
+        discarded = []
         if order_by is not None:
             if not isinstance(order_by, (tuple, list)):
                 order_by = [order_by]
@@ -517,12 +519,54 @@ class MingProvider(IProvider):
             if not isinstance(desc, (tuple, list)):
                 desc = [desc]
 
-            sorting = [(field, DESCENDING if sort_descending else ASCENDING) for field, sort_descending in
-                       zip_longest(order_by, desc)]
-            iter.sort(sorting)
+            sorting = SON()
+            for sort_by, sort_descending in zip_longest(order_by, desc):
+                sort_order = DESCENDING if sort_descending else ASCENDING
+                if self.is_relation(entity, sort_by):
+                    relationship = getattr(entity, sort_by)
+                    join = relationship.join
+                    my_foreign_key = relationship._detect_foreign_keys(relationship.mapper,
+                                                                    join.rel_cls,
+                                                                    False)
+                    rel_foreign_key = relationship._detect_foreign_keys(mapper(relationship.related),
+                                                                        join.own_cls,
+                                                                        False)
+                    related_col_name = mapper(relationship.related).collection.m.collection_name
+                    embedded_results_field = '__%s_%s' % (related_col_name, uuid.uuid4().hex)
+                    discarded.append(embedded_results_field)
+                    if my_foreign_key:
+                        pipeline.append({'$lookup': {
+                            'from': related_col_name,
+                            'localField': my_foreign_key[0].name,
+                            'foreignField': '_id',
+                            'as': embedded_results_field
+                        }})
+                    else:
+                        pipeline.append({'$lookup': {
+                            'from': related_col_name,
+                            'localField': '_id',
+                            'foreignField': rel_foreign_key[0].name,
+                            'as': embedded_results_field
+                        }})
+                    sorting['%s.%s' % (
+                        embedded_results_field, 
+                        self.get_view_field_name(relationship.related, related_field_names)
+                    )] = sort_order
+                else:
+                    sorting[sort_by] = sort_order
+            if sorting:
+                pipeline.append({'$sort': sorting})
 
-        count = iter.count()
-        return count, iter.all()
+        if offset:
+            pipeline.append({'$skip': int(offset)})
+        if limit is not None:
+            pipeline.append({'$limit': int(limit)})
+
+        if discarded:
+            pipeline.append({'$project': {f: False for f in discarded}})
+
+        results = ODMCursor(self.session, entity, entity.query.aggregate(pipeline))
+        return count, results.all()
 
     def is_string(self, entity, field_name):
         fld = self.get_field(entity, field_name)

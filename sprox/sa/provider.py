@@ -177,6 +177,7 @@ class SAORMProvider(IProvider):
         return None
 
     def get_view_field_name(self, entity, possible_names, item=None):
+        possible_names = possible_names or []
         view_field = self._find_title_column(entity)
 
         fields = self.get_fields(entity)
@@ -496,7 +497,7 @@ class SAORMProvider(IProvider):
         return params
 
     def query(self, entity, limit=None, offset=None, limit_fields=None,
-              order_by=None, desc=False, field_names=[], filters={},
+              order_by=None, desc=False, filters={},
               substring_filters=[], search_related=False, related_field_names=None,
               **kw):
         entity = resolve_entity(entity)
@@ -549,8 +550,8 @@ class SAORMProvider(IProvider):
                             class_ = prop.mapper.class_
                         except (AttributeError, KeyError):
                             pass
-                    query = query.join(sort_by)
-                    f = self.get_view_field_name(class_, field_names)
+                    query = query.outerjoin(sort_by)
+                    f = self.get_view_field_name(class_, related_field_names)
                     field = self.get_field(class_, f)
                 else:
                     field = self.get_field(entity, sort_by)
