@@ -544,12 +544,7 @@ class SAORMProvider(IProvider):
             for sort_by, sort_descending in zip_longest(order_by, desc):
                 if self.is_relation(entity, sort_by):
                     mapper = class_mapper(entity)
-                    class_ = None
-                    for prop in mapper.iterate_properties:
-                        try:
-                            class_ = prop.mapper.class_
-                        except (AttributeError, KeyError):
-                            pass
+                    class_ = self._get_related_class(entity, sort_by)
                     query = query.outerjoin(sort_by)
                     f = self.get_view_field_name(class_, related_field_names)
                     field = self.get_field(class_, f)

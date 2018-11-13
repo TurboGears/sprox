@@ -158,6 +158,9 @@ class DocumentCategory(DeclarativeBase):
     department_id = Column(Integer, ForeignKey('department.department_id'), primary_key=True)
     name = Column(Unicode(255))
 
+    department = relation(Department, foreign_keys=[department_id])
+
+
 document_category_tag_association_table = Table(
     'document_category_tag_assignment', metadata,
     Column('document_category_id', None, ForeignKey('document_category.document_category_id',
