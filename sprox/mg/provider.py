@@ -509,7 +509,9 @@ class MingProvider(IProvider):
 
         count = entity.query.find(filters).count()
 
-        pipeline = [{'$match': filters}]
+        pipeline = []
+        if filters:
+            pipeline.append({'$match': filters})
 
         discarded = []
         if order_by is not None:
@@ -550,7 +552,7 @@ class MingProvider(IProvider):
                         }})
                     sorting['%s.%s' % (
                         embedded_results_field, 
-                        self.get_view_field_name(relationship.related, related_field_names)
+                        self.get_view_field_name(relationship.related, related_field_names or [])
                     )] = sort_order
                 else:
                     sorting[sort_by] = sort_order

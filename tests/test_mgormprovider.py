@@ -791,6 +791,37 @@ class TestMGORMProvider(SproxTest):
         cnt, r = self.provider.query(Town, order_by=['country', "name"], desc=[True, False])
         eq_([t.name for t in r], ['Arvada', 'Boulder', 'Denver', 'Golden', 'Torino'])
 
+    def test_query_sort_related(self):
+        cnt, r = self.provider.query(DocumentCategory, order_by=['department'], related_field_names=['name'])
+        eq_([t.department.name for t in r], ['Accounting', 'Marketing', 'Marketing'])
+
+        cnt, r = self.provider.query(DocumentCategory, order_by=['department'],
+                                     related_field_names=['name'], desc=True)
+        eq_([t.department.name for t in r], ['Marketing', 'Marketing', 'Accounting'])
+
+    def test_query_sort_related_many(self):
+        g1 = self.provider.create(Group, {'group_name': 'Alpha'})
+        g2 = self.provider.create(Group, {'group_name': 'Beta'})
+        g3 = self.provider.create(Group, {'group_name': 'Zeta'})
+
+        u1 = self.provider.create(User, {'user_name': 'User3', 'groups':[g1]})
+        u2 = self.provider.create(User, {'user_name': 'User1', 'groups':[g2]})
+        u3 = self.provider.create(User, {'user_name': 'User2', 'groups':[g3]})
+
+        cnt, r = self.provider.query(User, order_by=['groups'], related_field_names=['group_name'])
+        eq_([u.user_name for u in r], ['asdf', 'User3', 'User1', 'User2'])
+
+        cnt, r = self.provider.query(User, order_by=['groups'], 
+                                     related_field_names=['group_name'], desc=True)
+        eq_([u.user_name for u in r], ['User2', 'User1', 'User3', 'asdf'])
+
+        u4 = self.provider.create(User, {'user_name': 'User0', 'groups':[g2, g1]})
+        cnt, r = self.provider.query(User, order_by=['groups'], related_field_names=['group_name'])
+        eq_([u.user_name for u in r], ['asdf', 'User3', 'User0','User1', 'User2'])
+        cnt, r = self.provider.query(User, order_by=['groups'], 
+                                     related_field_names=['group_name'], desc=True)
+        eq_([u.user_name for u in r], ['User2', 'User1', 'User0', 'User3', 'asdf'])
+
     def test_query_filters(self):
         cnt, r = self.provider.query(Town, filters={'name':'Golden'})
         eq_([t.name for t in r], ['Golden']), r
