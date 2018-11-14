@@ -591,23 +591,6 @@ class SAORMProvider(IProvider):
                             params[key] = dt
         return params
 
-    def _remove_related_empty_params(self, obj, params, omit_fields=None):
-        entity = obj.__class__
-        mapper = class_mapper(entity)
-        relations = self.get_relations(entity)
-        for relation in relations:
-            if omit_fields and relation in omit_fields:
-                continue
-
-            #clear out those items which are not found in the params list.
-            if relation not in params or not params[relation]:
-                related_items = getattr(obj, relation)
-                if related_items is not None:
-                    if hasattr(related_items, '__iter__'):
-                        setattr(obj, relation, [])
-                    else:
-                        setattr(obj, relation, None)
-
     def _get_obj(self, entity, pkdict):
         entity = resolve_entity(entity)
         pk_names = self.get_primary_fields(entity)
@@ -636,7 +619,6 @@ class SAORMProvider(IProvider):
                 pass
             setattr(obj, key, value)
 
-        self._remove_related_empty_params(obj, params, omit_fields)
         self.session.flush()
         return obj
 
