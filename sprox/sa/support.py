@@ -28,11 +28,10 @@ except ImportError:  # pragma: no cover
 
 
 def resolve_entity(entity):
-    if inspect.isfunction(entity):
+    if inspect.isfunction(entity) or inspect.ismethod(entity):
         entity = entity()
     if _class_resolver is not None and isinstance(entity, _class_resolver):
         entity = entity()
-    elif hasattr(entity, '__self__'):
-        entity = entity()
     return entity
+
 
