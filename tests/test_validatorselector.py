@@ -3,6 +3,7 @@ from sprox.validatorselector import ValidatorSelector
 from sprox.test.base import *
 
 from sprox.sa.validatorselector import *
+from sprox.sa.support import Binary, LargeBinary
 
 from sqlalchemy import Column, Integer, String
 from sprox.sa.provider import SAORMProvider
@@ -36,6 +37,7 @@ class TestSAValidatorSelector(SproxTest):
     testColumns = (
     (BLOB,        FileValidator),
     (BOOLEAN,     NoneType),
+    (BINARY,      FileValidator),
     (Binary,      FileValidator),
     (LargeBinary, FileValidator),
     (Boolean,     NoneType),

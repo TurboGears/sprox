@@ -1,0 +1,7 @@
+__pycache__/
+.coverage
+.eggs
+*.egg-info
+
+\#*\#
+.\#*

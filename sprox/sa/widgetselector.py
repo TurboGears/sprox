@@ -41,6 +41,7 @@ class SAWidgetSelector(WidgetSelector):
     DateTime: SproxCalendarDateTimePicker,
     Date:     SproxCalendarDatePicker,
     Time:     SproxTimePicker,
+    BINARY:   FileField,
     Binary:   FileField,
     LargeBinary: FileField,
     BLOB:   FileField,

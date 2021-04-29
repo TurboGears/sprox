@@ -56,6 +56,7 @@ class SAValidatorSelector(ValidatorSelector):
     DateTime: DateTimeValidator,
     Date:     DateValidator,
     Time:     DateTimeValidator,
+    BINARY:   FileValidator,
     Binary:   FileValidator,
     LargeBinary: FileValidator,
     PickleType: UnicodeString,

@@ -129,22 +129,22 @@ class FormBase(ViewBase):
         <tr class="odd"  id="sx_town:container">
             <th><label for="sx_town">Town</label></th>
             <td >
-                <select name="town" id="sx_town">
+                <select id="sx_town" name="town">
              <option value="1">Arvada</option>
              <option value="2">Denver</option>
              <option value="3">Golden</option>
              <option value="4">Boulder</option>
-             <option selected="selected" value="">-----------</option>
+             <option value="" selected="selected">-----------</option>
     </select>
                 <span id="sx_town:error"></span>
             </td>
         </tr>
         <tr class="error"><td colspan="2">
-            <input type="hidden" name="sprox_id" value="" id="sprox_id"/>
+            <input id="sprox_id" value="" name="sprox_id" type="hidden"/>
             <span id=":error"></span>
         </td></tr>
     </table>
-    		<input type="submit" value="Save"/>
+    		<input value="Save" type="submit"/>
     </form>
 
     Forms created with sprox can be validated as you would any other widget.
@@ -415,44 +415,44 @@ class AddRecordForm(FormBase):
         <tr class="odd required"  id="sx_user_name:container">
             <th><label for="sx_user_name">User Name</label></th>
             <td >
-                <input name="user_name" type="text" id="sx_user_name" value=""/>
+                <input id="sx_user_name" value="" name="user_name" type="text"/>
                 <span id="sx_user_name:error"></span>
             </td>
         </tr>
         <tr class="even required"  id="sx_email_address:container">
             <th><label for="sx_email_address">Email Address</label></th>
             <td >
-                <input name="email_address" type="text" id="sx_email_address"/>
+                <input id="sx_email_address" name="email_address" type="text"/>
                 <span id="sx_email_address:error"></span>
             </td>
         </tr>
         <tr class="odd"  id="sx_display_name:container">
             <th><label for="sx_display_name">Display Name</label></th>
             <td >
-                <input name="display_name" type="text" id="sx_display_name" value=""/>
+                <input id="sx_display_name" value="" name="display_name" type="text"/>
                 <span id="sx_display_name:error"></span>
             </td>
         </tr>
         <tr class="even required"  id="sx_password:container">
             <th><label for="sx_password">Password</label></th>
             <td >
-                <input type="password" name="password" id="sx_password"/>
+                <input id="sx_password" name="password" type="password"/>
                 <span id="sx_password:error"></span>
             </td>
         </tr>
         <tr class="odd"  id="verify_password:container">
             <th><label for="verify_password">Verify Password</label></th>
             <td >
-                <input type="password" name="verify_password" id="verify_password"/>
+                <input id="verify_password" name="verify_password" type="password"/>
                 <span id="verify_password:error"></span>
             </td>
         </tr>
         <tr class="error"><td colspan="2">
-            <input type="hidden" name="sprox_id" value="" id="sprox_id"/>
+            <input id="sprox_id" value="" name="sprox_id" type="hidden"/>
             <span id=":error"></span>
         </td></tr>
     </table>
-        <input type="submit" value="Save"/>
+            <input value="Save" type="submit"/>
     </form>
 
 
@@ -517,25 +517,25 @@ class DisabledForm(FormBase):
         <tr class="odd"  id="sx_user_name:container">
             <th><label for="sx_user_name">User Name</label></th>
             <td >
-                <input name="user_name" value="" disabled="disabled" type="text" id="sx_user_name"/>
+                <input disabled="disabled" id="sx_user_name" value="" name="user_name" type="text"/>
                 <span id="sx_user_name:error"></span>
             </td>
         </tr>
         <tr class="even"  id="sx_email_address:container">
             <th><label for="sx_email_address">Email Address</label></th>
             <td >
-                <textarea disabled="disabled" name="email_address" id="sx_email_address"></textarea>
+                <textarea disabled="disabled" id="sx_email_address" name="email_address"></textarea>
                 <span id="sx_email_address:error"></span>
             </td>
         </tr>
         <tr class="error"><td colspan="2">
-            <input type="hidden" name="user_name" id="disabled_user_name"/>
-            <input type="hidden" name="email_address" id="disabled_email_address"/>
-            <input type="hidden" name="sprox_id" value="" id="sprox_id"/>
+            <input id="disabled_user_name" name="user_name" type="hidden"/>
+            <input id="disabled_email_address" name="email_address" type="hidden"/>
+            <input id="sprox_id" value="" name="sprox_id" type="hidden"/>
             <span id=":error"></span>
         </td></tr>
     </table>
-        <input type="submit" value="Save"/>
+        <input value="Save" type="submit"/>
     </form>
 
 

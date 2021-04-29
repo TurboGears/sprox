@@ -26,6 +26,32 @@ except ImportError:  # pragma: no cover
     class Binary(LargeBinary):
         pass
 
+from sqlalchemy.orm import mapperlib
+try:
+    _all_registries = lambda: mapperlib._all_registries()
+except AttributeError:
+    _all_registries = lambda: [mapperlib._mapper_registry]
+
+
+def mapped_classes(engine):
+    classes = []
+    for registry in _all_registries():
+        for mapper in registry.mappers:
+            mapped_engine = mapper.tables[0].bind
+            if engine is None:
+                classes.append(mapper.class_)
+            if mapped_engine is not None and mapped_engine != engine:
+                continue
+            classes.append(mapper.class_)
+    return classes
+
+
+def mapped_class(engine, class_name):
+    for _class in mapped_classes(engine):
+        if _class.__name__ == class_name:
+            return _class
+    raise KeyError('could not find model by the name %s (in %s)' % (class_name, [c.__name__ for c in mapped_classes(engine)]))
+
 
 def resolve_entity(entity):
     if inspect.isfunction(entity) or inspect.ismethod(entity):

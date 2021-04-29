@@ -4,7 +4,7 @@ def test_fix_xml():
     s = """<form action="" method="post" class="required tableform">
         <div></div>
         </form>"""
-    e = """<form action="" class="required tableform" method="post"><div /></form>"""
+    e = """<form action="" method="post" class="required tableform"><div /></form>"""
     r =fix_xml(s)
     assert r == e, (r, s)
 
@@ -12,7 +12,7 @@ def test_fix_xml_with_escapes():
     s = """<form action="" method="post" class="required tableform">
         <div></div>&nbsp;
         </form>"""
-    e = """<form action="" class="required tableform" method="post"><div /></form>"""
+    e = """<form action="" method="post" class="required tableform"><div /></form>"""
     r =fix_xml(s)
     assert r == e, r
 
