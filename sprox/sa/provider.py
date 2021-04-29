@@ -40,6 +40,9 @@ from warnings import warn
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.sa.validatorselector import SAValidatorSelector
 from sprox._compat import string_type, zip_longest
+from sys import version_info
+
+PY2 = version_info[0] == 2
 
 class SAORMProviderError(Exception):pass
 
@@ -546,7 +549,7 @@ class SAORMProvider(IProvider):
                 if self.is_relation(entity, sort_by):
                     mapper = self.class_mapper(entity)
                     class_ = self._get_related_class(entity, sort_by)
-                    query = query.outerjoin(sort_by)
+                    query = query.outerjoin(sort_by.encode() if PY2 else sort_by)
                     f = self.get_view_field_name(class_, related_field_names)
                     field = self.get_field(class_, f)
                 else:
