@@ -27,10 +27,14 @@ except ImportError:  # pragma: no cover
         pass
 
 from sqlalchemy.orm import mapperlib
-try:
-    _all_registries = lambda: mapperlib._all_registries()
-except AttributeError:
-    _all_registries = lambda: [mapperlib._mapper_registry]
+def _all_registries():
+    try:
+        return mapperlib._all_registries()
+    except AttributeError:
+        class RegistryCompat:
+            def __init__(self, mr):
+                self.mappers = mr
+        return [RegistryCompat(mapperlib._mapper_registry)]
 
 
 def mapped_classes(engine):
