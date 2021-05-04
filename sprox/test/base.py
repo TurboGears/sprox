@@ -59,7 +59,7 @@ def remove_whitespace_nodes(node):
         new_node.text = ''
     if new_node.tail and new_node.tail.strip() == '':
         new_node.tail = ''
-    for child in node.getchildren():
+    for child in node:
         if child is not None:
             child = remove_whitespace_nodes(child)
         new_node.append(child)
@@ -67,7 +67,7 @@ def remove_whitespace_nodes(node):
 
 def remove_namespace(doc):
     """Remove namespace in the passed document in place."""
-    for elem in doc.getiterator():
+    for elem in doc:
         match = re.match('(\{.*\})(.*)', elem.tag)
         if match:
             elem.tag = match.group(2)
@@ -127,7 +127,7 @@ def setup_database():
 
     #singletonizes things
     if not database_setup:
-        engine = create_engine(os.environ.get('DBURL', 'sqlite://'), strategy="threadlocal")
+        engine = create_engine(os.environ.get('DBURL', 'sqlite://'))
         connect = engine.connect()
     #    print 'testing on', engine
         metadata.bind = engine

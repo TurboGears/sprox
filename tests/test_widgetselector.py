@@ -7,6 +7,7 @@ from sprox.widgetselector import WidgetSelector, EntityDefWidget, EntityDefWidge
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.widgets import *
 from sprox.sa.provider import SAORMProvider
+from sprox.sa.support import Binary, LargeBinary
 from sprox.test.model import Document
 
 class TestWidgetSelector:
@@ -44,6 +45,7 @@ class TestSAWidgetSelector:
     testColumns = (
     (BLOB,        FileField),
     (BOOLEAN,     SproxCheckBox),
+    (BINARY,      FileField),
     (Binary,      FileField),
     (LargeBinary, FileField),
     (Boolean,     SproxCheckBox),

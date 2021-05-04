@@ -12,6 +12,7 @@ from datetime import datetime
 from sqlalchemy import *
 from sqlalchemy.orm import relation, backref, synonym
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base, synonym_for
+from sprox.sa.support import Binary, LargeBinary
 
 DeclarativeBase = declarative_base()
 

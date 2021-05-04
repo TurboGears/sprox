@@ -12,7 +12,7 @@ import inspect
 try:
     from sqlalchemy import MetaData
     from sqlalchemy.engine import Engine
-    from sqlalchemy.orm import _mapper_registry, class_mapper
+    from sqlalchemy.orm import class_mapper
     from sqlalchemy.orm.session import Session
     from sqlalchemy.orm.scoping import ScopedSession
 except ImportError: # pragma: no cover
@@ -50,6 +50,7 @@ except ImportError:   # pragma: no cover
     pass
 
 from sprox.dummyentity import DummyEntity
+from sprox.sa.support import mapped_class
 
 class ProviderSelector:
     def __init__(self):
@@ -111,14 +112,10 @@ class _SAORMSelector(ProviderSelector):
 
     def get_entity(self, identifier, hint=None, **hints):
         engine = self._get_engine(hint, hints)
-        for mapper in _mapper_registry:
-            if mapper.class_.__name__ == identifier:
-                if engine is None:
-                    return mapper.class_
-                if engine is not None and mapper.tables[0].bind == engine:
-                    return mapper.class_
-
-        raise KeyError('could not find model by the name %s in %s'%(model_name, metadata))
+        try:
+            return mapped_class(engine, identifier)
+        except KeyError as ex:
+            raise NameError(str(ex))
 
     def get_identifier(self, entity, **hints):
         return entity.__name__

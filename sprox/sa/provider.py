@@ -26,11 +26,11 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm.query import Query
-from sqlalchemy.orm import Mapper, _mapper_registry, SynonymProperty, object_mapper, class_mapper
+from sqlalchemy.orm import Mapper, SynonymProperty, object_mapper, mapperlib
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, UnmappedInstanceError
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.schema import Column
-from sprox.sa.support import PropertyLoader, resolve_entity, Binary, LargeBinary
+from sprox.sa.support import PropertyLoader, resolve_entity, Binary, LargeBinary, mapped_classes, mapped_class
 
 from sprox.iprovider import IProvider
 from cgi import FieldStorage
@@ -39,7 +39,8 @@ from warnings import warn
 
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.sa.validatorselector import SAValidatorSelector
-from sprox._compat import string_type, zip_longest
+from sprox._compat import string_type, zip_longest, PY2
+
 
 class SAORMProviderError(Exception):pass
 
@@ -57,6 +58,13 @@ class SAORMProvider(IProvider):
         #if hint is None and len(hints) == 0:
         #    raise SAORMProviderError('You must provide a hint to this provider')
         self.engine, self.session, self.metadata = self._get_engine(hint, hints)
+
+    def class_mapper(self, entity):
+        if isinstance(entity, str):
+            return mapperlib.class_mapper(mapped_class(self.engine, entity))
+        else:
+            return mapperlib.class_mapper(entity)
+
 
     def _get_engine(self, hint, hints):
         metadata = hints.get('metadata', None)
@@ -82,7 +90,7 @@ class SAORMProvider(IProvider):
 
     def get_fields(self, entity):
         entity = resolve_entity(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
         field_names = list(mapper.c.keys())
         for prop in mapper.iterate_properties:
             try:
@@ -95,26 +103,14 @@ class SAORMProvider(IProvider):
         return field_names
 
     def get_entity(self, name):
-        for mapper in _mapper_registry:
-            if mapper.class_.__name__ == name:
-                engine = mapper.tables[0].bind
-                if engine is not None and mapper.tables[0].bind != self.engine:
-                    continue
-                return mapper.class_
-        raise KeyError('could not find model by the name %s'%(name))
+        return mapped_class(self.engine, name)
 
     def get_entities(self):
-        entities = []
-        for mapper in _mapper_registry:
-            engine = mapper.tables[0].bind
-            if engine is not None and mapper.tables[0].bind != self.engine:
-                continue
-            entities.append(mapper.class_.__name__)
-        return entities
+        return [c.__name__ for c in mapped_classes(self.engine)]
 
     def get_field(self, entity, name):
         entity = resolve_entity(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
         try:
             return mapper.c[name]
         except (InvalidRequestError, KeyError):
@@ -151,7 +147,7 @@ class SAORMProvider(IProvider):
 
     def get_primary_fields(self, entity):
         entity = resolve_entity(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
         fields = []
 
         for field_name in self.get_fields(entity):
@@ -171,7 +167,7 @@ class SAORMProvider(IProvider):
 
     def _find_title_column(self, entity):
         entity = resolve_entity(entity)
-        for column in class_mapper(entity).columns:
+        for column in self.class_mapper(entity).columns:
             if 'title' in column.info and column.info['title']:
                 return column.key
         return None
@@ -224,7 +220,10 @@ class SAORMProvider(IProvider):
 
         view_name = self.get_view_field_name(target_field, view_names)
 
-        rows = self.session.query(target_field).all()
+        if isinstance(target_field, str):
+            rows = self.session.query(mapped_class(self.engine, target_field)).all()
+        else:
+            rows = self.session.query(target_field).all()
 
         if len(pk_fields) == 1:
             def build_pk(row):
@@ -237,7 +236,7 @@ class SAORMProvider(IProvider):
 
     def get_relations(self, entity):
         entity = resolve_entity(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, PropertyLoader)]
 
     def is_entity(self, entity):
@@ -252,7 +251,7 @@ class SAORMProvider(IProvider):
 
     def is_relation(self, entity, field_name):
         entity = resolve_entity(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
 
         try:
             property = mapper.get_property(field_name)
@@ -264,7 +263,7 @@ class SAORMProvider(IProvider):
 
     def _relates_many(self, entity, field_name):
         entity = resolve_entity(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
         property = mapper.get_property(field_name)
         return property.uselist
 
@@ -287,7 +286,7 @@ class SAORMProvider(IProvider):
 
     def get_synonyms(self, entity):
         entity = resolve_entity(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
         return [prop.key for prop in mapper.iterate_properties if isinstance(prop, SynonymProperty)]
 
     def _adapt_type(self, value, primary_key):
@@ -302,7 +301,7 @@ class SAORMProvider(IProvider):
 
     def _modify_params_for_relationships(self, entity, params):
         entity = resolve_entity(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
         relations = self.get_relations(entity)
 
         for relation in relations:
@@ -322,7 +321,7 @@ class SAORMProvider(IProvider):
                                 if hasattr(target, 'primary_key'):
                                     pk = target.primary_key
                                 else:
-                                    pk = class_mapper(target).primary_key
+                                    pk = self.class_mapper(target).primary_key
                                 if isinstance(v, string_type) and "/" in v:
                                     v = map(self._adapt_type, v.split("/"), pk)
                                     v = tuple(v)
@@ -339,9 +338,12 @@ class SAORMProvider(IProvider):
                         except UnmappedInstanceError:
                             mapper = target
                             if not isinstance(target, Mapper):
-                                mapper = class_mapper(target)
+                                mapper = self.class_mapper(target)
                             value = self._adapt_type(value, mapper.primary_key[0])
-                            target_obj = [self.session.query(target).get(value)]
+                            if isinstance(target, str):
+                                target_obj = [self.session.query(mapped_class(self.engine, target)).get(value)]
+                            else:
+                                target_obj = [self.session.query(target).get(value)]
                     else:
                         try:
                             object_mapper(value)
@@ -369,7 +371,7 @@ class SAORMProvider(IProvider):
         obj = entity()
 
         relations = self.get_relations(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
         for key, value in params.items():
             if value is not None:
                 if isinstance(value, FieldStorage):
@@ -392,7 +394,7 @@ class SAORMProvider(IProvider):
         if obj is None:
             return {}
         r = {}
-        mapper = class_mapper(obj.__class__)
+        mapper = self.class_mapper(obj.__class__)
         for prop in mapper.iterate_properties:
             if fields and prop.key not in fields:
                 continue
@@ -452,12 +454,12 @@ class SAORMProvider(IProvider):
 
     def _get_related_class(self, entity, relation):
         entity = resolve_entity(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
         prop = mapper.get_property(relation)
 
         target = resolve_entity(prop.argument)
         if not hasattr(target, 'class_'):
-            target = class_mapper(target)
+            target = self.class_mapper(target)
 
         return target.class_
 
@@ -543,9 +545,9 @@ class SAORMProvider(IProvider):
 
             for sort_by, sort_descending in zip_longest(order_by, desc):
                 if self.is_relation(entity, sort_by):
-                    mapper = class_mapper(entity)
+                    mapper = self.class_mapper(entity)
                     class_ = self._get_related_class(entity, sort_by)
-                    query = query.outerjoin(sort_by)
+                    query = query.outerjoin(sort_by.encode() if PY2 else sort_by)
                     f = self.get_view_field_name(class_, related_field_names)
                     field = self.get_field(class_, f)
                 else:
@@ -567,7 +569,7 @@ class SAORMProvider(IProvider):
 
     def _modify_params_for_dates(self, entity, params):
         entity = resolve_entity(entity)
-        mapper = class_mapper(entity)
+        mapper = self.class_mapper(entity)
         for key, value in list(params.items()):
             if key in mapper.c and value is not None:
                 field = mapper.c[key]

@@ -22,6 +22,7 @@ Original Version by Christopher Perkins 2007Database
 Released under MIT license.
 """
 from sqlalchemy.types import *
+from sqlalchemy.sql.sqltypes import _Binary
 from sprox.widgets import *
 
 from sqlalchemy.schema import Column
@@ -41,6 +42,7 @@ class SAWidgetSelector(WidgetSelector):
     DateTime: SproxCalendarDateTimePicker,
     Date:     SproxCalendarDatePicker,
     Time:     SproxTimePicker,
+    _Binary:   FileField,
     Binary:   FileField,
     LargeBinary: FileField,
     BLOB:   FileField,

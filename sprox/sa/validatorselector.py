@@ -24,6 +24,7 @@ Released under MIT license.
 from sqlalchemy.schema import Column
 from sqlalchemy.types import *
 from sqlalchemy.types import String as StringType
+from sqlalchemy.sql.sqltypes import _Binary
 from formencode.compound import All
 from formencode import Invalid
 from formencode.validators import StringBool, Number, UnicodeString as FEUnicodeString, Email, Int
@@ -56,6 +57,7 @@ class SAValidatorSelector(ValidatorSelector):
     DateTime: DateTimeValidator,
     Date:     DateValidator,
     Time:     DateTimeValidator,
+    _Binary:   FileValidator,
     Binary:   FileValidator,
     LargeBinary: FileValidator,
     PickleType: UnicodeString,
