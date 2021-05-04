@@ -39,10 +39,8 @@ from warnings import warn
 
 from sprox.sa.widgetselector import SAWidgetSelector
 from sprox.sa.validatorselector import SAValidatorSelector
-from sprox._compat import string_type, zip_longest
-from sys import version_info
+from sprox._compat import string_type, zip_longest, PY2
 
-PY2 = version_info[0] == 2
 
 class SAORMProviderError(Exception):pass
 
