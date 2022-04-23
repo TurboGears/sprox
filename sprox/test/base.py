@@ -5,7 +5,7 @@ from copy import copy
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from .model import *
-from cgi import FieldStorage
+from multipart import MultipartPart as FieldStorage
 from sprox._compat import unicode_text
 
 try:

@@ -8,7 +8,7 @@ exec(compile(open(os.path.join(here, 'sprox', 'release.py')).read(), 'release.py
 import sys
 py_version = sys.version_info[:2]
 
-DEPENDENCIES = ['formencode>=1.3.0a1']
+DEPENDENCIES = ['formencode>=1.3.0a1', 'multipart']
 TESTS_DEPENDENCIES = ['sieve']
 
 if py_version == (3, 2):
