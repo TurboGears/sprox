@@ -20,7 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install nose
           pip install coverage
-          pip install git+git://github.com/TurboGears/Ming.git
+          pip install git+https://github.com/TurboGears/Ming.git
           pip install git+https://github.com/toscawidgets/tw2.core.git@develop#egg=tw2.core
           pip install git+https://github.com/toscawidgets/tw2.forms.git@develop#egg=tw2.forms
           pip install -U --upgrade-strategy=eager --pre -e .[testing]
