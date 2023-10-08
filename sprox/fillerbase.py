@@ -226,11 +226,13 @@ class TableFiller(FillerBase):
             for field in self.__fields__:
                 field_method = getattr(self, field, None)
                 if inspect.ismethod(field_method):
-                    argspec = inspect.getargspec(field_method)
-                    if argspec and (len(argspec[0])-2>=len(kw) or argspec[2]):
-                        value = getattr(self, field)(obj, **kw)
+                    signature = inspect.signature(field_method)
+                    try:
+                        signature.bind(obj, **kw)
+                    except TypeError:
+                        value = field_method(obj)
                     else:
-                        value = getattr(self, field)(obj)
+                        value = field_method(obj, **kw)
                 else:
                     value = getattr(obj, field)
                     if 'password' in field.lower():
