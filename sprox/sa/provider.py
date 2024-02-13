@@ -33,7 +33,7 @@ from sqlalchemy.schema import Column
 from sprox.sa.support import PropertyLoader, resolve_entity, Binary, LargeBinary, mapped_classes, mapped_class
 
 from sprox.iprovider import IProvider
-from cgi import FieldStorage
+from multipart import MultipartPart as FieldStorage
 from datetime import datetime, date, timedelta
 from warnings import warn
 

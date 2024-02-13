@@ -12,7 +12,7 @@ from sqlalchemy.engine import Engine
 from nose.tools import raises, eq_
 import datetime
 
-from cgi import FieldStorage
+from multipart import MultipartPart as FieldStorage
 
 try:
     from io import BytesIO
